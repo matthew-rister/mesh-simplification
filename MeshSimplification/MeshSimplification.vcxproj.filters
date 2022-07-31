@@ -1,0 +1,104 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="graphics\mesh.cpp">
+      <Filter>graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="graphics\shader_program.cpp">
+      <Filter>graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="graphics\texture2d.cpp">
+      <Filter>graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="graphics\obj_loader.cpp">
+      <Filter>graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="geometry\face.cpp">
+      <Filter>geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="geometry\half_edge_mesh.cpp">
+      <Filter>geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="geometry\mesh_simplifier.cpp">
+      <Filter>geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="graphics\scene.cpp">
+      <Filter>graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="graphics\window.cpp">
+      <Filter>graphics</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="graphics\shader_program.h">
+      <Filter>graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="graphics\mesh.h">
+      <Filter>graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="graphics\obj_loader.h">
+      <Filter>graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="graphics\texture2d.h">
+      <Filter>graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="graphics\material.h">
+      <Filter>graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="geometry\vertex.h">
+      <Filter>geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="geometry\half_edge.h">
+      <Filter>geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="geometry\face.h">
+      <Filter>geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="geometry\half_edge_mesh.h">
+      <Filter>geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="geometry\mesh_simplifier.h">
+      <Filter>geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="graphics\scene.h">
+      <Filter>graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="graphics\window.h">
+      <Filter>graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="graphics\camera.h">
+      <Filter>graphics</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="shaders\mesh_fragment.glsl">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="shaders\mesh_vertex.glsl">
+      <Filter>shaders</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="shaders">
+      <UniqueIdentifier>{bc519ce1-d050-44ca-bf16-5049ce0cb9a2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="models">
+      <UniqueIdentifier>{72540917-fab2-49b9-bf65-600687120d37}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="graphics">
+      <UniqueIdentifier>{e2a2d935-f222-40b4-b7c5-da80e71d06b4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="geometry">
+      <UniqueIdentifier>{a63d86ff-a6ba-4e0f-b5b7-0e6345a41a0f}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <Object Include="models\bunny.obj">
+      <Filter>models</Filter>
+    </Object>
+    <Object Include="models\buddha.obj">
+      <Filter>models</Filter>
+    </Object>
+  </ItemGroup>
+</Project>

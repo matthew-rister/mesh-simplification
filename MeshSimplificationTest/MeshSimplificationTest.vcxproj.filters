@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="graphics\obj_loader_test.cpp">
+      <Filter>graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="graphics\mesh_test.cpp">
+      <Filter>graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="geometry\face_test.cpp">
+      <Filter>geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="geometry\half_edge_test.cpp">
+      <Filter>geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="geometry\vertex_test.cpp">
+      <Filter>geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="geometry\half_edge_mesh_test.cpp">
+      <Filter>geometry</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="graphics">
+      <UniqueIdentifier>{358dd437-5550-496d-9676-902602cd7ec3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="geometry">
+      <UniqueIdentifier>{daec029e-b1ee-494e-a6df-6335e2413eda}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

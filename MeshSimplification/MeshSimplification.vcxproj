@@ -1,0 +1,279 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>16.0</VCProjectVersion>
+    <Keyword>Win32Proj</Keyword>
+    <ProjectGuid>{06eb8b3a-77ab-46be-a186-a748778feee4}</ProjectGuid>
+    <RootNamespace>MeshSimplification</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>MeshSimplification</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+    <EnableASAN>false</EnableASAN>
+    <EnableFuzzer>false</EnableFuzzer>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+    <EnableASAN>false</EnableASAN>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+    <EnableASAN>false</EnableASAN>
+    <EnableFuzzer>false</EnableFuzzer>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+    <EnableASAN>false</EnableASAN>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+    <RunCodeAnalysis>false</RunCodeAnalysis>
+    <CodeAnalysisRuleSet>..\MeshSimplification.ruleset</CodeAnalysisRuleSet>
+    <EnableMicrosoftCodeAnalysis>true</EnableMicrosoftCodeAnalysis>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+    <RunCodeAnalysis>false</RunCodeAnalysis>
+    <CodeAnalysisRuleSet>..\MeshSimplification.ruleset</CodeAnalysisRuleSet>
+    <EnableMicrosoftCodeAnalysis>true</EnableMicrosoftCodeAnalysis>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>true</LinkIncremental>
+    <RunCodeAnalysis>false</RunCodeAnalysis>
+    <CodeAnalysisRuleSet>..\MeshSimplification.ruleset</CodeAnalysisRuleSet>
+    <EnableMicrosoftCodeAnalysis>true</EnableMicrosoftCodeAnalysis>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>false</LinkIncremental>
+    <RunCodeAnalysis>false</RunCodeAnalysis>
+    <CodeAnalysisRuleSet>..\MeshSimplification.ruleset</CodeAnalysisRuleSet>
+    <EnableMicrosoftCodeAnalysis>true</EnableMicrosoftCodeAnalysis>
+  </PropertyGroup>
+  <PropertyGroup Label="Vcpkg">
+    <VcpkgEnableManifest>true</VcpkgEnableManifest>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level4</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>STB_IMAGE_IMPLEMENTATION;GLM_FORCE_SILENT_WARNINGS;WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <AdditionalIncludeDirectories>$(ProjectDir);</AdditionalIncludeDirectories>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <StringPooling>false</StringPooling>
+      <SmallerTypeCheck>false</SmallerTypeCheck>
+      <ControlFlowGuard>false</ControlFlowGuard>
+      <FloatingPointExceptions>true</FloatingPointExceptions>
+      <DisableLanguageExtensions>false</DisableLanguageExtensions>
+      <EnablePREfast>false</EnablePREfast>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level4</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>false</SDLCheck>
+      <PreprocessorDefinitions>STB_IMAGE_IMPLEMENTATION;GLM_FORCE_SILENT_WARNINGS;WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <AdditionalIncludeDirectories>$(ProjectDir);</AdditionalIncludeDirectories>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <OmitFramePointers>true</OmitFramePointers>
+      <StringPooling>true</StringPooling>
+      <ControlFlowGuard>false</ControlFlowGuard>
+      <EnableParallelCodeGeneration>true</EnableParallelCodeGeneration>
+      <EnableEnhancedInstructionSet>AdvancedVectorExtensions2</EnableEnhancedInstructionSet>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <FloatingPointExceptions>false</FloatingPointExceptions>
+      <DisableLanguageExtensions>false</DisableLanguageExtensions>
+      <EnablePREfast>false</EnablePREfast>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <LinkTimeCodeGeneration>UseFastLinkTimeCodeGeneration</LinkTimeCodeGeneration>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level4</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>STB_IMAGE_IMPLEMENTATION;GLM_FORCE_SILENT_WARNINGS;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <AdditionalIncludeDirectories>$(ProjectDir);</AdditionalIncludeDirectories>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <StringPooling>false</StringPooling>
+      <SmallerTypeCheck>false</SmallerTypeCheck>
+      <ControlFlowGuard>false</ControlFlowGuard>
+      <FloatingPointExceptions>true</FloatingPointExceptions>
+      <OmitFramePointers>false</OmitFramePointers>
+      <DisableLanguageExtensions>false</DisableLanguageExtensions>
+      <EnablePREfast>false</EnablePREfast>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>
+      </AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level4</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>false</SDLCheck>
+      <PreprocessorDefinitions>STB_IMAGE_IMPLEMENTATION;GLM_FORCE_SILENT_WARNINGS;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <AdditionalIncludeDirectories>$(ProjectDir);</AdditionalIncludeDirectories>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <OmitFramePointers>true</OmitFramePointers>
+      <StringPooling>true</StringPooling>
+      <ControlFlowGuard>false</ControlFlowGuard>
+      <EnableParallelCodeGeneration>true</EnableParallelCodeGeneration>
+      <EnableEnhancedInstructionSet>AdvancedVectorExtensions2</EnableEnhancedInstructionSet>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <FloatingPointExceptions>false</FloatingPointExceptions>
+      <DisableLanguageExtensions>false</DisableLanguageExtensions>
+      <EnablePREfast>false</EnablePREfast>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>
+      </AdditionalLibraryDirectories>
+      <LinkTimeCodeGeneration>UseFastLinkTimeCodeGeneration</LinkTimeCodeGeneration>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="geometry\face.cpp" />
+    <ClCompile Include="geometry\half_edge_mesh.cpp" />
+    <ClCompile Include="graphics\mesh.cpp" />
+    <ClCompile Include="graphics\obj_loader.cpp" />
+    <ClCompile Include="graphics\shader_program.cpp" />
+    <ClCompile Include="graphics\texture2d.cpp" />
+    <ClCompile Include="geometry\mesh_simplifier.cpp" />
+    <ClCompile Include="graphics\window.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="graphics\scene.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="graphics\camera.h" />
+    <ClInclude Include="geometry\face.h" />
+    <ClInclude Include="geometry\mesh_simplifier.h" />
+    <ClInclude Include="graphics\texture2d.h" />
+    <ClInclude Include="graphics\material.h" />
+    <ClInclude Include="geometry\half_edge.h" />
+    <ClInclude Include="geometry\half_edge_mesh.h" />
+    <ClInclude Include="graphics\mesh.h" />
+    <ClInclude Include="graphics\obj_loader.h" />
+    <ClInclude Include="graphics\shader_program.h" />
+    <ClInclude Include="geometry\vertex.h" />
+    <ClInclude Include="graphics\window.h" />
+    <ClInclude Include="graphics\scene.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="shaders\mesh_fragment.glsl" />
+    <None Include="shaders\mesh_vertex.glsl" />
+  </ItemGroup>
+  <ItemGroup>
+    <Object Include="models\buddha.obj">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </Object>
+    <Object Include="models\bunny.obj">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </Object>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+  <PropertyGroup Condition="'$(Language)'=='C++'">
+    <CAExcludePath>$(SolutionDir)\vcpkg_installed;$(ProjectDir)\lib;.\GeneratedFiles;$(CAExcludePath)</CAExcludePath>
+  </PropertyGroup>
+</Project>
