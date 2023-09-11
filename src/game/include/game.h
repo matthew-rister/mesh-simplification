@@ -6,7 +6,6 @@
 namespace gfx {
 
 class Game {
-
 public:
     void Run() const;
 
@@ -14,4 +13,5 @@ private:
     Engine engine_;
     Scene scene_;
 };
-}
+
+}  // namespace gfx

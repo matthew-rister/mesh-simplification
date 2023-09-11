@@ -1,11 +1,9 @@
 #include "vector3.h"
 
+#include <catch.hpp>
 #include <sstream>
 
-#include <catch.hpp>
-
 TEST_CASE("Vector3 construction") {
-
     SECTION("A default constructed vector initializes each component to zero") {
         constexpr gfx::Vector3 v;
         static_assert(v.x == 0.0f);
@@ -73,10 +71,7 @@ TEST_CASE("Vector3 operations") {
 }
 
 TEST_CASE("Vector3 length") {
-
-    SECTION("The length of the zero vector is zero") {
-        REQUIRE(gfx::Length(gfx::Vector3{0.0f, 0.0f, 0.0f}) == 0.0f);
-    }
+    SECTION("The length of the zero vector is zero") { REQUIRE(gfx::Length(gfx::Vector3{0.0f, 0.0f, 0.0f}) == 0.0f); }
 
     SECTION("The length of a vector is the square root of the sum of each component squared") {
         constexpr gfx::Vector3 v{1.0f, 2.0f, 3.0f};
