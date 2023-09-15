@@ -2,6 +2,7 @@
 
 #include <cassert>
 #include <cmath>
+#include <format>
 #include <ostream>
 
 namespace gfx {
@@ -35,7 +36,7 @@ constexpr bool operator==(const Vector3& u, const Vector3& v) noexcept {
 constexpr bool operator!=(const Vector3& u, const Vector3& v) noexcept { return !(u == v); }
 
 inline std::ostream& operator<<(std::ostream& os, const Vector3& v) {
-    return os << '(' << v.x << ',' << v.y << ',' << v.z << ')';
+    return os << std::format("({},{},{})", v.x, v.y, v.z);
 }
 
 inline float Length(const Vector3& v) noexcept { return std::sqrt(v.x * v.x + v.y * v.y + v.z * v.z); }
