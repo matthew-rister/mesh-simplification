@@ -1,5 +1,5 @@
-add_executable(test main.cpp math/vector3_test.cpp)
+find_package(Catch2 CONFIG REQUIRED)
 
-target_include_directories(test PRIVATE extern)
+add_executable(test math/vector3_test.cpp)
 
-target_link_libraries(test PRIVATE math_lib)
+target_link_libraries(test PRIVATE math Catch2::Catch2WithMain)

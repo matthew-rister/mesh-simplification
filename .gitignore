@@ -1,4 +1,8 @@
-## C++.gitignore
+## VkRender
+build/
+out/
+
+## C++
 
 # Prerequisites
 *.d
@@ -33,7 +37,7 @@
 *.out
 *.app
 
-## CMake.gitignore
+## CMake
 
 CMakeLists.txt.user
 CMakeCache.txt
@@ -47,7 +51,7 @@ compile_commands.json
 CTestTestfile.cmake
 _deps
 
-## VisualStudio.gitignore
+## Visual Studio
 
 # User-specific files
 *.rsuser
@@ -443,6 +447,17 @@ FodyWeavers.xsd
 # JetBrains Rider
 *.sln.iml
 
-## VkRender
+## Visual Studio Code
 
-out/
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+!.vscode/*.code-snippets
+
+# Local History for Visual Studio Code
+.history/
+
+# Built Visual Studio Code Extensions
+*.vsix
