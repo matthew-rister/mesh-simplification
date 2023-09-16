@@ -1,7 +1,3 @@
-// TODO(#13): remove these defines once its understood how to build vcpkg triples with address sanitizer
-#define _DISABLE_STRING_ANNOTATION
-#define _DISABLE_VECTOR_ANNOTATION
-
 #include "vector3.h"
 
 #include <catch2/catch_test_macros.hpp>
