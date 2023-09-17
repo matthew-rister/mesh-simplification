@@ -21,7 +21,7 @@ This project enables [Address Sanitizer](https://clang.llvm.org/docs/AddressSani
 This project utilizes [CMake Presets](https://cmake.org/cmake/help/v3.22/manual/cmake-presets.7.html) to facilitate CMake configuration.  To build the project from the command line using the `x64-release` preset, run `cmake -S . --preset x64-release && cmake --build out/build/x64-release`. To see what presets are available, run `cmake --list-presets`.  Alternatively, you can use an IDE with CMake integration.
 
 ### Testing
-This project uses [Catch2](https://github.com/catchorg/Catch2) for unit testing. Tests can be run the `test` executable which is built with the project.
+This project uses [Catch2](https://github.com/catchorg/Catch2) for unit testing. After building the project, these can be run from the separate `tests` executable or by running `ctest` from the project build directory.
 
 ## Contributing
 
