@@ -43,6 +43,7 @@ CMakeLists.txt.user
 CMakeCache.txt
 CMakeFiles
 CMakeScripts
+CMakeUserPresets.json
 Testing
 Makefile
 cmake_install.cmake
