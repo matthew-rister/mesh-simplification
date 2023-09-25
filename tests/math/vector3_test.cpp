@@ -1,8 +1,9 @@
 #include "vector3.h"
 
+#include <sstream>
+
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/matchers/catch_matchers_floating_point.hpp>
-#include <sstream>
 
 TEST_CASE("Vector3 construction") {
     SECTION("A default constructed vector initializes each component to zero") {
