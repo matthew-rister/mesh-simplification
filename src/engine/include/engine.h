@@ -5,7 +5,7 @@ class Scene;
 
 class Engine {
 public:
-    void Render(const Scene&) const;
+  void Render(const Scene&) const;
 };
 
 }  // namespace gfx

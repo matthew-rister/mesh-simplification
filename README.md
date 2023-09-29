@@ -30,7 +30,7 @@ To see what test presets are available, run `ctest --list-presets`.  Alternative
 ## Contribute
 
 ### C++ Style Guide 
-This project follows the [Google C++ Style Guide](https://google.github.io/styleguide/cppguide.html) which is enforced using [clang-format](https://clang.llvm.org/docs/ClangFormatStyleOptions.html).
+This project follows the [Google C++ Style Guide](https://google.github.io/styleguide/cppguide.html) with a few exceptions (e.g., 120 column width) which is enforced using [clang-format](https://clang.llvm.org/docs/ClangFormatStyleOptions.html).
 
 ### Git Commits
 To promote descriptive commits, this project uses a commit message template which should be configured by running 

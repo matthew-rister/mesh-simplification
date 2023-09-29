@@ -8,14 +8,14 @@ namespace gfx {
 
 class Game {
 public:
-    Game();
+  Game();
 
-    void Run() const;
+  void Run() const;
 
 private:
-    Window window_;
-    Engine engine_;
-    Scene scene_;
+  Window window_;
+  Engine engine_;
+  Scene scene_;
 };
 
 }  // namespace gfx
