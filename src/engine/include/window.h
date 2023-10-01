@@ -14,7 +14,7 @@ public:
 
   void OnKeyEvent(std::invocable<int, int> auto&& fn) { on_key_event_ = std::forward<decltype(on_key_event_)>(fn); }
 
-  [[nodiscard]] bool Closed() const noexcept { return glfwWindowShouldClose(glfw_window_.get()) == GLFW_TRUE; }
+  [[nodiscard]] bool IsClosed() const noexcept { return glfwWindowShouldClose(glfw_window_.get()) == GLFW_TRUE; }
   void Close() const noexcept { glfwSetWindowShouldClose(glfw_window_.get(), GLFW_TRUE); }
 
   void Update() const noexcept { glfwPollEvents(); }

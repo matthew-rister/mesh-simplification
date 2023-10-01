@@ -31,6 +31,9 @@ private:
     if (glfwInit() == GLFW_FALSE) {
       throw std::runtime_error{"GLFW initialization failed"};
     }
+    if (glfwVulkanSupported() == GLFW_FALSE) {
+      throw std::runtime_error{"No Vulkan loader or installable client driver could be found"};
+    }
   }
 };
 

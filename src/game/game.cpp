@@ -9,7 +9,7 @@ gfx::Game::Game() : window_{"VkRender", 1600, 900} {
 }
 
 void gfx::Game::Run() const {
-  while (!window_.Closed()) {
+  while (!window_.IsClosed()) {
     window_.Update();
     engine_.Render(scene_);
   }

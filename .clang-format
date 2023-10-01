@@ -2,4 +2,3 @@ BasedOnStyle: Google
 AccessModifierOffset: -2
 ColumnLimit: 120
 IncludeBlocks: Preserve
-Standard: c++20

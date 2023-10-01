@@ -1,4 +1,5 @@
-﻿#include <exception>
+﻿#include <cstdlib>
+#include <exception>
 #include <iostream>
 
 #include "game.h"
