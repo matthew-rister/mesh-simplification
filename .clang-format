@@ -1,4 +1,8 @@
 BasedOnStyle: Google
 AccessModifierOffset: -2
 ColumnLimit: 120
+DerivePointerAlignment: false
+PointerAlignment: Left
 IncludeBlocks: Preserve
+InsertNewlineAtEOF: true
+QualifierAlignment: Left
