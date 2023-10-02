@@ -1,3 +1,3 @@
 #include "scene.h"
 
-void gfx::Scene::Render() const {}
+void gfx::Scene::Render() const noexcept {}

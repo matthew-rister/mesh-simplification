@@ -4,7 +4,7 @@ namespace gfx {
 
 class Scene {
 public:
-  void Render() const;
+  void Render() const noexcept;
 };
 
 }  // namespace gfx

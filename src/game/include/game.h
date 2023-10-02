@@ -8,7 +8,7 @@ namespace gfx {
 
 class Game {
 public:
-  Game();
+  Game() noexcept;
 
   void Run() const;
 

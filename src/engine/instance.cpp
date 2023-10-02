@@ -25,7 +25,7 @@ gfx::Instance::Instance() {
 #endif
 
   std::uint32_t required_extension_count{};
-  const auto** required_extension_names = glfwGetRequiredInstanceExtensions(&required_extension_count);
+  const auto* const* required_extension_names = glfwGetRequiredInstanceExtensions(&required_extension_count);
   if (required_extension_names == nullptr) {
     throw std::runtime_error{"No Vulkan instance extensions for window surface creation could be found"};
   }

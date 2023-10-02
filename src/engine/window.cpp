@@ -4,8 +4,6 @@
 #include <iostream>
 #include <stdexcept>
 
-#include <GLFW/glfw3.h>
-
 namespace {
 
 class GlfwContext {

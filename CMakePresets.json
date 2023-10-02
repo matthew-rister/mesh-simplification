@@ -24,6 +24,13 @@
         "type": "equals",
         "lhs": "${hostSystemName}",
         "rhs": "Windows"
+      },
+      "vendor": {
+        "microsoft.com/VisualStudioSettings/CMake/1.0": {
+          "enableMicrosoftCodeAnalysis": true,
+          "codeAnalysisRuleset": "${sourceDir}/CppCoreCheckAll.ruleset",
+          "disableExternalAnalysis": true
+        }
       }
     },
     {
