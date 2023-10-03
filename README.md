@@ -4,10 +4,10 @@ A cross-platform Vulkan renderer written in C++23.
 ## Prerequisites
 This project requires [CMake](https://cmake.org/) 3.22 and a C++ compiler that supports the C++23 language standard. It has been tested with the Microsoft C/C++ Compiler Version 19.37.32822 on Windows and Clang 17 on Ubuntu 22.04.3 LTS. This project utilizes [CMake Presets](https://cmake.org/cmake/help/v3.22/manual/cmake-presets.7.html) to facilitate configuration, building, and testing with [ninja](https://ninja-build.org/) as a build generator.
 
-#### Package Management
+### Package Management
 This project uses [`vcpkg`](https://vcpkg.io) to manage external dependencies.  To get started, run `git submodule update --init` to clone `vcpkg` as a git submodule. `vcpkg` can then be initialized by running `.\vcpkg\bootstrap-vcpk.bat` on Windows or `./vcpkg/bootstrap-vcpkg.sh` on Linux. Upon completion, CMake will integrate with `vcpkg` to download, compile, and link external libraries specified in the [vcpkg.json](vcpkg.json) manifest when building the project.
 
-#### Address Sanitizer
+### Address Sanitizer
 This project enables [Address Sanitizer](https://clang.llvm.org/docs/AddressSanitizer.html) (ASan) for debug builds. On Linux, this should already be available when using a modern version of GCC or Clang with C++23 support. On Windows, ASan needs to be installed separately which is documented [here](https://learn.microsoft.com/en-us/cpp/sanitizers/asan?view=msvc-170#install-addresssanitizer).
 
 ## Build
@@ -29,12 +29,13 @@ To see what test presets are available, run `ctest --list-presets`.  Alternative
 
 ## Contribute
 
-### C++ Style Guide
+### Code Style
 This project follows the  [Google C++ Style Guide](https://google.github.io/styleguide/cppguide.html) with the following exceptions:
  1. 120-character limit per line.
  2. C++ files are named with the `.cpp` file extension.
  3. Exceptions are allowed.
  4. Forward declarations are allowed.
+ 5. Static variables are allowed when their scope is restricted to a single translation unit.
 
 Code style is enforced across platforms using [clang-format](https://clang.llvm.org/docs/ClangFormatStyleOptions.html).
 

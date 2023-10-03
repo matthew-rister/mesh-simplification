@@ -11,6 +11,10 @@ VULKAN_HPP_DEFAULT_DISPATCH_LOADER_DYNAMIC_STORAGE
 #endif
 
 gfx::Instance::Instance() {
+  if (glfwVulkanSupported() == GLFW_FALSE) {
+    throw std::runtime_error{"No Vulkan loader or installable client driver could be found"};
+  }
+
 #if VULKAN_HPP_DISPATCH_LOADER_DYNAMIC == 1
   static const vk::DynamicLoader loader;
   const auto get_instance_proc_address = loader.getProcAddress<PFN_vkGetInstanceProcAddr>("vkGetInstanceProcAddr");
