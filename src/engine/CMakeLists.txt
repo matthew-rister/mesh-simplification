@@ -1,4 +1,4 @@
-add_library(Engine STATIC engine.cpp instance.cpp scene.cpp window.cpp)
+add_library(Engine STATIC engine.cpp instance.cpp window.cpp)
 
 find_package(glfw3 CONFIG REQUIRED)
 find_package(Vulkan REQUIRED)

@@ -1,7 +1,6 @@
 #pragma once
 
 #include "engine.h"
-#include "scene.h"
 #include "window.h"
 
 namespace gfx {
@@ -15,7 +14,6 @@ public:
 private:
   Window window_;
   Engine engine_;
-  Scene scene_;
 };
 
 }  // namespace gfx

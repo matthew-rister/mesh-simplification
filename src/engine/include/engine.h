@@ -2,15 +2,18 @@
 
 #include "instance.h"
 
+#include <vulkan/vulkan.hpp>
+
 namespace gfx {
-class Scene;
+class Window;
 
 class Engine {
 public:
-  void Render(const Scene&) const;
+  explicit Engine(const Window&);
 
 private:
   Instance instance_;
+  vk::UniqueSurfaceKHR surface_;
 };
 
 }  // namespace gfx

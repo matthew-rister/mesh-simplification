@@ -2,5 +2,5 @@
   "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg-tool/main/docs/vcpkg.schema.json",
   "name": "vkrender",
   "version": "0.1.0",
-  "dependencies": [ "catch2", "glfw3", "vulkan-hpp" ]
+  "dependencies": [ "catch2", "glfw3", "vulkan-headers" ]
 }

@@ -2,7 +2,12 @@
 
 #include <GLFW/glfw3.h>
 
-gfx::Game::Game() noexcept : window_{"VkRender", 1600, 900} {
+namespace {
+constexpr auto kWindowHeight = 1600;
+constexpr auto kWindowWidth = 900;
+}  // namespace
+
+gfx::Game::Game() noexcept : window_{"VkRender", kWindowHeight, kWindowWidth}, engine_{window_} {
   window_.OnKeyEvent([this](const auto key, const auto action) {
     if (action == GLFW_PRESS && key == GLFW_KEY_ESCAPE) {
       window_.Close();
@@ -12,7 +17,6 @@ gfx::Game::Game() noexcept : window_{"VkRender", 1600, 900} {
 
 void gfx::Game::Run() const {
   while (!window_.IsClosed()) {
-    window_.Update();
-    engine_.Render(scene_);
+    Window::Update();
   }
 }

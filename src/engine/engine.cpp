@@ -1,5 +1,5 @@
 ﻿#include "engine.h"
 
-#include "scene.h"
+#include "window.h"
 
-void gfx::Engine::Render(const Scene& scene) const { scene.Render(); }
+gfx::Engine::Engine(const Window& window) : surface_{window.CreateVulkanSurface(*instance_)} {}
