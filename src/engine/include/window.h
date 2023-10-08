@@ -24,9 +24,9 @@ public:
   static void Update() noexcept { glfwPollEvents(); }
 
 #ifdef GLFW_INCLUDE_VULKAN
-  [[nodiscard]] static std::span<const char* const> GetVulkanInstanceExtensions();
+  [[nodiscard]] static std::span<const char* const> GetInstanceExtensions();
 
-  [[nodiscard]] vk::UniqueSurfaceKHR CreateVulkanSurface(const vk::Instance& instance) const;
+  [[nodiscard]] vk::UniqueSurfaceKHR CreateSurface(const vk::Instance& instance) const;
 #endif
 
 private:

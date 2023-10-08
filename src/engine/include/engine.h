@@ -1,5 +1,6 @@
 ﻿#pragma once
 
+#include "device.h"
 #include "instance.h"
 
 #include <vulkan/vulkan.hpp>
@@ -14,6 +15,7 @@ public:
 private:
   Instance instance_;
   vk::UniqueSurfaceKHR surface_;
+  Device device_;
 };
 
 }  // namespace gfx
