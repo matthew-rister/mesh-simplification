@@ -30,7 +30,7 @@ public:
 #endif
 
 private:
-  std::unique_ptr<GLFWwindow, void (*)(GLFWwindow*)> glfw_window_{nullptr, nullptr};
+  std::unique_ptr<GLFWwindow, void (*)(GLFWwindow*)> glfw_window_;
   std::function<void(int, int)> on_key_event_;
 };
 
