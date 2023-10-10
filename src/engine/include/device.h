@@ -10,6 +10,7 @@ public:
 
 private:
   vk::PhysicalDevice physical_device_;
+  vk::UniqueDevice device_;
 };
 
 }  // namespace gfx

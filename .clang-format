@@ -1,9 +1,12 @@
 BasedOnStyle: Google
 AccessModifierOffset: -2
+BinPackArguments: false
+BinPackParameters: false
 BreakBeforeBinaryOperators: NonAssignment
 ColumnLimit: 120
 DerivePointerAlignment: false
-PointerAlignment: Left
 IncludeBlocks: Preserve
 InsertNewlineAtEOF: true
+PackConstructorInitializers: NextLine
+PointerAlignment: Left
 QualifierAlignment: Left
