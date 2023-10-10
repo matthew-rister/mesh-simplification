@@ -54,9 +54,9 @@ gfx::Window::Window(const char* const title, const int width, const int height)
   glfwSetKeyCallback(
       glfw_window_.get(),
       [](GLFWwindow* glfw_window, const int key, const int /*scancode*/, const int action, const int /*modifiers*/) {
-        if (const auto* self = static_cast<Window*>(glfwGetWindowUserPointer(glfw_window))) {
-          self->on_key_event_(key, action);
-        }
+        const auto* self = static_cast<Window*>(glfwGetWindowUserPointer(glfw_window));
+        assert(self != nullptr);
+        if (self->on_key_event_) self->on_key_event_(key, action);
       });
 }
 
