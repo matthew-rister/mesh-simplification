@@ -9,6 +9,7 @@
     {
       "name": "default",
       "hidden": true,
+      "generator": "Ninja",
       "binaryDir": "${sourceDir}/out/build/${presetName}",
       "installDir": "${sourceDir}/out/install/${presetName}",
       "toolchainFile": "${sourceDir}/vcpkg/scripts/buildsystems/vcpkg.cmake"
@@ -54,25 +55,19 @@
       }
     },
     {
-      "name": "ninja",
-      "hidden": true,
-      "generator": "Ninja",
-      "architecture": {
-        "strategy": "external"
-      }
-    },
-    {
       "name": "x64",
       "hidden": true,
       "architecture": {
-        "value": "x64"
+        "value": "x64",
+        "strategy": "external"
       }
     },
     {
       "name": "x86",
       "hidden": true,
       "architecture": {
-        "value": "x86"
+        "value": "x86",
+        "strategy": "external"
       }
     },
     {
@@ -92,7 +87,7 @@
     {
       "name": "x64-debug",
       "displayName": "x64 Debug",
-      "inherits": [ "windows", "ninja", "x64", "debug" ],
+      "inherits": ["windows", "x64", "debug"],
       "cacheVariables": {
         "VCPKG_OVERLAY_TRIPLETS": "${sourceDir}/cmake/vcpkg-triplets",
         "VCPKG_TARGET_TRIPLET": "x64-windows-asan"
@@ -101,12 +96,12 @@
     {
       "name": "x64-release",
       "displayName": "x64 Release",
-      "inherits": [ "windows", "ninja", "x64", "release" ]
+      "inherits": ["windows", "x64", "release"]
     },
     {
       "name": "x86-debug",
       "displayName": "x86 Debug",
-      "inherits": [ "windows", "ninja", "x86", "debug" ],
+      "inherits": ["windows", "x86", "debug"],
       "cacheVariables": {
         "VCPKG_OVERLAY_TRIPLETS": "${sourceDir}/cmake/vcpkg-triplets",
         "VCPKG_TARGET_TRIPLET": "x86-windows-asan"
@@ -115,12 +110,12 @@
     {
       "name": "x86-release",
       "displayName": "x86 Release",
-      "inherits": [ "windows", "ninja", "x86", "release" ]
+      "inherits": ["windows", "x86", "release"]
     },
     {
       "name": "linux-debug",
       "displayName": "Linux Debug",
-      "inherits": [ "linux", "ninja", "debug" ]
+      "inherits": ["linux", "debug"]
     }
   ],
   "buildPresets": [
