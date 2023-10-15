@@ -1,5 +1,6 @@
 #include "window.h"
 
+#include <cassert>
 #include <cstdint>
 #include <format>
 #include <iostream>
