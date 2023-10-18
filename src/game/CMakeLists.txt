@@ -1,5 +1,5 @@
-add_executable(Game main.cpp game.cpp)
+add_executable(game main.cpp game.cpp)
 
-target_link_libraries(Game PRIVATE EnableAllWarningsAsErrors EnableASanIfDebug Engine)
+target_link_libraries(game PRIVATE enable_all_warnings_as_errors enable_asan_if_debug engine)
 
-target_include_directories(Game PRIVATE include)
+target_include_directories(game PRIVATE include)
