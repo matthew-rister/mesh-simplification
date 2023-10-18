@@ -1,7 +1,7 @@
 #include "instance.h"
 
 #include <cstdint>
-#include <vector>
+#include <initializer_list>
 
 #include "window.h"
 
@@ -17,7 +17,7 @@ gfx::Instance::Instance() {
 #endif
 
   static constexpr vk::ApplicationInfo kApplicationInfo{.apiVersion = VK_API_VERSION_1_3};
-  const std::vector<const char*> instance_layers{
+  static constexpr std::initializer_list<const char*> kInstanceLayers{
 #ifndef NDEBUG
       "VK_LAYER_KHRONOS_validation"
 #endif
@@ -26,8 +26,8 @@ gfx::Instance::Instance() {
 
   instance_ = vk::createInstanceUnique(
       vk::InstanceCreateInfo{.pApplicationInfo = &kApplicationInfo,
-                             .enabledLayerCount = static_cast<std::uint32_t>(instance_layers.size()),
-                             .ppEnabledLayerNames = instance_layers.data(),
+                             .enabledLayerCount = static_cast<std::uint32_t>(kInstanceLayers.size()),
+                             .ppEnabledLayerNames = std::data(kInstanceLayers),
                              .enabledExtensionCount = static_cast<std::uint32_t>(instance_extensions.size()),
                              .ppEnabledExtensionNames = instance_extensions.data()});
 
