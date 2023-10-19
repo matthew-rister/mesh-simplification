@@ -1,7 +1,6 @@
 #include "window.h"
 
 #include <cassert>
-#include <cstdint>
 #include <format>
 #include <iostream>
 #include <stdexcept>
@@ -39,16 +38,16 @@ private:
 
 using UniqueGlfwWindow = std::unique_ptr<GLFWwindow, decltype(&glfwDestroyWindow)>;
 
-UniqueGlfwWindow CreateGlfwWindow(const char* title, const int width, const int height) {
+UniqueGlfwWindow CreateGlfwWindow(const char* const title, const std::uint32_t width, const std::uint32_t height) {
   [[maybe_unused]] const auto& glfw_context = GlfwContext::Get();
-  auto* glfw_window = glfwCreateWindow(width, height, title, nullptr, nullptr);
+  auto* glfw_window = glfwCreateWindow(static_cast<int>(width), static_cast<int>(height), title, nullptr, nullptr);
   if (glfw_window == nullptr) throw std::runtime_error{"Window creation failed"};
   return UniqueGlfwWindow{glfw_window, glfwDestroyWindow};
 }
 
 }  // namespace
 
-gfx::Window::Window(const char* const title, const int width, const int height)
+gfx::Window::Window(const char* const title, const std::uint32_t width, const std::uint32_t height)
     : glfw_window_{CreateGlfwWindow(title, width, height)} {
   glfwSetWindowUserPointer(glfw_window_.get(), this);
 
@@ -59,6 +58,12 @@ gfx::Window::Window(const char* const title, const int width, const int height)
         assert(self != nullptr);
         if (self->on_key_event_) self->on_key_event_(key, action);
       });
+}
+
+std::pair<std::uint32_t, std::uint32_t> gfx::Window::GetFramebufferSize() const noexcept {
+  auto width = 0, height = 0;
+  glfwGetFramebufferSize(glfw_window_.get(), &width, &height);
+  return std::pair{static_cast<std::uint32_t>(width), static_cast<std::uint32_t>(height)};
 }
 
 #ifdef GLFW_INCLUDE_VULKAN

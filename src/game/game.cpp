@@ -3,8 +3,8 @@
 #include <GLFW/glfw3.h>
 
 namespace {
-constexpr auto kWindowHeight = 1600;
-constexpr auto kWindowWidth = 900;
+constexpr std::uint32_t kWindowHeight = 1600;
+constexpr std::uint32_t kWindowWidth = 900;
 }  // namespace
 
 gfx::Game::Game() noexcept : window_{"VkRender", kWindowHeight, kWindowWidth}, engine_{window_} {

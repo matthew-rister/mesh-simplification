@@ -1,9 +1,11 @@
 #pragma once
 
 #include <concepts>
+#include <cstdint>
 #include <functional>
 #include <memory>
 #include <span>
+#include <utility>
 
 #include <GLFW/glfw3.h>
 #if GLFW_INCLUDE_VULKAN
@@ -14,12 +16,14 @@ namespace gfx {
 
 class Window {
 public:
-  Window(const char* title, int width, int height);
+  Window(const char* title, std::uint32_t width, std::uint32_t height);
 
   void OnKeyEvent(std::invocable<int, int> auto&& fn) { on_key_event_ = std::forward<decltype(on_key_event_)>(fn); }
 
   [[nodiscard]] bool IsClosed() const noexcept { return glfwWindowShouldClose(glfw_window_.get()) == GLFW_TRUE; }
   void Close() const noexcept { glfwSetWindowShouldClose(glfw_window_.get(), GLFW_TRUE); }
+
+  [[nodiscard]] std::pair<std::uint32_t, std::uint32_t> GetFramebufferSize() const noexcept;
 
   static void Update() noexcept { glfwPollEvents(); }
 

@@ -2,6 +2,7 @@
 
 #include "device.h"
 #include "instance.h"
+#include "swapchain.h"
 
 #include <vulkan/vulkan.hpp>
 
@@ -16,6 +17,7 @@ private:
   Instance instance_;
   vk::UniqueSurfaceKHR surface_;
   Device device_;
+  Swapchain swapchain_;
 };
 
 }  // namespace gfx

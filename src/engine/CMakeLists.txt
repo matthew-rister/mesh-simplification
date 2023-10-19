@@ -1,4 +1,4 @@
-add_library(engine STATIC device.cpp engine.cpp instance.cpp window.cpp)
+add_library(engine STATIC device.cpp engine.cpp instance.cpp window.cpp swapchain.cpp)
 
 find_package(glfw3 CONFIG REQUIRED)
 find_package(Vulkan REQUIRED)
