@@ -10,13 +10,20 @@
 #include <unordered_set>
 #include <vector>
 
+struct gfx::RankedPhysicalDevice {
+  struct QueueFamilyIndices {
+    static constexpr std::uint32_t kInvalidIndex = std::numeric_limits<std::uint32_t>::max();
+    std::uint32_t graphics_index = kInvalidIndex, present_index = kInvalidIndex;
+  };
+  static constexpr std::uint32_t kInvalidRank = 0;
+  vk::PhysicalDevice physical_device;
+  QueueFamilyIndices queue_family_indices;
+  std::uint32_t rank = kInvalidRank;
+};
+
 namespace {
 
-struct QueueFamilyIndices {
-  static constexpr auto kInvalidIndex = std::numeric_limits<std::uint32_t>::max();
-  std::uint32_t graphics_index = kInvalidIndex;
-  std::uint32_t present_index = kInvalidIndex;
-};
+using QueueFamilyIndices = gfx::RankedPhysicalDevice::QueueFamilyIndices;
 
 std::optional<QueueFamilyIndices> FindQueueFamilyIndices(const vk::PhysicalDevice& physical_device,
                                                          const vk::SurfaceKHR& surface) {
@@ -35,6 +42,33 @@ std::optional<QueueFamilyIndices> FindQueueFamilyIndices(const vk::PhysicalDevic
     ++index;
   }
   return std::nullopt;
+}
+
+gfx::RankedPhysicalDevice GetRankedPhysicalDevice(const vk::PhysicalDevice& physical_device,
+                                                  const vk::SurfaceKHR& surface) {
+  return FindQueueFamilyIndices(physical_device, surface)
+      .transform([&physical_device](const auto& queue_family_indices) {
+        return gfx::RankedPhysicalDevice{
+            .physical_device = physical_device,
+            .queue_family_indices = queue_family_indices,
+            .rank = 1u + (physical_device.getProperties().deviceType == vk::PhysicalDeviceType::eDiscreteGpu)};
+      })
+      .value_or(gfx::RankedPhysicalDevice{.rank = gfx::RankedPhysicalDevice::kInvalidRank});
+}
+
+gfx::RankedPhysicalDevice SelectPhysicalDevice(const vk::Instance& instance, const vk::SurfaceKHR& surface) {
+  const auto ranked_physical_devices =
+      instance.enumeratePhysicalDevices() | std::ranges::views::transform([&surface](auto&& physical_device) {
+        return GetRankedPhysicalDevice(physical_device, surface);
+      })
+      | std::ranges::views::filter([](auto&& ranked_physical_device) {
+          return ranked_physical_device.rank != gfx::RankedPhysicalDevice::kInvalidRank;
+        })
+      | std::ranges::to<std::vector>();
+
+  return ranked_physical_devices.empty()
+             ? throw std::runtime_error{"Invalid physical device"}
+             : *std::ranges::max_element(ranked_physical_devices, {}, &gfx::RankedPhysicalDevice::rank);
 }
 
 vk::UniqueDevice CreateDevice(const vk::PhysicalDevice& physical_device,
@@ -68,13 +102,6 @@ vk::UniqueDevice CreateDevice(const vk::PhysicalDevice& physical_device,
 
 }  // namespace
 
-struct gfx::Device::RankedPhysicalDevice {
-  static constexpr std::uint32_t kInvalidRank = 0;
-  vk::PhysicalDevice physical_device;
-  QueueFamilyIndices queue_family_indices;
-  std::uint32_t rank = kInvalidRank;
-};
-
 gfx::Device::Device(const vk::Instance& instance, const vk::SurfaceKHR& surface)
     : Device{SelectPhysicalDevice(instance, surface)} {}
 
@@ -83,31 +110,3 @@ gfx::Device::Device(RankedPhysicalDevice&& ranked_physical_device)
       device_{CreateDevice(physical_device_, ranked_physical_device.queue_family_indices)},
       graphics_queue_{*device_, ranked_physical_device.queue_family_indices.graphics_index, 0},
       present_queue_{*device_, ranked_physical_device.queue_family_indices.present_index, 0} {}
-
-gfx::Device::RankedPhysicalDevice gfx::Device::SelectPhysicalDevice(const vk::Instance& instance,
-                                                                    const vk::SurfaceKHR& surface) {
-  const auto ranked_physical_devices = instance.enumeratePhysicalDevices()
-                                       | std::ranges::views::transform([&surface](auto&& physical_device) {
-                                           return GetRankedPhysicalDevice(physical_device, surface);
-                                         })
-                                       | std::ranges::views::filter([](auto&& ranked_physical_device) {
-                                           return ranked_physical_device.rank != RankedPhysicalDevice::kInvalidRank;
-                                         })
-                                       | std::ranges::to<std::vector>();
-
-  return ranked_physical_devices.empty()
-             ? throw std::runtime_error{"Invalid physical device"}
-             : *std::ranges::max_element(ranked_physical_devices, {}, &RankedPhysicalDevice::rank);
-}
-
-gfx::Device::RankedPhysicalDevice gfx::Device::GetRankedPhysicalDevice(const vk::PhysicalDevice& physical_device,
-                                                                       const vk::SurfaceKHR& surface) {
-  return FindQueueFamilyIndices(physical_device, surface)
-      .transform([&physical_device](const auto& queue_family_indices) {
-        return RankedPhysicalDevice{
-            .physical_device = physical_device,
-            .queue_family_indices = queue_family_indices,
-            .rank = 1u + (physical_device.getProperties().deviceType == vk::PhysicalDeviceType::eDiscreteGpu)};
-      })
-      .value_or(RankedPhysicalDevice{.rank = RankedPhysicalDevice::kInvalidRank});
-}

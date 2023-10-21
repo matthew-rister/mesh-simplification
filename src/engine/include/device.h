@@ -5,6 +5,7 @@
 #include "queue.h"
 
 namespace gfx {
+struct RankedPhysicalDevice;
 
 class Device {
 public:
@@ -19,12 +20,7 @@ public:
   [[nodiscard]] const Queue& present_queue() const noexcept { return present_queue_; }
 
 private:
-  struct RankedPhysicalDevice;
-
   explicit Device(RankedPhysicalDevice&&);
-
-  static RankedPhysicalDevice SelectPhysicalDevice(const vk::Instance&, const vk::SurfaceKHR&);
-  static RankedPhysicalDevice GetRankedPhysicalDevice(const vk::PhysicalDevice&, const vk::SurfaceKHR&);
 
   vk::PhysicalDevice physical_device_;
   vk::UniqueDevice device_;
