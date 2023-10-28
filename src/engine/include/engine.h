@@ -12,7 +12,7 @@ class Window;
 
 class Engine {
 public:
-  explicit Engine(const Window&);
+  explicit Engine(const Window& window);
 
 private:
   Instance instance_;

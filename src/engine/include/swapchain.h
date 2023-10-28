@@ -10,7 +10,7 @@ class Window;
 
 class Swapchain {
 public:
-  Swapchain(const Device&, const Window&, const vk::SurfaceKHR&);
+  Swapchain(const Device& device, const Window& window, const vk::SurfaceKHR& surface);
 
 private:
   vk::UniqueSwapchainKHR swapchain_;
