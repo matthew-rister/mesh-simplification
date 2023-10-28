@@ -3,6 +3,7 @@
 #include <cassert>
 #include <format>
 #include <iostream>
+#include <print>
 #include <stdexcept>
 
 namespace {
@@ -25,7 +26,7 @@ public:
 private:
   GlfwContext() {
     glfwSetErrorCallback([](const int error_code, const char* const description) {
-      std::cerr << std::format("GLFW error {}: {}\n", error_code, description);
+      std::println(std::cerr, "GLFW error {}: {}", error_code, description);
     });
     if (glfwInit() == GLFW_FALSE) {
       throw std::runtime_error{"GLFW initialization failed"};
@@ -71,14 +72,14 @@ std::pair<std::uint32_t, std::uint32_t> gfx::Window::GetFramebufferSize() const 
 std::span<const char* const> gfx::Window::GetInstanceExtensions() {
   std::uint32_t required_extension_count{};
   const auto* const* required_extensions = glfwGetRequiredInstanceExtensions(&required_extension_count);
-  if (required_extensions == nullptr) throw std::runtime_error{"No surface instance extensions"};
+  if (required_extensions == nullptr) throw std::runtime_error{"No window surface instance extensions"};
   return std::span{required_extensions, required_extension_count};  // pointer lifetime managed by GLFW
 }
 
 vk::UniqueSurfaceKHR gfx::Window::CreateSurface(const vk::Instance& instance) const {
   VkSurfaceKHR surface{};
   const auto result = glfwCreateWindowSurface(instance, glfw_window_.get(), nullptr, &surface);
-  vk::resultCheck(vk::Result{result}, "Surface creation failed");
+  vk::resultCheck(vk::Result{result}, "Window surface creation failed");
   const vk::ObjectDestroy<vk::Instance, VULKAN_HPP_DEFAULT_DISPATCHER_TYPE> deleter{instance};
   return vk::UniqueSurfaceKHR{vk::SurfaceKHR{surface}, deleter};
 }

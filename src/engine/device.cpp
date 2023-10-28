@@ -67,7 +67,7 @@ gfx::RankedPhysicalDevice SelectPhysicalDevice(const vk::Instance& instance, con
       | std::ranges::to<std::vector>();
 
   return ranked_physical_devices.empty()
-             ? throw std::runtime_error{"Invalid physical device"}
+             ? throw std::runtime_error{"Unsupported physical device"}
              : *std::ranges::max_element(ranked_physical_devices, {}, &gfx::RankedPhysicalDevice::rank);
 }
 

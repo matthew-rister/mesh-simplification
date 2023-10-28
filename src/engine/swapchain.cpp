@@ -67,8 +67,9 @@ std::vector<vk::UniqueImageView> CreateSwapchainImageViews(const vk::Device& dev
                .image = image,
                .viewType = vk::ImageViewType::e2D,
                .format = image_format,
-               .subresourceRange = vk::ImageSubresourceRange{
-                   .aspectMask = vk::ImageAspectFlagBits::eColor, .levelCount = 1u, .layerCount = 1u}});
+               .subresourceRange = vk::ImageSubresourceRange{.aspectMask = vk::ImageAspectFlagBits::eColor,
+                                                             .levelCount = 1u,
+                                                             .layerCount = 1u}});
          })
          | std::ranges::to<std::vector>();
 }
