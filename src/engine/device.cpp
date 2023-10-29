@@ -29,7 +29,7 @@ std::optional<QueueFamilyIndices> FindQueueFamilyIndices(const vk::PhysicalDevic
                                                          const vk::SurfaceKHR& surface) {
   std::optional<std::uint32_t> graphics_index, present_index;
   for (std::uint32_t index = 0; const auto& queue_family_properties : physical_device.getQueueFamilyProperties()) {
-    assert(queue_family_properties.queueCount > 0);  // required by the Vulkan specification
+    assert(queue_family_properties.queueCount > 0u);  // required by the Vulkan specification
     if (static_cast<bool>(queue_family_properties.queueFlags & vk::QueueFlagBits::eGraphics)) {
       graphics_index = index;
     }
@@ -73,7 +73,7 @@ gfx::RankedPhysicalDevice SelectPhysicalDevice(const vk::Instance& instance, con
 
 vk::UniqueDevice CreateDevice(const vk::PhysicalDevice& physical_device,
                               const QueueFamilyIndices& queue_family_indices) {
-  static constexpr auto kHighestNormalizedQueuePriority = 1.0f;
+  static constexpr float kHighestNormalizedQueuePriority = 1.0;
 
   const auto device_queue_create_info =
       std::unordered_set{queue_family_indices.graphics_index, queue_family_indices.present_index}
@@ -108,5 +108,5 @@ gfx::Device::Device(const vk::Instance& instance, const vk::SurfaceKHR& surface)
 gfx::Device::Device(RankedPhysicalDevice&& ranked_physical_device)
     : physical_device_{ranked_physical_device.physical_device},
       device_{CreateDevice(physical_device_, ranked_physical_device.queue_family_indices)},
-      graphics_queue_{*device_, ranked_physical_device.queue_family_indices.graphics_index, 0},
-      present_queue_{*device_, ranked_physical_device.queue_family_indices.present_index, 0} {}
+      graphics_queue_{*device_, ranked_physical_device.queue_family_indices.graphics_index, 0u},
+      present_queue_{*device_, ranked_physical_device.queue_family_indices.present_index, 0u} {}

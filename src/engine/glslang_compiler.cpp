@@ -27,12 +27,12 @@ constexpr auto kGlslangMessages =
 
 std::ostream& operator<<(std::ostream& ostream, glslang_shader_t* const shader) {
   if (const auto* const shader_info_log = glslang_shader_get_info_log(shader);
-      shader_info_log != nullptr && std::strlen(shader_info_log) > 0) {
+      shader_info_log != nullptr && std::strlen(shader_info_log) > 0u) {
     std::println(ostream, "{}", shader_info_log);
   }
 #ifndef NDEBUG
   if (const auto* const shader_info_debug_log = glslang_shader_get_info_debug_log(shader);
-      shader_info_debug_log != nullptr && std::strlen(shader_info_debug_log) > 0) {
+      shader_info_debug_log != nullptr && std::strlen(shader_info_debug_log) > 0u) {
     std::println(ostream, "{}", shader_info_debug_log);
   }
 #endif
@@ -41,12 +41,12 @@ std::ostream& operator<<(std::ostream& ostream, glslang_shader_t* const shader) 
 
 std::ostream& operator<<(std::ostream& ostream, glslang_program_t* const program) {
   if (const auto* const program_info_log = glslang_program_get_info_log(program);
-      program_info_log != nullptr && std::strlen(program_info_log) > 0) {
+      program_info_log != nullptr && std::strlen(program_info_log) > 0u) {
     std::println(ostream, "{}", program_info_log);
   }
 #ifndef NDEBUG
   if (const auto* const program_info_debug_log = glslang_program_get_info_debug_log(program);
-      program_info_debug_log != nullptr && std::strlen(program_info_debug_log) > 0) {
+      program_info_debug_log != nullptr && std::strlen(program_info_debug_log) > 0u) {
     std::println(ostream, "{}", program_info_debug_log);
   }
 #endif
@@ -121,7 +121,7 @@ std::vector<std::uint32_t> GenerateSpirv(glslang_program_t* const program, const
 
 #ifndef NDEBUG
   if (const auto* const spirv_messages = glslang_program_SPIRV_get_messages(program);
-      spirv_messages != nullptr && std::strlen(spirv_messages) > 0) {
+      spirv_messages != nullptr && std::cmp_greater(std::strlen(spirv_messages), 0)) {
     std::println(std::clog, "{}", spirv_messages);
   }
 #endif
