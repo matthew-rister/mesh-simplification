@@ -1,0 +1,59 @@
+name: Bug Report
+description: Report unexpected or incorrect behavior
+labels: ["bug"]
+body:
+  - type: textarea
+    id: problem-description
+    attributes:
+      label: Problem Summary
+      description: Describe the issue you're experiencing and its impact.
+    validations:
+      required: true
+  - type: checkboxes
+    id: impact
+    attributes:
+      label: Impact
+      description: Help us understand the priority of this defect.
+      options:
+        - label: Is this problem user facing?
+          required: false
+        - label: Is there a known workaround?
+          required: false
+        - label: Is this a regression?
+          required: false
+  - type: textarea
+    id: repro-steps
+    attributes:
+      label: Repro Steps
+      description: List the steps to reproduce the bug.
+    validations:
+      required: true
+  - type: input
+    id: expected-result
+    attributes:
+      label: Expected Result
+      description: What is the expected behavior?
+    validations:
+      required: true
+  - type: input
+    id: actual-result
+    attributes:
+      label: Actual Result
+      description: What is the actual behavior?
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Describe the environment used to reproduce the bug (e.g., OS, driver version).
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Log Output
+      description: Include relevant logs to help diagnose the issue.
+      render: shell
+    validations:
+      required: false

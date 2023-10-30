@@ -1,0 +1,45 @@
+name: Work Item
+description: Capture work not related to a defect
+body:
+  - type: textarea
+    id: problem-statement
+    attributes:
+      label: Problem Statement
+      description: Provide an overview of the problem this work item will solve.
+    validations:
+      required: true
+  - type: textarea
+    id: technical-details
+    attributes:
+      label: Technical Details
+      description: Include relevant details that will help with finishing this work (e.g., documentation, code samples)
+    validations:
+      required: false
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: Dependencies
+      description: Enumerate dependencies on other work or teams.
+    validations:
+      required: false
+  - type: textarea
+    id: open-questions
+    attributes:
+      label: Open Questions
+      description: List questions without an immediate answer that should be considered when taking on this work.
+    validations:
+      required: false
+  - type: textarea
+    id: acceptance-criteria
+    attributes:
+      label: Acceptance Criteria
+      description: What defines this work as being completed?
+    validations:
+      required: true
+  - type: textarea
+    id: testing
+    attributes:
+      label: Testing
+      description: How will this be tested (e.g., automated vs manual)? What scenarios, platforms, and edge cases need to be considered?
+    validations:
+      required: true
