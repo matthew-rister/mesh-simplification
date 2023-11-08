@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SRC_ENGINE_INCLUDE_ENGINE_SHADER_MODULE_H_
+#define SRC_ENGINE_INCLUDE_ENGINE_SHADER_MODULE_H_
 
 #include <filesystem>
 
@@ -20,3 +21,5 @@ private:
 };
 
 }  // namespace gfx
+
+#endif  // SRC_ENGINE_INCLUDE_ENGINE_SHADER_MODULE_H_

@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SRC_ENGINE_INCLUDE_ENGINE_SWAPCHAIN_H_
+#define SRC_ENGINE_INCLUDE_ENGINE_SWAPCHAIN_H_
 
 #include <vector>
 
@@ -20,3 +21,5 @@ private:
 };
 
 }  // namespace gfx
+
+#endif  // SRC_ENGINE_INCLUDE_ENGINE_SWAPCHAIN_H_
