@@ -1,4 +1,4 @@
-#include "shader_module.h"
+#include "engine/shader_module.h"
 
 #include <format>
 #include <fstream>
@@ -7,7 +7,7 @@
 
 #include <glslang/Include/glslang_c_shader_types.h>
 
-#include "glslang_compiler.h"
+#include "engine/glslang_compiler.h"
 
 namespace {
 

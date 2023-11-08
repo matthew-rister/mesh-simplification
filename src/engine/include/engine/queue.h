@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SRC_ENGINE_INCLUDE_ENGINE_QUEUE_H_
+#define SRC_ENGINE_INCLUDE_ENGINE_QUEUE_H_
 
 #include <cstdint>
 
@@ -19,3 +20,5 @@ private:
 };
 
 }  // namespace gfx
+
+#endif  // SRC_ENGINE_INCLUDE_ENGINE_QUEUE_H_

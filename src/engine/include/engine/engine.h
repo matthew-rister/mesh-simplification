@@ -1,11 +1,12 @@
-﻿#pragma once
-
-#include "device.h"
-#include "instance.h"
-#include "shader_module.h"
-#include "swapchain.h"
+#ifndef SRC_ENGINE_INCLUDE_ENGINE_ENGINE_H_
+#define SRC_ENGINE_INCLUDE_ENGINE_ENGINE_H_
 
 #include <vulkan/vulkan.hpp>
+
+#include "engine/device.h"
+#include "engine/instance.h"
+#include "engine/shader_module.h"
+#include "engine/swapchain.h"
 
 namespace gfx {
 class Window;
@@ -23,3 +24,5 @@ private:
 };
 
 }  // namespace gfx
+
+#endif  // SRC_ENGINE_INCLUDE_ENGINE_ENGINE_H_

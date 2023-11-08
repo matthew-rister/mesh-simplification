@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SRC_ENGINE_INCLUDE_ENGINE_INSTANCE_H_
+#define SRC_ENGINE_INCLUDE_ENGINE_INSTANCE_H_
 
 #include <vulkan/vulkan.hpp>
 
@@ -15,3 +16,5 @@ private:
 };
 
 }  // namespace gfx
+
+#endif  // SRC_ENGINE_INCLUDE_ENGINE_INSTANCE_H_

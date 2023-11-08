@@ -1,8 +1,9 @@
-#pragma once
+#ifndef SRC_ENGINE_INCLUDE_ENGINE_DEVICE_H_
+#define SRC_ENGINE_INCLUDE_ENGINE_DEVICE_H_
 
 #include <vulkan/vulkan.hpp>
 
-#include "queue.h"
+#include "engine/queue.h"
 
 namespace gfx {
 struct RankedPhysicalDevice;
@@ -28,3 +29,5 @@ private:
 };
 
 }  // namespace gfx
+
+#endif  // SRC_ENGINE_INCLUDE_ENGINE_DEVICE_H_

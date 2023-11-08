@@ -1,6 +1,6 @@
-﻿#include "engine.h"
+﻿#include "engine/engine.h"
 
-#include "window.h"
+#include "engine/window.h"
 
 gfx::Engine::Engine(const Window& window)
     : surface_{window.CreateSurface(*instance_)},

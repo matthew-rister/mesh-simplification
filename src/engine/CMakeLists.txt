@@ -3,7 +3,8 @@ add_library(engine STATIC device.cpp
                           glslang_compiler.cpp
                           instance.cpp
                           shader_module.cpp
-                          swapchain.cpp window.cpp)
+                          swapchain.cpp
+                          window.cpp)
 
 find_package(glfw3 CONFIG REQUIRED)
 find_package(glslang CONFIG REQUIRED)

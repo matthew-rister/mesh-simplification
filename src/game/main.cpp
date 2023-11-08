@@ -2,7 +2,7 @@
 #include <exception>
 #include <iostream>
 
-#include "game.h"
+#include "game/game.h"
 
 int main() {
   try {

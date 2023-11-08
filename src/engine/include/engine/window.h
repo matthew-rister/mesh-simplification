@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SRC_ENGINE_INCLUDE_ENGINE_WINDOW_H_
+#define SRC_ENGINE_INCLUDE_ENGINE_WINDOW_H_
 
 #include <concepts>
 #include <functional>
@@ -38,3 +39,5 @@ private:
 };
 
 }  // namespace gfx
+
+#endif  // SRC_ENGINE_INCLUDE_ENGINE_WINDOW_H_

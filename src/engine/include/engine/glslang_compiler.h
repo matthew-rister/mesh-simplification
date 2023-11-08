@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SRC_ENGINE_INCLUDE_ENGINE_GLSLANG_COMPILER_H_
+#define SRC_ENGINE_INCLUDE_ENGINE_GLSLANG_COMPILER_H_
 
 #include <cstdint>
 #include <vector>
@@ -29,3 +30,5 @@ private:
 };
 
 }  // namespace gfx
+
+#endif  // SRC_ENGINE_INCLUDE_ENGINE_GLSLANG_COMPILER_H_
