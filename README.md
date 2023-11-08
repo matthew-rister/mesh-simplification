@@ -1,26 +1,31 @@
 # VkRender
+
 A cross-platform Vulkan renderer written in C++23.
 
-## Prerequisites 
+## Prerequisites
 
-### CMake
-This project requires CMake 3.26 and a C++ compiler that supports the C++23 language standard. To facilitate project configuration, building, and testing, [CMake Presets](https://cmake.org/cmake/help/v3.22/manual/cmake-presets.7.html) are used with [ninja](https://ninja-build.org/) as a build generator.
+This project requires CMake 3.26 and a compiler that supports the C++23 language standard. To facilitate CMake configuration, building, and testing, [CMake Presets](https://cmake.org/cmake/help/v3.22/manual/cmake-presets.7.html) are used with [ninja](https://ninja-build.org/) as a build generator.
 
 ### Vulkan
-This project requires a graphics driver with Vulkan 1.3 support. To use the validation layers in debug builds, the [Vulkan SDK](https://www.lunarg.com/vulkan-sdk/) is also required. Because this project uses [Vulkan-Hpp](https://github.com/KhronosGroup/Vulkan-Hpp) to dynamically load Vulkan function pointers at runtime, it is unnecessary to manually configure the project to link against a Vulkan library.
+
+This project requires a graphics driver with Vulkan 1.3 support. Because it uses [Vulkan-Hpp](https://github.com/KhronosGroup/Vulkan-Hpp) which provides a dynamic loader implementation, it is unnecessary to manually link against `vulkan-1.lib`. As a result, it is not required to download the [Vulkan SDK](https://www.lunarg.com/vulkan-sdk/) for release builds, however, it is still required for debug builds which enable [validation layers](https://vulkan.lunarg.com/doc/view/latest/windows/validation_layers.html) by default.
 
 ### Package Management
-This project uses [`vcpkg`](https://vcpkg.io) to manage external dependencies.  To get started, run `git submodule update --init` to clone `vcpkg` as a git submodule. `vcpkg` can then be initialized by running `.\vcpkg\bootstrap-vcpk.bat` on Windows or `./vcpkg/bootstrap-vcpkg.sh` on Linux. Upon completion, CMake will integrate with `vcpkg` to download, compile, and link external libraries specified in the [vcpkg.json](vcpkg.json) manifest when building the project.
+
+This project uses [`vcpkg`](https://vcpkg.io) to manage external dependencies.  To get started, run `git submodule update --init` to clone `vcpkg` as a git submodule. Upon completion, CMake will integrate with `vcpkg` to download, compile, and link external libraries specified in the [vcpkg.json](vcpkg.json) manifest when building the project.
 
 ### Address Sanitizer
-This project enables [Address Sanitizer](https://clang.llvm.org/docs/AddressSanitizer.html) (ASan) for debug builds. On Linux, this should already be available when using a modern version of GCC or Clang with C++23 support. On Windows, ASan needs to be installed separately which is documented [here](https://learn.microsoft.com/en-us/cpp/sanitizers/asan?view=msvc-170#install-addresssanitizer).
+
+This project enables [Address Sanitizer](https://clang.llvm.org/docs/AddressSanitizer.html) (ASan) for debug builds. On Linux, this should already be available when using a version of GCC or Clang with C++23 support. On Windows, ASan needs to be installed separately which is documented [here](https://learn.microsoft.com/en-us/cpp/sanitizers/asan?view=msvc-170#install-addresssanitizer).
 
 ## Build
 
 The simplest way to build the project is to use an IDE with CMake integration. Alternatively, the project can be built from the command line using CMake presets. To use the `x64-release` preset, run:
 
-	cmake --preset x64-release
-	cmake --build --preset x64-release
+```bash
+cmake --preset x64-release
+cmake --build --preset x64-release
+```
 
 A list of available configuration and build presets can be displayed by running  `cmake --list-presets` and `cmake --build --list-presets` respectively. Note that on Windows, `cl` and `ninja` are expected to be available in your environment path which are available by default when using the Developer Command Prompt for Visual Studio.
 
@@ -28,28 +33,36 @@ A list of available configuration and build presets can be displayed by running 
 
 This project uses [Catch2](https://github.com/catchorg/Catch2) for unit testing which can be run after building the project with [CTest](https://cmake.org/cmake/help/book/mastering-cmake/chapter/Testing%20With%20CMake%20and%20CTest.html). To use the `x64-release` preset, run:
 
-	ctest --preset x64-release
+```bash
+ctest --preset x64-release
+```
 
 To see what test presets are available, run `ctest --list-presets`.  Alternatively, tests can be run from the separate `tests` executable which is built with the project.
 
 ## Contribute
 
 ### Code Style
-This project follows the  [Google C++ Style Guide](https://google.github.io/styleguide/cppguide.html) with the following exceptions:
+
+This project follows the [Google C++ Style Guide](https://google.github.io/styleguide/cppguide.html) with the following exceptions:
+
  1. 120-character limit per line.
- 2. C++ files are named with the `.cpp` file extension.
+ 2. C++ implementation files use `.cpp` as a file extension.
  3. Exceptions are allowed.
  4. Forward declarations are allowed.
  5. Static variables are allowed when their scope is restricted to a single translation unit.
- 
+
 Code style is enforced across platforms using [clang-format](https://clang.llvm.org/docs/ClangFormatStyleOptions.html).
 
 ### Commits Messages
+
 To promote descriptive commits, this project uses a commit message template which should be configured by running
 
-	git config commit.template .gitmessage
+```bash
+git config commit.template .gitmessage
+```
 
- The template includes the following sections:
+The template includes the following sections:
+
 1. A short-one line summary using the [semantic commit messages](https://gist.github.com/joshbuchea/6f47e86d2510bce28f8e7f42ae84c716) format.
 2. A description of the problem being addressed.
 3. A description of the solution that solves the problem.

@@ -1,0 +1,13 @@
+####### 50 characters Limit ######################
+# [Summary] A short one-line commit description.
+
+####### 72 characters Limit ############################################
+# [Problem] Describe the problem being addressed.
+
+# [Solution] Describe how this commit solves the problem.
+
+# [Testing] Describe how the solution was tested.
+
+# [Documentation] Include any relevant technical documentation.
+
+# [Issues] Issues related to or closed by this commit.

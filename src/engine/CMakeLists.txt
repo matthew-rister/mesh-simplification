@@ -7,13 +7,12 @@ add_library(engine STATIC device.cpp
 
 find_package(glfw3 CONFIG REQUIRED)
 find_package(glslang CONFIG REQUIRED)
-find_package(Vulkan REQUIRED)
 find_package(VulkanHeaders CONFIG REQUIRED)
 
 target_link_libraries(engine PRIVATE dbgasan warnings)
 target_link_libraries(engine PUBLIC glfw
                                     glslang::glslang glslang::glslang-default-resource-limits glslang::SPIRV
-                                    Vulkan::Vulkan Vulkan::Headers)
+                                    Vulkan::Headers)
 
 target_compile_definitions(engine PUBLIC GLFW_INCLUDE_VULKAN
                                   PUBLIC VULKAN_HPP_NO_CONSTRUCTORS
