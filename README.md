@@ -31,41 +31,10 @@ A list of available configuration and build presets can be displayed by running 
 
 ## Test
 
-This project uses [Catch2](https://github.com/catchorg/Catch2) for unit testing which can be run after building the project with [CTest](https://cmake.org/cmake/help/book/mastering-cmake/chapter/Testing%20With%20CMake%20and%20CTest.html). To use the `x64-release` preset, run:
+This project uses [Google Test](https://github.com/google/googletest) for unit testing which can be run after building the project with [CTest](https://cmake.org/cmake/help/book/mastering-cmake/chapter/Testing%20With%20CMake%20and%20CTest.html). To use the `x64-release` preset, run:
 
 ```bash
 ctest --preset x64-release
 ```
 
 To see what test presets are available, run `ctest --list-presets`.  Alternatively, tests can be run from the separate `tests` executable which is built with the project.
-
-## Contribute
-
-### Code Style
-
-This project follows the [Google C++ Style Guide](https://google.github.io/styleguide/cppguide.html) with the following exceptions:
-
- 1. 120-character limit per line.
- 2. C++ implementation files use `.cpp` as a file extension.
- 3. Exceptions are allowed.
- 4. Forward declarations are allowed.
- 5. Static variables are allowed when their scope is restricted to a single translation unit.
-
-Code style is enforced across platforms using [clang-format](https://clang.llvm.org/docs/ClangFormatStyleOptions.html).
-
-### Commits Messages
-
-To promote descriptive commits, this project uses a commit message template which should be configured by running
-
-```bash
-git config commit.template .gitmessage
-```
-
-The template includes the following sections:
-
-1. A short-one line summary using the [semantic commit messages](https://gist.github.com/joshbuchea/6f47e86d2510bce28f8e7f42ae84c716) format.
-2. A description of the problem being addressed.
-3. A description of the solution that solves the problem.
-4. A description of how the solution was tested.
-5. Links to relevant technical documentation for additional context.
-6. References to GitHub issues related to or closed by this commit.
