@@ -1,7 +1,6 @@
-﻿
-# CONTRIBUTING
+﻿# CONTRIBUTING
 
-Welcome 👋 This document outlines standards and guidelines for contributring to this project.
+Welcome 👋 This document outlines standards and guidelines for contributing to this project.
 
 ## Issue Templates
 
@@ -34,19 +33,88 @@ This project follows the [Google C++ Style Guide](https://google.github.io/style
 
 Code style is enforced with `clang-format` and `cpplint` which are run prior to check-in using pre-commit hooks.
 
-## Commits Message Format
+## Commit Message Template
 
-To promote descriptive commits, this project uses a commit message template which should be configured by running
+To promote descriptive commits, this project uses a commit message template which should be configured by running:
 
 ```bash
 git config commit.template .gitmessage
 ```
 
-The template includes the following sections:
+### Commits Message Format
 
-1. A short-one line summary using the [semantic commit messages](https://gist.github.com/joshbuchea/6f47e86d2510bce28f8e7f42ae84c716) format.
-2. A description of the problem being addressed.
-3. A description of the solution that solves the problem.
-4. A description of how the solution was tested.
-5. Links to relevant technical documentation for additional context.
-6. References to GitHub issues related to or closed by this commit.
+A well-crafted commit message should consist of a **header**, **body**, and optional **footer**.
+
+#### Header
+
+The header should be a one-line summary of the form:
+
+```text
+<type>: <summary>
+ │       │
+ │       └─⫸ summary: present tense without punctuation
+ │
+ └─⫸ type: build|docs|feat|fix|refactor|style|test
+```
+
+Commit changes can be categorized into the following types:
+
+| Type       | Description                                   |
+| -------    | --------------------------------------------- |
+| `build`    | Changes a build script or process             |
+| `docs`     | Updates source code or project documentation  |
+| `feat`     | Adds a new feature for a user                 |
+| `fix`      | Fixes a user facing defect                    |
+| `refactor` | Changes code structure                        |
+| `style`    | Formats code or changes code style            |
+| `test`     | Updates automated tests                       |
+
+#### Body
+
+The commit body should describe the motivation behind a code change and explain how the change addresses the problem. It can also include relevant notes such as how the change was tested or links to additional technical documentation.
+
+#### Footer
+
+The footer is optional and can include references to related GitHub issues affected by the commit.
+
+#### Example
+
+```text
+build: compile vcpkg libraries with ASan
+
+
+
+When compiling address sanitizer on Windows, external libraries managed
+
+by vcpkg will fail to compile with the following error: "error LNK2038:
+
+mismatch detected for 'annotate_string': value '0' doesn't match value
+
+'1'". This is caused by enhanced ASan instrumentation for the standard
+
+library which creates conflicting symbols when also used by an external
+
+library due to ODR.
+
+
+
+Although this functionality can be disabled with macro definitions
+
+(_DISABLE_VECTOR_ANNOTATION and _DISABLE_STRING_ANNOTATION), a better
+
+solution is to build external libraries managed by vcpkg with ASan
+
+enabled. To achieve this, custom vcpkg triplets are created for Windows
+
+x64 and x86 which set the VCPKG_CXX_FLAGS_DEBUG and VCPKG_C_FLAGS_DEBUG
+
+to use /fsanitize=address. These custom triplets can then be enabled by
+
+first configuring vcpkg to know about them in vcpkg-configuration.json
+
+and then setting CMake cache variables to use them in CMakePresets.json.
+
+
+
+Closes #13
+```

@@ -1,13 +1,17 @@
-####### 50 characters Limit ######################
-# [Summary] A short one-line commit description.
+# ├──────── Header (50 character limit) ─────────┤
+# A one-line, all lowercase summary in the form of
+# <type>: <summary>
+#  │       │
+#  │       └─⫸ present tense without a period
+#  │
+#  └─⫸ build|docs|feat|fix|refactor|style|test
 
-####### 72 characters Limit ############################################
-# [Problem] Describe the problem being addressed.
 
-# [Solution] Describe how this commit solves the problem.
+# ├──────────────────── Body (72 character limit) ─────────────────────┤
+# Explain the motivation behind this change and describe how this commit
+# addresses it. If applicable, include relevant notes such as how it was
+# tested or links to technical documentation used to implementation it.
 
-# [Testing] Describe how the solution was tested.
 
-# [Documentation] Include any relevant technical documentation.
-
-# [Issues] Issues related to or closed by this commit.
+# ├─────────────────── Footer (72 character limit) ────────────────────┤
+# Optionally include references to GitHub issues related to this change.
