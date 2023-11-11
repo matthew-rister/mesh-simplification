@@ -17,5 +17,7 @@ repos:
     hooks:
       - id: clang-format
         args: [-i, --style=file, --Werror]
+      - id: clang-tidy
+        args: [--config=, --fix-errors]
       - id: cpplint
         args: [--verbose=0]
