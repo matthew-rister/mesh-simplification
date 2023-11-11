@@ -32,7 +32,7 @@
       "hidden": true,
       "inherits": "default",
       "cacheVariables": {
-        "CMAKE_CXX_COMPILER": "/usr/bin/clang++",
+        "CMAKE_CXX_COMPILER": "clang++",
         "CLANG_DEFAULT_CXX_STDLIB": "libc++",
         "CLANG_DEFAULT_RTLIB": "compiler-rt"
       },
