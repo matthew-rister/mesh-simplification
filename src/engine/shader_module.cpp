@@ -2,8 +2,8 @@
 
 #include <format>
 #include <fstream>
+#include <ios>
 #include <stdexcept>
-#include <utility>
 
 #include <glslang/Include/glslang_c_shader_types.h>
 
@@ -25,13 +25,13 @@ glslang_stage_t GetGlslangStage(const vk::ShaderStageFlagBits shader_stage) {
     case vk::ShaderStageFlagBits::eMissKHR: return GLSLANG_STAGE_MISS;
     case vk::ShaderStageFlagBits::eIntersectionKHR: return GLSLANG_STAGE_INTERSECT;
     case vk::ShaderStageFlagBits::eCallableKHR: return GLSLANG_STAGE_CALLABLE;
-    default: throw std::invalid_argument{std::format("Unsupported shader stage {}", std::to_underlying(shader_stage))};
+    default: throw std::invalid_argument{std::format("Unsupported shader stage {}", vk::to_string(shader_stage))};
   }
 }
 
 std::string ReadFile(const std::filesystem::path& filepath) {
   if (std::ifstream ifs{filepath, std::ios::ate}; ifs.good()) {
-    const auto size = ifs.tellg();
+    const std::streamsize size = ifs.tellg();
     std::string source(static_cast<std::size_t>(size), '\0');
     ifs.seekg(0, std::ios::beg);
     ifs.read(source.data(), size);
@@ -44,10 +44,9 @@ std::string ReadFile(const std::filesystem::path& filepath) {
 
 gfx::ShaderModule::ShaderModule(const vk::Device& device,
                                 const vk::ShaderStageFlagBits shader_stage,
-                                const std::filesystem::path& filepath)
-    : shader_stage_{shader_stage} {
+                                const std::filesystem::path& filepath) {
   const auto glsl = ReadFile(filepath);
-  const auto spirv = GlslangCompiler::Get().Compile(GetGlslangStage(shader_stage_), glsl.c_str());
+  const auto spirv = GlslangCompiler::Get().Compile(GetGlslangStage(shader_stage), glsl.c_str());
 
   shader_module_ = device.createShaderModuleUnique(
       vk::ShaderModuleCreateInfo{.codeSize = spirv.size() * sizeof(decltype(spirv)::value_type),

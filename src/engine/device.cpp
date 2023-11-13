@@ -58,10 +58,10 @@ gfx::RankedPhysicalDevice GetRankedPhysicalDevice(const vk::PhysicalDevice& phys
 
 gfx::RankedPhysicalDevice SelectPhysicalDevice(const vk::Instance& instance, const vk::SurfaceKHR& surface) {
   const auto ranked_physical_devices =
-      instance.enumeratePhysicalDevices() | std::ranges::views::transform([&surface](auto&& physical_device) {
+      instance.enumeratePhysicalDevices() | std::views::transform([&surface](auto&& physical_device) {
         return GetRankedPhysicalDevice(physical_device, surface);
       })
-      | std::ranges::views::filter([](auto&& ranked_physical_device) {
+      | std::views::filter([](auto&& ranked_physical_device) {
           return ranked_physical_device.rank != gfx::RankedPhysicalDevice::kInvalidRank;
         })
       | std::ranges::to<std::vector>();
@@ -73,14 +73,14 @@ gfx::RankedPhysicalDevice SelectPhysicalDevice(const vk::Instance& instance, con
 
 vk::UniqueDevice CreateDevice(const vk::PhysicalDevice& physical_device,
                               const QueueFamilyIndices& queue_family_indices) {
-  static constexpr float kHighestNormalizedQueuePriority = 1.0;
+  static constexpr auto kHighestNormalizedQueuePriority = 1.0f;
 
   const auto device_queue_create_info =
       std::unordered_set{queue_family_indices.graphics_index, queue_family_indices.present_index}
-      | std::ranges::views::transform([](const auto queue_family_index) {
+      | std::views::transform([](const auto queue_family_index) {
           assert(queue_family_index != QueueFamilyIndices::kInvalidIndex);
           return vk::DeviceQueueCreateInfo{.queueFamilyIndex = queue_family_index,
-                                           .queueCount = 1u,
+                                           .queueCount = 1,
                                            .pQueuePriorities = &kHighestNormalizedQueuePriority};
         })
       | std::ranges::to<std::vector>();
@@ -108,5 +108,5 @@ gfx::Device::Device(const vk::Instance& instance, const vk::SurfaceKHR& surface)
 gfx::Device::Device(RankedPhysicalDevice&& ranked_physical_device)
     : physical_device_{ranked_physical_device.physical_device},
       device_{CreateDevice(physical_device_, ranked_physical_device.queue_family_indices)},
-      graphics_queue_{*device_, ranked_physical_device.queue_family_indices.graphics_index, 0u},
-      present_queue_{*device_, ranked_physical_device.queue_family_indices.present_index, 0u} {}
+      graphics_queue_{*device_, ranked_physical_device.queue_family_indices.graphics_index, 0},
+      present_queue_{*device_, ranked_physical_device.queue_family_indices.present_index, 0} {}

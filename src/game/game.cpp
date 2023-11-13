@@ -15,8 +15,9 @@ gfx::Game::Game() noexcept : window_{"VkRender", kWindowHeight, kWindowWidth}, e
   });
 }
 
-void gfx::Game::Run() const {
+void gfx::Game::Run() {
   while (!window_.IsClosed()) {
     Window::Update();
+    engine_.Render();
   }
 }

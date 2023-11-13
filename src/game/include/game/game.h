@@ -10,7 +10,7 @@ class Game {
 public:
   Game() noexcept;
 
-  void Run() const;
+  void Run();
 
 private:
   Window window_;

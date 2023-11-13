@@ -13,11 +13,8 @@ public:
 
   [[nodiscard]] const vk::ShaderModule& operator*() const noexcept { return *shader_module_; }
 
-  [[nodiscard]] vk::ShaderStageFlagBits stage() const noexcept { return shader_stage_; }
-
 private:
   vk::UniqueShaderModule shader_module_;
-  vk::ShaderStageFlagBits shader_stage_;
 };
 
 }  // namespace gfx

@@ -27,12 +27,12 @@ constexpr auto kGlslangMessages =
 
 std::ostream& operator<<(std::ostream& ostream, glslang_shader_t* const shader) {
   if (const auto* const shader_info_log = glslang_shader_get_info_log(shader);
-      shader_info_log != nullptr && std::strlen(shader_info_log) > 0u) {
+      shader_info_log != nullptr && std::strlen(shader_info_log) > 0) {
     std::println(ostream, "{}", shader_info_log);
   }
 #ifndef NDEBUG
   if (const auto* const shader_info_debug_log = glslang_shader_get_info_debug_log(shader);
-      shader_info_debug_log != nullptr && std::strlen(shader_info_debug_log) > 0u) {
+      shader_info_debug_log != nullptr && std::strlen(shader_info_debug_log) > 0) {
     std::println(ostream, "{}", shader_info_debug_log);
   }
 #endif
@@ -41,12 +41,12 @@ std::ostream& operator<<(std::ostream& ostream, glslang_shader_t* const shader) 
 
 std::ostream& operator<<(std::ostream& ostream, glslang_program_t* const program) {
   if (const auto* const program_info_log = glslang_program_get_info_log(program);
-      program_info_log != nullptr && std::strlen(program_info_log) > 0u) {
+      program_info_log != nullptr && std::strlen(program_info_log) > 0) {
     std::println(ostream, "{}", program_info_log);
   }
 #ifndef NDEBUG
   if (const auto* const program_info_debug_log = glslang_program_get_info_debug_log(program);
-      program_info_debug_log != nullptr && std::strlen(program_info_debug_log) > 0u) {
+      program_info_debug_log != nullptr && std::strlen(program_info_debug_log) > 0) {
     std::println(ostream, "{}", program_info_debug_log);
   }
 #endif
@@ -141,22 +141,20 @@ struct std::formatter<glslang_stage_t> : std::formatter<std::string_view> {
 private:
   static constexpr std::string_view to_string(const glslang_stage_t stage) noexcept {
     switch (stage) {
-#define TO_STRING(kGlslangStage) #kGlslangStage  // NOLINT(cppcoreguidelines-macro-usage)
-      case GLSLANG_STAGE_VERTEX: return TO_STRING(GLSLANG_STAGE_VERTEX);
-      case GLSLANG_STAGE_TESSCONTROL: return TO_STRING(GLSLANG_STAGE_TESSCONTROL);
-      case GLSLANG_STAGE_TESSEVALUATION: return TO_STRING(GLSLANG_STAGE_TESSEVALUATION);
-      case GLSLANG_STAGE_GEOMETRY: return TO_STRING(GLSLANG_STAGE_GEOMETRY);
-      case GLSLANG_STAGE_FRAGMENT: return TO_STRING(GLSLANG_STAGE_FRAGMENT);
-      case GLSLANG_STAGE_COMPUTE: return TO_STRING(GLSLANG_STAGE_COMPUTE);
-      case GLSLANG_STAGE_RAYGEN: return TO_STRING(GLSLANG_STAGE_RAYGEN);
-      case GLSLANG_STAGE_INTERSECT: return TO_STRING(GLSLANG_STAGE_INTERSECT);
-      case GLSLANG_STAGE_ANYHIT: return TO_STRING(GLSLANG_STAGE_ANYHIT);
-      case GLSLANG_STAGE_CLOSESTHIT: return TO_STRING(GLSLANG_STAGE_CLOSESTHIT);
-      case GLSLANG_STAGE_MISS: return TO_STRING(GLSLANG_STAGE_MISS);
-      case GLSLANG_STAGE_CALLABLE: return TO_STRING(GLSLANG_STAGE_CALLABLE);
-      case GLSLANG_STAGE_TASK: return TO_STRING(GLSLANG_STAGE_TASK);
-      case GLSLANG_STAGE_MESH: return TO_STRING(GLSLANG_STAGE_MESH);
-#undef TO_STRING
+      case GLSLANG_STAGE_VERTEX: return "GLSLANG_STAGE_VERTEX";
+      case GLSLANG_STAGE_TESSCONTROL: return "GLSLANG_STAGE_TESSCONTROL";
+      case GLSLANG_STAGE_TESSEVALUATION: return "GLSLANG_STAGE_TESSEVALUATION";
+      case GLSLANG_STAGE_GEOMETRY: return "GLSLANG_STAGE_GEOMETRY";
+      case GLSLANG_STAGE_FRAGMENT: return "GLSLANG_STAGE_FRAGMENT";
+      case GLSLANG_STAGE_COMPUTE: return "GLSLANG_STAGE_COMPUTE";
+      case GLSLANG_STAGE_RAYGEN: return "GLSLANG_STAGE_RAYGEN";
+      case GLSLANG_STAGE_INTERSECT: return "GLSLANG_STAGE_INTERSECT";
+      case GLSLANG_STAGE_ANYHIT: return "GLSLANG_STAGE_ANYHIT";
+      case GLSLANG_STAGE_CLOSESTHIT: return "GLSLANG_STAGE_CLOSESTHIT";
+      case GLSLANG_STAGE_MISS: return "GLSLANG_STAGE_MISS";
+      case GLSLANG_STAGE_CALLABLE: return "GLSLANG_STAGE_CALLABLE";
+      case GLSLANG_STAGE_TASK: return "GLSLANG_STAGE_TASK";
+      case GLSLANG_STAGE_MESH: return "GLSLANG_STAGE_MESH";
       default: std::unreachable();
     }
   }
