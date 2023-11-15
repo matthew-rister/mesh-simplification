@@ -1,4 +1,4 @@
-﻿# CONTRIBUTING
+# CONTRIBUTING
 
 Welcome 👋 This document outlines standards and guidelines for contributing to this project.
 
@@ -65,9 +65,9 @@ Commit changes can be categorized into the following types:
 | `docs`     | Updates source code or project documentation  |
 | `feat`     | Adds a new feature for a user                 |
 | `fix`      | Fixes a user facing defect                    |
-| `refactor` | Changes code structure                        |
-| `style`    | Formats code or changes code style            |
-| `test`     | Updates automated tests                       |
+| `refactor` | Alters code structure or behavior             |
+| `style`    | Code style changes that don't change behavior |
+| `test`     | Relates to tests and testing infrastructure   |
 
 #### Body
 
