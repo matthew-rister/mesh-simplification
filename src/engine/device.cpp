@@ -100,6 +100,12 @@ vk::UniqueDevice CreateDevice(const vk::PhysicalDevice& physical_device,
   return device;
 }
 
+vk::UniqueCommandPool CreateOneTimeSubmitCommandPool(const vk::Device& device, const gfx::Queue& graphics_queue) {
+  return device.createCommandPoolUnique(
+      vk::CommandPoolCreateInfo{.flags = vk::CommandPoolCreateFlagBits::eTransient,
+                                .queueFamilyIndex = graphics_queue.queue_family_index()});
+}
+
 }  // namespace
 
 gfx::Device::Device(const vk::Instance& instance, const vk::SurfaceKHR& surface)
@@ -109,4 +115,5 @@ gfx::Device::Device(RankedPhysicalDevice&& ranked_physical_device)
     : physical_device_{ranked_physical_device.physical_device},
       device_{CreateDevice(physical_device_, ranked_physical_device.queue_family_indices)},
       graphics_queue_{*device_, ranked_physical_device.queue_family_indices.graphics_index, 0},
-      present_queue_{*device_, ranked_physical_device.queue_family_indices.present_index, 0} {}
+      present_queue_{*device_, ranked_physical_device.queue_family_indices.present_index, 0},
+      one_time_submit_command_pool_{CreateOneTimeSubmitCommandPool(*device_, graphics_queue_)} {}

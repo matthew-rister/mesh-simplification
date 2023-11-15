@@ -4,6 +4,7 @@
   "version": "0.1.0",
   "dependencies": [
     "glfw3",
+    "glm",
     "glslang",
     "gtest",
     "vulkan-headers"

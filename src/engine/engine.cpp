@@ -1,4 +1,4 @@
-﻿#include "engine/engine.h"
+#include "engine/engine.h"
 
 #include <algorithm>
 #include <array>
@@ -7,6 +7,7 @@
 #include <ranges>
 #include <utility>
 
+#include "engine/mesh.h"
 #include "engine/shader_module.h"
 #include "engine/window.h"
 
@@ -67,8 +68,10 @@ vk::UniquePipeline CreateGraphicsPipeline(const vk::Device& device,
                                         .pName = "main"}};
 
   static constexpr vk::PipelineVertexInputStateCreateInfo kVertexInputStateCreateInfo{
-      .vertexBindingDescriptionCount = 0,
-      .vertexAttributeDescriptionCount = 0};
+      .vertexBindingDescriptionCount = 1,
+      .pVertexBindingDescriptions = &gfx::Mesh::kVertexInputBindingDescription,
+      .vertexAttributeDescriptionCount = static_cast<std::uint32_t>(gfx::Mesh::kVertexAttributeDescriptions.size()),
+      .pVertexAttributeDescriptions = gfx::Mesh::kVertexAttributeDescriptions.data()};
 
   static constexpr vk::PipelineInputAssemblyStateCreateInfo kInputAssemblyStateCreateInfo{
       .topology = vk::PrimitiveTopology::eTriangleList};
@@ -176,6 +179,7 @@ gfx::Engine::Engine(const Window& window)
     : surface_{window.CreateSurface(*instance_)},
       device_{*instance_, *surface_},
       swapchain_{device_, window, *surface_},
+      mesh_{device_},
       render_pass_{CreateRenderPass(*device_, swapchain_)},
       framebuffers_{CreateFramebuffers(*device_, swapchain_, *render_pass_)},
       graphics_pipeline_layout_{device_->createPipelineLayoutUnique(vk::PipelineLayoutCreateInfo{})},
@@ -222,7 +226,7 @@ void gfx::Engine::Render() {
                                  vk::SubpassContents::eInline);
 
   command_buffer.bindPipeline(vk::PipelineBindPoint::eGraphics, *graphics_pipeline_);
-  command_buffer.draw(3, 1, 0, 0);
+  mesh_.Render(command_buffer);
 
   command_buffer.endRenderPass();
   command_buffer.end();

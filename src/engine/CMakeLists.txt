@@ -2,6 +2,7 @@ add_library(engine STATIC device.cpp
                           engine.cpp
                           glslang_compiler.cpp
                           instance.cpp
+                          memory.cpp
                           shader_module.cpp
                           swapchain.cpp
                           window.cpp)

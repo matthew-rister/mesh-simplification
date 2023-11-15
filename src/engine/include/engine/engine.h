@@ -7,6 +7,7 @@
 
 #include "engine/device.h"
 #include "engine/instance.h"
+#include "engine/mesh.h"
 #include "engine/swapchain.h"
 
 namespace gfx {
@@ -31,6 +32,7 @@ private:
   vk::UniqueSurfaceKHR surface_;
   Device device_;
   Swapchain swapchain_;
+  Mesh mesh_;
   vk::UniqueRenderPass render_pass_;
   std::vector<vk::UniqueFramebuffer> framebuffers_;
   vk::UniquePipelineLayout graphics_pipeline_layout_;
