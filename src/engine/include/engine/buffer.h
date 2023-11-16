@@ -2,10 +2,10 @@
 #define SRC_ENGINE_INCLUDE_ENGINE_BUFFER_H_
 
 #include <cassert>
-#include <span>
 
 #include <vulkan/vulkan.hpp>
 
+#include "engine/data_view.h"
 #include "engine/device.h"
 #include "engine/memory.h"
 
@@ -26,7 +26,7 @@ public:
   [[nodiscard]] const vk::Buffer* operator->() const noexcept { return &(*buffer_); }
 
   template <typename T>
-  void Copy(const std::span<const T> src_data) {
+  void Copy(const DataView<const T> src_data) {
     const auto mapped_memory = memory_.Map();
     assert(!mapped_memory.expired());
     memcpy(mapped_memory.lock().get(), src_data.data(), src_data.size_bytes());
@@ -47,7 +47,7 @@ private:
 template <typename T>
 [[nodiscard]] Buffer CreateDeviceLocalBuffer(const Device& device,
                                              const vk::BufferUsageFlags& buffer_usage_flags,
-                                             const std::span<const T>& data) {
+                                             const DataView<const T>& data) {
   Buffer host_visible_buffer{device,
                              data.size_bytes(),
                              vk::BufferUsageFlagBits::eTransferSrc,

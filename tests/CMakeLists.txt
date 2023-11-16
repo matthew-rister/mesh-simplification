@@ -1,8 +1,8 @@
-add_executable(hello_test hello_test.cpp)
+add_executable(tests engine/data_view_test.cpp)
 
 find_package(GTest CONFIG REQUIRED)
 
-target_link_libraries(hello_test PRIVATE dbgasan warnings GTest::gtest_main)
+target_link_libraries(tests PRIVATE dbgasan engine warnings GTest::gtest_main)
 
 include(GoogleTest)
-gtest_discover_tests(hello_test)
+gtest_discover_tests(tests)
