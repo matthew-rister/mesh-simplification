@@ -2,7 +2,6 @@
 #define SRC_ENGINE_INCLUDE_ENGINE_BUFFER_H_
 
 #include <cassert>
-#include <span>
 
 #include <vulkan/vulkan.hpp>
 
@@ -26,10 +25,10 @@ public:
   [[nodiscard]] const vk::Buffer* operator->() const noexcept { return &(*buffer_); }
 
   template <typename T>
-  void Copy(const std::span<const T> src_data) {
+  void Copy(const vk::ArrayProxy<const T> src_data) {
     const auto mapped_memory = memory_.Map();
     assert(!mapped_memory.expired());
-    memcpy(mapped_memory.lock().get(), src_data.data(), src_data.size_bytes());
+    memcpy(mapped_memory.lock().get(), src_data.data(), src_data.size() * sizeof(T));
   }
 
   void Copy(const Device& device, const Buffer& src_buffer) {
@@ -47,15 +46,17 @@ private:
 template <typename T>
 [[nodiscard]] Buffer CreateDeviceLocalBuffer(const Device& device,
                                              const vk::BufferUsageFlags& buffer_usage_flags,
-                                             const std::span<const T>& data) {
+                                             const vk::ArrayProxy<const T>& data) {
+  const auto size_bytes = data.size() * sizeof(T);
+
   Buffer host_visible_buffer{device,
-                             data.size_bytes(),
+                             size_bytes,
                              vk::BufferUsageFlagBits::eTransferSrc,
                              vk::MemoryPropertyFlagBits::eHostVisible};
   host_visible_buffer.Copy(data);
 
   Buffer device_local_buffer{device,
-                             data.size_bytes(),
+                             size_bytes,
                              buffer_usage_flags | vk::BufferUsageFlagBits::eTransferDst,
                              vk::MemoryPropertyFlagBits::eDeviceLocal};
   device_local_buffer.Copy(device, host_visible_buffer);
