@@ -47,7 +47,7 @@ std::weak_ptr<void> gfx::Memory::Map() {
     mapped_memory_ = std::shared_ptr<void>{device_.mapMemory(*memory_, 0, size_), [](auto* /*data*/) {
                                              // avoid deleting memory managed by vkUnmapMemory
                                            }};
-    assert(mapped_memory_ != nullptr);  // guaranteed by Vulkan specification
+    assert(mapped_memory_ != nullptr);
   }
   return mapped_memory_;
 }

@@ -15,10 +15,10 @@ struct gfx::RankedPhysicalDevice {
     static constexpr std::uint32_t kInvalidIndex = std::numeric_limits<std::uint32_t>::max();
     std::uint32_t graphics_index = kInvalidIndex, present_index = kInvalidIndex;
   };
-  static constexpr std::uint32_t kInvalidRank = 0;
+  static constexpr std::int32_t kInvalidRank = -1;
   vk::PhysicalDevice physical_device;
   QueueFamilyIndices queue_family_indices;
-  std::uint32_t rank = kInvalidRank;
+  std::int32_t rank = kInvalidRank;
 };
 
 namespace {
@@ -29,7 +29,7 @@ std::optional<QueueFamilyIndices> FindQueueFamilyIndices(const vk::PhysicalDevic
                                                          const vk::SurfaceKHR& surface) {
   std::optional<std::uint32_t> graphics_index, present_index;
   for (std::uint32_t index = 0; const auto& queue_family_properties : physical_device.getQueueFamilyProperties()) {
-    assert(queue_family_properties.queueCount > 0u);  // required by the Vulkan specification
+    assert(queue_family_properties.queueCount > 0);
     if (static_cast<bool>(queue_family_properties.queueFlags & vk::QueueFlagBits::eGraphics)) {
       graphics_index = index;
     }
@@ -51,7 +51,7 @@ gfx::RankedPhysicalDevice GetRankedPhysicalDevice(const vk::PhysicalDevice& phys
         return gfx::RankedPhysicalDevice{
             .physical_device = physical_device,
             .queue_family_indices = queue_family_indices,
-            .rank = 1u + (physical_device.getProperties().deviceType == vk::PhysicalDeviceType::eDiscreteGpu)};
+            .rank = physical_device.getProperties().deviceType == vk::PhysicalDeviceType::eDiscreteGpu};
       })
       .value_or(gfx::RankedPhysicalDevice{.rank = gfx::RankedPhysicalDevice::kInvalidRank});
 }

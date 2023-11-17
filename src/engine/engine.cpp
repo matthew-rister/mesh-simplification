@@ -195,8 +195,8 @@ gfx::Engine::~Engine() noexcept {
 
 void gfx::Engine::Render() {
   current_frame_index_ = (current_frame_index_ + 1) % kMaxRenderFrames;
+  // NOLINTBEGIN(cppcoreguidelines-pro-bounds-constant-array-index): index verified prior to array access
   const auto& command_buffer = *command_buffers_[current_frame_index_];
-  // NOLINTBEGIN(cppcoreguidelines-pro-bounds-constant-array-index)
   const auto& acquire_next_image_semaphore = *acquire_next_image_semaphores_[current_frame_index_];
   const auto& present_image_semaphore = *present_image_semaphores_[current_frame_index_];
   const auto& draw_fence = *draw_fences_[current_frame_index_];

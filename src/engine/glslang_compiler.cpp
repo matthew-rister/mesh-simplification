@@ -18,7 +18,7 @@ using UniqueGlslangShader = std::unique_ptr<glslang_shader_t, decltype(&glslang_
 using UniqueGlslangProgram = std::unique_ptr<glslang_program_t, decltype(&glslang_program_delete)>;
 
 constexpr auto kGlslangMessages =
-// NOLINTBEGIN(hicpp-signed-bitwise)
+// NOLINTBEGIN(hicpp-signed-bitwise): signed bit flags are part of the glslang API
 #ifndef NDEBUG
     GLSLANG_MSG_DEBUG_INFO_BIT |
 #endif
@@ -133,7 +133,7 @@ std::vector<std::uint32_t> GenerateSpirv(glslang_program_t* const program, const
 
 template <>
 struct std::formatter<glslang_stage_t> : std::formatter<std::string_view> {
-  // NOLINTNEXTLINE(runtime/references)
+  // NOLINTNEXTLINE(runtime/references): non-const reference is required by std::format
   [[nodiscard]] auto format(const glslang_stage_t stage, std::format_context& format_context) const {
     return std::formatter<std::string_view>::format(to_string(stage), format_context);
   }
@@ -168,7 +168,7 @@ gfx::GlslangCompiler::GlslangCompiler() {
 
 gfx::GlslangCompiler::~GlslangCompiler() noexcept { glslang_finalize_process(); }
 
-// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
+// NOLINTNEXTLINE(readability-convert-member-functions-to-static): access enforced through a static instance
 std::vector<std::uint32_t> gfx::GlslangCompiler::Compile(const glslang_stage_t stage,
                                                          const char* const glsl_source) const {
   const auto shader = CreateShader(stage, glsl_source);
