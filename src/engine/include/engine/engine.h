@@ -1,6 +1,8 @@
 #ifndef SRC_ENGINE_INCLUDE_ENGINE_ENGINE_H_
 #define SRC_ENGINE_INCLUDE_ENGINE_ENGINE_H_
 
+#include <array>
+#include <cstdint>
 #include <vector>
 
 #include <vulkan/vulkan.hpp>
@@ -28,6 +30,8 @@ public:
   void Render();
 
 private:
+  static constexpr std::size_t kMaxRenderFrames = 2;
+  std::uint32_t current_frame_index_ = 0;
   Instance instance_;
   vk::UniqueSurfaceKHR surface_;
   Device device_;
@@ -39,9 +43,9 @@ private:
   vk::UniquePipeline graphics_pipeline_;
   vk::UniqueCommandPool command_pool_;
   std::vector<vk::UniqueCommandBuffer> command_buffers_;
-  std::vector<vk::UniqueSemaphore> acquire_next_image_semaphores_, present_image_semaphores_;
-  std::vector<vk::UniqueFence> draw_fences_;
-  std::uint32_t current_frame_index_ = 0;
+  std::array<vk::UniqueSemaphore, kMaxRenderFrames> acquire_next_image_semaphores_;
+  std::array<vk::UniqueSemaphore, kMaxRenderFrames> present_image_semaphores_;
+  std::array<vk::UniqueFence, kMaxRenderFrames> draw_fences_;
 };
 
 }  // namespace gfx

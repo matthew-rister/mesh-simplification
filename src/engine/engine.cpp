@@ -140,36 +140,31 @@ vk::UniqueCommandPool CreateCommandPool(const gfx::Device& device) {
                                 .queueFamilyIndex = device.graphics_queue().queue_family_index()});
 }
 
-constexpr auto kMaxRenderFrames = 2;
-
+template <std::size_t N>
 std::vector<vk::UniqueCommandBuffer> AllocateCommandBuffers(const vk::Device& device,
                                                             const vk::CommandPool& command_pool) {
   return device.allocateCommandBuffersUnique(vk::CommandBufferAllocateInfo{
       .commandPool = command_pool,
       .level = vk::CommandBufferLevel::ePrimary,
-      .commandBufferCount = kMaxRenderFrames,
+      .commandBufferCount = N,
   });
 }
 
-std::vector<vk::UniqueSemaphore> CreateSemaphores(const vk::Device& device) {
-  std::vector<vk::UniqueSemaphore> semaphores;
-  semaphores.reserve(kMaxRenderFrames);
-
-  std::ranges::generate_n(std::back_inserter(semaphores), kMaxRenderFrames, [&device] {
+template <std::size_t N>
+std::array<vk::UniqueSemaphore, N> CreateSemaphores(const vk::Device& device) {
+  std::array<vk::UniqueSemaphore, N> semaphores;
+  std::ranges::generate(semaphores, [&device] {
     return device.createSemaphoreUnique(vk::SemaphoreCreateInfo{});
   });
-
   return semaphores;
 }
 
-std::vector<vk::UniqueFence> CreateFences(const vk::Device& device) {
-  std::vector<vk::UniqueFence> fences;
-  fences.reserve(kMaxRenderFrames);
-
-  std::ranges::generate_n(std::back_inserter(fences), kMaxRenderFrames, [&device] {
+template <std::size_t N>
+std::array<vk::UniqueFence, N> CreateFences(const vk::Device& device) {
+  std::array<vk::UniqueFence, N> fences;
+  std::ranges::generate(fences, [&device] {
     return device.createFenceUnique(vk::FenceCreateInfo{.flags = vk::FenceCreateFlagBits::eSignaled});
   });
-
   return fences;
 }
 
@@ -185,10 +180,10 @@ gfx::Engine::Engine(const Window& window)
       graphics_pipeline_layout_{device_->createPipelineLayoutUnique(vk::PipelineLayoutCreateInfo{})},
       graphics_pipeline_{CreateGraphicsPipeline(*device_, swapchain_, *graphics_pipeline_layout_, *render_pass_)},
       command_pool_{CreateCommandPool(device_)},
-      command_buffers_{AllocateCommandBuffers(*device_, *command_pool_)},
-      acquire_next_image_semaphores_{CreateSemaphores(*device_)},
-      present_image_semaphores_{CreateSemaphores(*device_)},
-      draw_fences_{CreateFences(*device_)} {}
+      command_buffers_{AllocateCommandBuffers<kMaxRenderFrames>(*device_, *command_pool_)},
+      acquire_next_image_semaphores_{CreateSemaphores<kMaxRenderFrames>(*device_)},
+      present_image_semaphores_{CreateSemaphores<kMaxRenderFrames>(*device_)},
+      draw_fences_{CreateFences<kMaxRenderFrames>(*device_)} {}
 
 gfx::Engine::~Engine() noexcept {
   try {
@@ -201,9 +196,11 @@ gfx::Engine::~Engine() noexcept {
 void gfx::Engine::Render() {
   current_frame_index_ = (current_frame_index_ + 1) % kMaxRenderFrames;
   const auto& command_buffer = *command_buffers_[current_frame_index_];
+  // NOLINTBEGIN(cppcoreguidelines-pro-bounds-constant-array-index)
   const auto& acquire_next_image_semaphore = *acquire_next_image_semaphores_[current_frame_index_];
   const auto& present_image_semaphore = *present_image_semaphores_[current_frame_index_];
   const auto& draw_fence = *draw_fences_[current_frame_index_];
+  // NOLINTEND(cppcoreguidelines-pro-bounds-constant-array-index)
 
   static constexpr auto kMaxTimeout = std::numeric_limits<std::uint64_t>::max();
   auto result = device_->waitForFences(draw_fence, vk::True, kMaxTimeout);
