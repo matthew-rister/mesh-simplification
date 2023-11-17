@@ -28,8 +28,7 @@ This project follows the [Google C++ Style Guide](https://google.github.io/style
 2. Exceptions are allowed.
 3. Forward declarations are allowed.
 4. Objects with static storage duration are allowed.
-5. C++ implementation files use `.cpp` as a file extension.
-6. Public APIs are documented with [Doxygen](https://www.doxygen.nl/).
+5. APIs are documented with [Doxygen](https://www.doxygen.nl/).
 
 Code style is enforced with `clang-format` and `cpplint` which are run prior to check-in using pre-commit hooks.
 
@@ -59,15 +58,15 @@ The header should be a one-line summary of the form:
 
 Commit changes can be categorized into the following types:
 
-| Type       | Description                                   |
-| -------    | --------------------------------------------- |
-| `build`    | Changes a build script or process             |
-| `docs`     | Updates source code or project documentation  |
-| `feat`     | Adds a new feature for a user                 |
-| `fix`      | Fixes a user facing defect                    |
-| `refactor` | Alters code structure or behavior             |
-| `style`    | Code style changes that don't change behavior |
-| `test`     | Relates to tests and testing infrastructure   |
+| Type       | Description                                          |
+| -------    | ---------------------------------------------------- |
+| `build`    | Changes a CMake script or build process              |
+| `docs`     | Updates project or source code documentation         |
+| `feat`     | Adds a new feature for a user                        |
+| `fix`      | Fixes a user facing defect                           |
+| `refactor` | Alters code structure without changing functionality |
+| `style`    | Applies formatting or changes code style conventions |
+| `test`     | Relates to tests and testing infrastructure          |
 
 #### Body
 
