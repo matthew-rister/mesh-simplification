@@ -1,8 +1,6 @@
 #include "engine/engine.h"
 
 #include <algorithm>
-#include <array>
-#include <cstdint>
 #include <iostream>
 #include <ranges>
 #include <utility>
@@ -16,41 +14,60 @@
 
 namespace {
 
-vk::UniqueRenderPass CreateRenderPass(const vk::Device& device, const gfx::Swapchain& swapchain) {
-  const vk::AttachmentDescription attachment_description{.format = swapchain.image_format(),
-                                                         .samples = vk::SampleCountFlagBits::e1,
-                                                         .loadOp = vk::AttachmentLoadOp::eClear,
-                                                         .storeOp = vk::AttachmentStoreOp::eStore,
-                                                         .stencilLoadOp = vk::AttachmentLoadOp::eDontCare,
-                                                         .stencilStoreOp = vk::AttachmentStoreOp::eDontCare,
-                                                         .initialLayout = vk::ImageLayout::eUndefined,
-                                                         .finalLayout = vk::ImageLayout::ePresentSrcKHR};
+vk::UniqueRenderPass CreateRenderPass(const vk::Device& device,
+                                      const vk::Format color_attachment_format,
+                                      const vk::Format depth_attachment_format) {
+  const std::array attachment_descriptions{
+      vk::AttachmentDescription{.format = color_attachment_format,
+                                .samples = vk::SampleCountFlagBits::e1,
+                                .loadOp = vk::AttachmentLoadOp::eClear,
+                                .storeOp = vk::AttachmentStoreOp::eStore,
+                                .stencilLoadOp = vk::AttachmentLoadOp::eDontCare,
+                                .stencilStoreOp = vk::AttachmentStoreOp::eDontCare,
+                                .initialLayout = vk::ImageLayout::eUndefined,
+                                .finalLayout = vk::ImageLayout::ePresentSrcKHR},
+      vk::AttachmentDescription{.format = depth_attachment_format,
+                                .loadOp = vk::AttachmentLoadOp::eClear,
+                                .storeOp = vk::AttachmentStoreOp::eStore,
+                                .stencilLoadOp = vk::AttachmentLoadOp::eDontCare,
+                                .stencilStoreOp = vk::AttachmentStoreOp::eDontCare,
+                                .initialLayout = vk::ImageLayout::eUndefined,
+                                .finalLayout = vk::ImageLayout::eDepthStencilAttachmentOptimal}};
 
   static constexpr vk::AttachmentReference kColorAttachmentReference{
       .attachment = 0,
       .layout = vk::ImageLayout::eColorAttachmentOptimal};
 
+  static constexpr vk::AttachmentReference kDepthAttachmentReference{
+      .attachment = 1,
+      .layout = vk::ImageLayout::eDepthStencilAttachmentOptimal};
+
   static constexpr vk::SubpassDescription kSubpassDescription{.pipelineBindPoint = vk::PipelineBindPoint::eGraphics,
                                                               .colorAttachmentCount = 1,
-                                                              .pColorAttachments = &kColorAttachmentReference};
+                                                              .pColorAttachments = &kColorAttachmentReference,
+                                                              .pDepthStencilAttachment = &kDepthAttachmentReference};
 
-  return device.createRenderPassUnique(vk::RenderPassCreateInfo{.attachmentCount = 1,
-                                                                .pAttachments = &attachment_description,
-                                                                .subpassCount = 1,
-                                                                .pSubpasses = &kSubpassDescription});
+  return device.createRenderPassUnique(
+      vk::RenderPassCreateInfo{.attachmentCount = static_cast<std::uint32_t>(attachment_descriptions.size()),
+                               .pAttachments = attachment_descriptions.data(),
+                               .subpassCount = 1,
+                               .pSubpasses = &kSubpassDescription});
 }
 
 std::vector<vk::UniqueFramebuffer> CreateFramebuffers(const vk::Device& device,
                                                       const gfx::Swapchain& swapchain,
-                                                      const vk::RenderPass& render_pass) {
+                                                      const vk::RenderPass& render_pass,
+                                                      const vk::ImageView& depth_attachment) {
   return swapchain.image_views()
-         | std::views::transform([&device, &render_pass, &extent = swapchain.image_extent()](const auto& image_view) {
-             return device.createFramebufferUnique(vk::FramebufferCreateInfo{.renderPass = render_pass,
-                                                                             .attachmentCount = 1,
-                                                                             .pAttachments = &image_view,
-                                                                             .width = extent.width,
-                                                                             .height = extent.height,
-                                                                             .layers = 1});
+         | std::views::transform([&, &extent = swapchain.image_extent()](const auto& color_attachment) {
+             const std::array image_attachments{color_attachment, depth_attachment};
+             return device.createFramebufferUnique(
+                 vk::FramebufferCreateInfo{.renderPass = render_pass,
+                                           .attachmentCount = static_cast<std::uint32_t>(image_attachments.size()),
+                                           .pAttachments = image_attachments.data(),
+                                           .width = extent.width,
+                                           .height = extent.height,
+                                           .layers = 1});
            })
          | std::ranges::to<std::vector>();
 }
@@ -101,10 +118,14 @@ vk::UniquePipeline CreateGraphicsPipeline(const vk::Device& device,
 
   static constexpr vk::PipelineRasterizationStateCreateInfo kRasterizationStateCreateInfo{
       .polygonMode = vk::PolygonMode::eFill,
-      // TODO(matthew-rister): change to eBack when implementing model loading
-      .cullMode = vk::CullModeFlagBits::eFront,
+      .cullMode = vk::CullModeFlagBits::eFront,  // TODO(matthew-rister): change to eBack when model loading is complete
       .frontFace = vk::FrontFace::eCounterClockwise,
       .lineWidth = 1.0f};
+
+  static constexpr vk::PipelineDepthStencilStateCreateInfo kPipelineDepthStencilStateCreateInfo{
+      .depthTestEnable = vk::True,
+      .depthWriteEnable = vk::True,
+      .depthCompareOp = vk::CompareOp::eLess};
 
   static constexpr vk::PipelineMultisampleStateCreateInfo kMultisampleStateCreateInfo{.rasterizationSamples =
                                                                                           vk::SampleCountFlagBits::e1};
@@ -134,6 +155,7 @@ vk::UniquePipeline CreateGraphicsPipeline(const vk::Device& device,
                                      .pViewportState = &viewport_state_create_info,
                                      .pRasterizationState = &kRasterizationStateCreateInfo,
                                      .pMultisampleState = &kMultisampleStateCreateInfo,
+                                     .pDepthStencilState = &kPipelineDepthStencilStateCreateInfo,
                                      .pColorBlendState = &kColorBlendStateCreateInfo,
                                      .layout = pipeline_layout,
                                      .renderPass = render_pass,
@@ -186,8 +208,14 @@ gfx::Engine::Engine(const Window& window)
       swapchain_{device_, window, *surface_},
       mesh_{device_},
       uniform_buffers_{device_},
-      render_pass_{CreateRenderPass(*device_, swapchain_)},
-      framebuffers_{CreateFramebuffers(*device_, swapchain_, *render_pass_)},
+      depth_buffer_{device_,
+                    vk::Format::eD32Sfloat,
+                    swapchain_.image_extent(),
+                    vk::ImageUsageFlagBits::eDepthStencilAttachment,
+                    vk::ImageAspectFlagBits::eDepth,
+                    vk::MemoryPropertyFlagBits::eDeviceLocal},
+      render_pass_{CreateRenderPass(*device_, swapchain_.image_format(), depth_buffer_.format())},
+      framebuffers_{CreateFramebuffers(*device_, swapchain_, *render_pass_, depth_buffer_.image_view())},
       graphics_pipeline_layout_{CreateGraphicsPipelineLayout(*device_, uniform_buffers_.descriptor_set_layout())},
       graphics_pipeline_{CreateGraphicsPipeline(*device_, swapchain_, *graphics_pipeline_layout_, *render_pass_)},
       command_pool_{CreateCommandPool(device_)},
@@ -232,25 +260,30 @@ void gfx::Engine::Render() {
   uniform_buffer.Copy(vertex_transform);
 
   command_buffer.begin(vk::CommandBufferBeginInfo{.flags = vk::CommandBufferUsageFlagBits::eOneTimeSubmit});
+  {
+    static constexpr std::array kClearValues{
+        vk::ClearValue{.color = vk::ClearColorValue{.float32 = std::array{0.0f, 0.0f, 0.0f, 1.0f}}},
+        vk::ClearValue{.depthStencil = vk::ClearDepthStencilValue{1.0f, 0}}};
 
-  static constexpr vk::ClearValue kClearValue{.color = vk::ClearColorValue{std::array{0.0f, 0.0f, 0.0f, 1.0f}}};
-  command_buffer.beginRenderPass(vk::RenderPassBeginInfo{.renderPass = *render_pass_,
-                                                         .framebuffer = *framebuffers_[image_index],
-                                                         .renderArea = vk::Rect2D{.offset = vk::Offset2D{0, 0},
-                                                                                  .extent = swapchain_.image_extent()},
-                                                         .clearValueCount = 1,
-                                                         .pClearValues = &kClearValue},
-                                 vk::SubpassContents::eInline);
-
-  command_buffer.bindPipeline(vk::PipelineBindPoint::eGraphics, *graphics_pipeline_);
-  command_buffer.bindDescriptorSets(vk::PipelineBindPoint::eGraphics,
-                                    *graphics_pipeline_layout_,
-                                    0,
-                                    uniform_buffer.descriptor_set(),
-                                    nullptr);
-  mesh_.Render(command_buffer);
-
-  command_buffer.endRenderPass();
+    command_buffer.beginRenderPass(
+        vk::RenderPassBeginInfo{
+            .renderPass = *render_pass_,
+            .framebuffer = *framebuffers_[image_index],
+            .renderArea = vk::Rect2D{.offset = vk::Offset2D{0, 0}, .extent = swapchain_.image_extent()},
+            .clearValueCount = static_cast<std::uint32_t>(kClearValues.size()),
+            .pClearValues = kClearValues.data()},
+        vk::SubpassContents::eInline);
+    {
+      command_buffer.bindPipeline(vk::PipelineBindPoint::eGraphics, *graphics_pipeline_);
+      command_buffer.bindDescriptorSets(vk::PipelineBindPoint::eGraphics,
+                                        *graphics_pipeline_layout_,
+                                        0,
+                                        uniform_buffer.descriptor_set(),
+                                        nullptr);
+      mesh_.Render(command_buffer);
+    }
+    command_buffer.endRenderPass();
+  }
   command_buffer.end();
 
   static constexpr vk::PipelineStageFlags kWaitPipelineStage = vk::PipelineStageFlagBits::eTopOfPipe;

@@ -1,6 +1,7 @@
 add_library(engine STATIC device.cpp
                           engine.cpp
                           glslang_compiler.cpp
+                          image.cpp
                           instance.cpp
                           memory.cpp
                           shader_module.cpp
@@ -18,6 +19,7 @@ target_link_libraries(engine PUBLIC glfw
 
 target_compile_definitions(engine PUBLIC GLFW_INCLUDE_VULKAN
                                   PUBLIC GLM_FORCE_DEFAULT_ALIGNED_GENTYPES
+                                  PUBLIC GLM_FORCE_DEPTH_ZERO_TO_ONE
                                   PUBLIC VULKAN_HPP_NO_CONSTRUCTORS
                                   PUBLIC VULKAN_HPP_DISPATCH_LOADER_DYNAMIC=1)
 
