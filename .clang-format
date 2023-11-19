@@ -2,7 +2,6 @@
 BasedOnStyle: Google
 AccessModifierOffset: -2
 AllowAllArgumentsOnNextLine: false
-AllowShortLambdasOnASingleLine: Empty
 AllowAllParametersOfDeclarationOnNextLine: false
 AllowShortCaseLabelsOnASingleLine: true
 BinPackArguments: false

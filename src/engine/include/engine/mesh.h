@@ -47,14 +47,14 @@ public:
   }
 
   void Render(const vk::CommandBuffer& command_buffer) const {
-    command_buffer.bindVertexBuffers(0, *vertex_buffer_, {0});
+    command_buffer.bindVertexBuffers(0, *vertex_buffer_, static_cast<vk::DeviceSize>(0));
     command_buffer.bindIndexBuffer(*index_buffer_, 0, vk::IndexType::eUint32);
-    command_buffer.drawIndexed(static_cast<std::uint32_t>(kIndices.size()), 1, 0, 0, 0);
+    command_buffer.drawIndexed(static_cast<std::uint32_t>(index_buffer_.length()), 1, 0, 0, 0);
   }
 
 private:
-  Buffer vertex_buffer_;
-  Buffer index_buffer_;
+  Buffer<Vertex> vertex_buffer_;
+  Buffer<std::uint32_t> index_buffer_;
 };
 
 }  // namespace gfx

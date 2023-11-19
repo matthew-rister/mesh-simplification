@@ -7,6 +7,9 @@
 #include <ranges>
 #include <utility>
 
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/vec3.hpp>
+
 #include "engine/mesh.h"
 #include "engine/shader_module.h"
 #include "engine/window.h"
@@ -52,6 +55,12 @@ std::vector<vk::UniqueFramebuffer> CreateFramebuffers(const vk::Device& device,
          | std::ranges::to<std::vector>();
 }
 
+vk::UniquePipelineLayout CreateGraphicsPipelineLayout(const vk::Device& device,
+                                                      const vk::DescriptorSetLayout& descriptor_set_layout) {
+  return device.createPipelineLayoutUnique(
+      vk::PipelineLayoutCreateInfo{.setLayoutCount = 1, .pSetLayouts = &descriptor_set_layout});
+}
+
 vk::UniquePipeline CreateGraphicsPipeline(const vk::Device& device,
                                           const gfx::Swapchain& swapchain,
                                           const vk::PipelineLayout& pipeline_layout,
@@ -92,7 +101,8 @@ vk::UniquePipeline CreateGraphicsPipeline(const vk::Device& device,
 
   static constexpr vk::PipelineRasterizationStateCreateInfo kRasterizationStateCreateInfo{
       .polygonMode = vk::PolygonMode::eFill,
-      .cullMode = vk::CullModeFlagBits::eBack,
+      // TODO(matthew-rister): change to eBack when implementing model loading
+      .cullMode = vk::CullModeFlagBits::eFront,
       .frontFace = vk::FrontFace::eCounterClockwise,
       .lineWidth = 1.0f};
 
@@ -153,7 +163,7 @@ std::vector<vk::UniqueCommandBuffer> AllocateCommandBuffers(const vk::Device& de
 template <std::size_t N>
 std::array<vk::UniqueSemaphore, N> CreateSemaphores(const vk::Device& device) {
   std::array<vk::UniqueSemaphore, N> semaphores;
-  std::ranges::generate(semaphores, [&device] {
+  std::ranges::generate(semaphores, [&device] {  //
     return device.createSemaphoreUnique(vk::SemaphoreCreateInfo{});
   });
   return semaphores;
@@ -175,9 +185,10 @@ gfx::Engine::Engine(const Window& window)
       device_{*instance_, *surface_},
       swapchain_{device_, window, *surface_},
       mesh_{device_},
+      uniform_buffers_{device_},
       render_pass_{CreateRenderPass(*device_, swapchain_)},
       framebuffers_{CreateFramebuffers(*device_, swapchain_, *render_pass_)},
-      graphics_pipeline_layout_{device_->createPipelineLayoutUnique(vk::PipelineLayoutCreateInfo{})},
+      graphics_pipeline_layout_{CreateGraphicsPipelineLayout(*device_, uniform_buffers_.descriptor_set_layout())},
       graphics_pipeline_{CreateGraphicsPipeline(*device_, swapchain_, *graphics_pipeline_layout_, *render_pass_)},
       command_pool_{CreateCommandPool(device_)},
       command_buffers_{AllocateCommandBuffers<kMaxRenderFrames>(*device_, *command_pool_)},
@@ -200,6 +211,7 @@ void gfx::Engine::Render() {
   const auto& acquire_next_image_semaphore = *acquire_next_image_semaphores_[current_frame_index_];
   const auto& present_image_semaphore = *present_image_semaphores_[current_frame_index_];
   const auto& draw_fence = *draw_fences_[current_frame_index_];
+  auto& uniform_buffer = uniform_buffers_[current_frame_index_];
   // NOLINTEND(cppcoreguidelines-pro-bounds-constant-array-index)
 
   static constexpr auto kMaxTimeout = std::numeric_limits<std::uint64_t>::max();
@@ -210,6 +222,14 @@ void gfx::Engine::Render() {
   std::uint32_t image_index{};
   std::tie(result, image_index) = device_->acquireNextImageKHR(*swapchain_, kMaxTimeout, acquire_next_image_semaphore);
   vk::resultCheck(result, std::format("vkAcquireNextImageKHR failed with error {}", vk::to_string(result)).c_str());
+
+  const auto [width, height] = swapchain_.image_extent();
+  VertexTransforms vertex_transform{
+      .model_transform = glm::mat4{1.0f},
+      .view_transform = glm::lookAt(glm::vec3{2.0f}, glm::vec3{0.0f}, glm::vec3{0.0f, 0.0f, 1.0f}),
+      .projection_transform = glm::perspective(glm::radians(45.0f), static_cast<float>(width) / height, 0.1f, 100.f)};
+  vertex_transform.projection_transform[1][1] *= -1;  // account for inverted y-axis convention in OpenGL
+  uniform_buffer.Copy(vertex_transform);
 
   command_buffer.begin(vk::CommandBufferBeginInfo{.flags = vk::CommandBufferUsageFlagBits::eOneTimeSubmit});
 
@@ -223,6 +243,11 @@ void gfx::Engine::Render() {
                                  vk::SubpassContents::eInline);
 
   command_buffer.bindPipeline(vk::PipelineBindPoint::eGraphics, *graphics_pipeline_);
+  command_buffer.bindDescriptorSets(vk::PipelineBindPoint::eGraphics,
+                                    *graphics_pipeline_layout_,
+                                    0,
+                                    uniform_buffer.descriptor_set(),
+                                    nullptr);
   mesh_.Render(command_buffer);
 
   command_buffer.endRenderPass();

@@ -1,8 +1,6 @@
 #ifndef SRC_ENGINE_INCLUDE_ENGINE_MEMORY_H_
 #define SRC_ENGINE_INCLUDE_ENGINE_MEMORY_H_
 
-#include <memory>
-
 #include <vulkan/vulkan.hpp>
 
 namespace gfx {
@@ -15,7 +13,7 @@ public:
          const vk::MemoryPropertyFlags& memory_property_flags);
 
   Memory(const Memory&) = delete;
-  Memory(Memory&& memory) noexcept = default;
+  Memory(Memory&&) noexcept = default;
 
   Memory& operator=(const Memory&) = delete;
   Memory& operator=(Memory&&) noexcept = default;
@@ -25,16 +23,14 @@ public:
   [[nodiscard]] const vk::DeviceMemory& operator*() const noexcept { return *memory_; }
   [[nodiscard]] const vk::DeviceMemory* operator->() const noexcept { return &(*memory_); }
 
-  [[nodiscard]] vk::DeviceSize size() const noexcept { return size_; }
-
-  std::weak_ptr<void> Map();
+  void* Map();
   void Unmap() noexcept;
 
 private:
   vk::Device device_;
-  vk::DeviceSize size_;
+  vk::MemoryRequirements memory_requirements_;
   vk::UniqueDeviceMemory memory_;
-  std::shared_ptr<void> mapped_memory_;
+  void* mapped_memory_{};
 };
 
 }  // namespace gfx

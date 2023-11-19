@@ -17,6 +17,7 @@ target_link_libraries(engine PUBLIC glfw
                                     Vulkan::Headers)
 
 target_compile_definitions(engine PUBLIC GLFW_INCLUDE_VULKAN
+                                  PUBLIC GLM_FORCE_DEFAULT_ALIGNED_GENTYPES
                                   PUBLIC VULKAN_HPP_NO_CONSTRUCTORS
                                   PUBLIC VULKAN_HPP_DISPATCH_LOADER_DYNAMIC=1)
 

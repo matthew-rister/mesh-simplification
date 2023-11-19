@@ -5,12 +5,14 @@
 #include <cstdint>
 #include <vector>
 
+#include <glm/mat4x4.hpp>
 #include <vulkan/vulkan.hpp>
 
 #include "engine/device.h"
 #include "engine/instance.h"
 #include "engine/mesh.h"
 #include "engine/swapchain.h"
+#include "engine/uniform_buffer.h"
 
 namespace gfx {
 class Window;
@@ -30,6 +32,12 @@ public:
   void Render();
 
 private:
+  struct VertexTransforms {
+    glm::mat4 model_transform;
+    glm::mat4 view_transform;
+    glm::mat4 projection_transform;
+  };
+
   static constexpr std::size_t kMaxRenderFrames = 2;
   std::uint32_t current_frame_index_ = 0;
   Instance instance_;
@@ -37,6 +45,7 @@ private:
   Device device_;
   Swapchain swapchain_;
   Mesh mesh_;
+  UniformBuffers<VertexTransforms, kMaxRenderFrames> uniform_buffers_;
   vk::UniqueRenderPass render_pass_;
   std::vector<vk::UniqueFramebuffer> framebuffers_;
   vk::UniquePipelineLayout graphics_pipeline_layout_;
