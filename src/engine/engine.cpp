@@ -8,7 +8,6 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/vec3.hpp>
 
-#include "engine/mesh.h"
 #include "engine/shader_module.h"
 #include "engine/window.h"
 

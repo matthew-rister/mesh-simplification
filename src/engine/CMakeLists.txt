@@ -8,12 +8,14 @@ add_library(engine STATIC device.cpp
                           swapchain.cpp
                           window.cpp)
 
+find_package(assimp CONFIG REQUIRED)
 find_package(glfw3 CONFIG REQUIRED)
 find_package(glslang CONFIG REQUIRED)
 find_package(VulkanHeaders CONFIG REQUIRED)
 
 target_link_libraries(engine PRIVATE dbgasan warnings)
-target_link_libraries(engine PUBLIC glfw
+target_link_libraries(engine PUBLIC assimp::assimp
+                                    glfw
                                     glslang::glslang glslang::glslang-default-resource-limits glslang::SPIRV
                                     Vulkan::Headers)
 
