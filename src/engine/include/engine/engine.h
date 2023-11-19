@@ -9,6 +9,7 @@
 #include <vulkan/vulkan.hpp>
 
 #include "engine/device.h"
+#include "engine/image.h"
 #include "engine/instance.h"
 #include "engine/mesh.h"
 #include "engine/swapchain.h"
@@ -46,6 +47,7 @@ private:
   Swapchain swapchain_;
   Mesh mesh_;
   UniformBuffers<VertexTransforms, kMaxRenderFrames> uniform_buffers_;
+  Image depth_buffer_;
   vk::UniqueRenderPass render_pass_;
   std::vector<vk::UniqueFramebuffer> framebuffers_;
   vk::UniquePipelineLayout graphics_pipeline_layout_;

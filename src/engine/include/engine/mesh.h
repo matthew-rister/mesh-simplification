@@ -37,9 +37,13 @@ public:
       Vertex{.position = glm::vec3{-0.5f, -0.5f, 0.0f}, .color = glm::vec3{1.0f, 0.0f, 0.0f}},
       Vertex{.position = glm::vec3{-0.5f, 0.5f, 0.0f}, .color = glm::vec3{0.0f, 1.0f, 0.0f}},
       Vertex{.position = glm::vec3{0.5f, 0.5f, 0.0f}, .color = glm::vec3{0.0f, 0.0f, 1.0f}},
-      Vertex{.position = glm::vec3{0.5f, -0.5f, 0.0f}, .color = glm::vec3{1.0f, 0.0f, 1.0f}}};
+      Vertex{.position = glm::vec3{0.5f, -0.5f, 0.0f}, .color = glm::vec3{1.0f, 0.0f, 1.0f}},
+      Vertex{.position = glm::vec3{-0.5f, -0.5f, -0.5f}, .color = glm::vec3{0.0f, 0.0f, 1.0f}},
+      Vertex{.position = glm::vec3{-0.5f, 0.5f, -0.5f}, .color = glm::vec3{0.0f, 0.0f, 1.0f}},
+      Vertex{.position = glm::vec3{0.5f, 0.5f, -0.5f}, .color = glm::vec3{0.0f, 0.0f, 1.0f}},
+      Vertex{.position = glm::vec3{0.5f, -0.5f, -0.5f}, .color = glm::vec3{0.0f, 0.0f, 1.0f}}};
 
-  static constexpr std::array<std::uint32_t, 6> kIndices{0, 1, 2, 0, 2, 3};
+  static constexpr std::array<std::uint32_t, 12> kIndices{0, 1, 2, 0, 2, 3, 4, 5, 6, 4, 6, 7};
 
   explicit Mesh(const Device& device)
       : vertex_buffer_{CreateDeviceLocalBuffer<Vertex>(device, vk::BufferUsageFlagBits::eVertexBuffer, kVertices)},

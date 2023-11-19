@@ -18,9 +18,9 @@ public:
          const vk::DeviceSize size,
          const vk::BufferUsageFlags& buffer_usage_flags,
          const vk::MemoryPropertyFlags& memory_property_flags)
-      : size_{size},
-        buffer_{device->createBufferUnique(vk::BufferCreateInfo{.size = size_, .usage = buffer_usage_flags})},
-        memory_{device, device->getBufferMemoryRequirements(*buffer_), memory_property_flags} {
+      : buffer_{device->createBufferUnique(vk::BufferCreateInfo{.size = size, .usage = buffer_usage_flags})},
+        memory_{device, device->getBufferMemoryRequirements(*buffer_), memory_property_flags},
+        size_{size} {
     device->bindBufferMemory(*buffer_, *memory_, 0);
   }
 
@@ -51,9 +51,9 @@ public:
   }
 
 private:
-  vk::DeviceSize size_;
   vk::UniqueBuffer buffer_;
   Memory memory_;
+  vk::DeviceSize size_;
 };
 
 template <typename T>

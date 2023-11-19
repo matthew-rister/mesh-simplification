@@ -43,7 +43,7 @@ std::uint32_t GetSwapchainImageCount(const vk::SurfaceCapabilitiesKHR& surface_c
   if (constexpr std::uint32_t kNoMaxLimitImageCount = 0; max_image_count == kNoMaxLimitImageCount) {
     max_image_count = std::numeric_limits<std::uint32_t>::max();
   }
-  return std::min(min_image_count + 1u, max_image_count);
+  return std::min(min_image_count + 1, max_image_count);
 }
 
 vk::Extent2D GetSwapchainImageExtent(const gfx::Window& window,
@@ -68,8 +68,8 @@ std::vector<vk::UniqueImageView> CreateSwapchainImageViews(const vk::Device& dev
                .viewType = vk::ImageViewType::e2D,
                .format = image_format,
                .subresourceRange = vk::ImageSubresourceRange{.aspectMask = vk::ImageAspectFlagBits::eColor,
-                                                             .levelCount = 1u,
-                                                             .layerCount = 1u}});
+                                                             .levelCount = 1,
+                                                             .layerCount = 1}});
          })
          | std::ranges::to<std::vector>();
 }
@@ -87,7 +87,7 @@ std::tuple<vk::UniqueSwapchainKHR, vk::Format, vk::Extent2D> CreateSwapchain(con
                                                    .imageFormat = image_format,
                                                    .imageColorSpace = image_color_space,
                                                    .imageExtent = image_extent,
-                                                   .imageArrayLayers = 1u,
+                                                   .imageArrayLayers = 1,
                                                    .imageUsage = vk::ImageUsageFlagBits::eColorAttachment,
                                                    .presentMode = GetSwapchainPresentMode(physical_device, surface),
                                                    .clipped = vk::True};
@@ -98,11 +98,11 @@ std::tuple<vk::UniqueSwapchainKHR, vk::Format, vk::Extent2D> CreateSwapchain(con
   if (graphics_index != present_index) {
     const std::array queue_family_indices{graphics_index, present_index};
     swapchain_create_info.imageSharingMode = vk::SharingMode::eConcurrent;
-    swapchain_create_info.queueFamilyIndexCount = 2u;
+    swapchain_create_info.queueFamilyIndexCount = 2;
     swapchain_create_info.pQueueFamilyIndices = queue_family_indices.data();
   } else {
     swapchain_create_info.imageSharingMode = vk::SharingMode::eExclusive;
-    swapchain_create_info.queueFamilyIndexCount = 1u;
+    swapchain_create_info.queueFamilyIndexCount = 1;
     swapchain_create_info.pQueueFamilyIndices = &graphics_index;
   }
 
