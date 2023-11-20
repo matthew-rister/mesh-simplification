@@ -62,15 +62,16 @@ vk::Extent2D GetSwapchainImageExtent(const gfx::Window& window,
 std::vector<vk::UniqueImageView> CreateSwapchainImageViews(const vk::Device& device,
                                                            const vk::SwapchainKHR& swapchain,
                                                            const vk::Format image_format) {
-  return device.getSwapchainImagesKHR(swapchain) | std::views::transform([&device, image_format](auto&& image) {
-           return device.createImageViewUnique(vk::ImageViewCreateInfo{
-               .image = image,
-               .viewType = vk::ImageViewType::e2D,
-               .format = image_format,
-               .subresourceRange = vk::ImageSubresourceRange{.aspectMask = vk::ImageAspectFlagBits::eColor,
-                                                             .levelCount = 1,
-                                                             .layerCount = 1}});
-         })
+  return device.getSwapchainImagesKHR(swapchain)  //
+         | std::views::transform([&device, image_format](auto&& image) {
+             return device.createImageViewUnique(vk::ImageViewCreateInfo{
+                 .image = image,
+                 .viewType = vk::ImageViewType::e2D,
+                 .format = image_format,
+                 .subresourceRange = vk::ImageSubresourceRange{.aspectMask = vk::ImageAspectFlagBits::eColor,
+                                                               .levelCount = 1,
+                                                               .layerCount = 1}});
+           })
          | std::ranges::to<std::vector>();
 }
 

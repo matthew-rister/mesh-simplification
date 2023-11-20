@@ -100,7 +100,8 @@ private:
   static std::vector<UniformBuffer<T>> CreateUniformBuffers(const Device& device,
                                                             const vk::DescriptorPool& descriptor_pool,
                                                             const vk::DescriptorSetLayout& descriptor_set_layout) {
-    return AllocateDescriptorSets(*device, descriptor_pool, descriptor_set_layout) | std::views::as_rvalue
+    return AllocateDescriptorSets(*device, descriptor_pool, descriptor_set_layout)  //
+           | std::views::as_rvalue                                                  //
            | std::views::transform([&device](vk::UniqueDescriptorSet&& descriptor_set) {
                return UniformBuffer<T>{device, std::move(descriptor_set)};
              })

@@ -11,7 +11,7 @@
 #include "engine/device.h"
 #include "engine/image.h"
 #include "engine/instance.h"
-#include "engine/mesh.h"
+#include "engine/model.h"
 #include "engine/swapchain.h"
 #include "engine/uniform_buffer.h"
 
@@ -33,8 +33,7 @@ public:
   void Render();
 
 private:
-  struct VertexTransforms {
-    glm::mat4 model_transform;
+  struct CameraTransforms {
     glm::mat4 view_transform;
     glm::mat4 projection_transform;
   };
@@ -45,8 +44,8 @@ private:
   vk::UniqueSurfaceKHR surface_;
   Device device_;
   Swapchain swapchain_;
-  Mesh mesh_;
-  UniformBuffers<VertexTransforms, kMaxRenderFrames> uniform_buffers_;
+  Model model_;
+  UniformBuffers<CameraTransforms, kMaxRenderFrames> uniform_buffers_;
   Image depth_buffer_;
   vk::UniqueRenderPass render_pass_;
   std::vector<vk::UniqueFramebuffer> framebuffers_;

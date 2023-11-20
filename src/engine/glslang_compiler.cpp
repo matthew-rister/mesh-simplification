@@ -18,12 +18,10 @@ using UniqueGlslangShader = std::unique_ptr<glslang_shader_t, decltype(&glslang_
 using UniqueGlslangProgram = std::unique_ptr<glslang_program_t, decltype(&glslang_program_delete)>;
 
 constexpr auto kGlslangMessages =
-// NOLINTBEGIN(hicpp-signed-bitwise): signed bit flags are part of the glslang API
 #ifndef NDEBUG
     GLSLANG_MSG_DEBUG_INFO_BIT |
 #endif
     GLSLANG_MSG_SPV_RULES_BIT | GLSLANG_MSG_VULKAN_RULES_BIT;
-// NOLINTEND(hicpp-signed-bitwise)
 
 std::ostream& operator<<(std::ostream& ostream, glslang_shader_t* const shader) {
   if (const auto* const shader_info_log = glslang_shader_get_info_log(shader);

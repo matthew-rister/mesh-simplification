@@ -1,6 +1,7 @@
 #include "engine/engine.h"
 
 #include <algorithm>
+#include <filesystem>
 #include <iostream>
 #include <ranges>
 #include <utility>
@@ -8,6 +9,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/vec3.hpp>
 
+#include "engine/mesh.h"
 #include "engine/shader_module.h"
 #include "engine/window.h"
 
@@ -73,16 +75,25 @@ std::vector<vk::UniqueFramebuffer> CreateFramebuffers(const vk::Device& device,
 
 vk::UniquePipelineLayout CreateGraphicsPipelineLayout(const vk::Device& device,
                                                       const vk::DescriptorSetLayout& descriptor_set_layout) {
-  return device.createPipelineLayoutUnique(
-      vk::PipelineLayoutCreateInfo{.setLayoutCount = 1, .pSetLayouts = &descriptor_set_layout});
+  constexpr vk::PushConstantRange kPushConstantRange{.stageFlags = vk::ShaderStageFlagBits::eVertex,
+                                                     .offset = 0,
+                                                     .size = sizeof(gfx::Mesh::PushConstants)};
+
+  return device.createPipelineLayoutUnique(vk::PipelineLayoutCreateInfo{.setLayoutCount = 1,
+                                                                        .pSetLayouts = &descriptor_set_layout,
+                                                                        .pushConstantRangeCount = 1,
+                                                                        .pPushConstantRanges = &kPushConstantRange});
 }
 
 vk::UniquePipeline CreateGraphicsPipeline(const vk::Device& device,
                                           const gfx::Swapchain& swapchain,
                                           const vk::PipelineLayout& pipeline_layout,
                                           const vk::RenderPass& render_pass) {
-  const gfx::ShaderModule vertex_shader_module{device, vk::ShaderStageFlagBits::eVertex, "shaders/vertex.glsl"};
-  const gfx::ShaderModule fragment_shader_module{device, vk::ShaderStageFlagBits::eFragment, "shaders/fragment.glsl"};
+  const std::filesystem::path vertex_shader_filepath{"assets/shaders/vertex.glsl"};
+  const gfx::ShaderModule vertex_shader_module{device, vk::ShaderStageFlagBits::eVertex, vertex_shader_filepath};
+
+  const std::filesystem::path fragment_shader_filepath{"assets/shaders/fragment.glsl"};
+  const gfx::ShaderModule fragment_shader_module{device, vk::ShaderStageFlagBits::eFragment, fragment_shader_filepath};
 
   const std::array shader_stage_create_info{
       vk::PipelineShaderStageCreateInfo{.stage = vk::ShaderStageFlagBits::eVertex,
@@ -117,7 +128,7 @@ vk::UniquePipeline CreateGraphicsPipeline(const vk::Device& device,
 
   static constexpr vk::PipelineRasterizationStateCreateInfo kRasterizationStateCreateInfo{
       .polygonMode = vk::PolygonMode::eFill,
-      .cullMode = vk::CullModeFlagBits::eFront,  // TODO(matthew-rister): change to eBack when model loading is complete
+      .cullMode = vk::CullModeFlagBits::eBack,
       .frontFace = vk::FrontFace::eCounterClockwise,
       .lineWidth = 1.0f};
 
@@ -205,7 +216,7 @@ gfx::Engine::Engine(const Window& window)
     : surface_{window.CreateSurface(*instance_)},
       device_{*instance_, *surface_},
       swapchain_{device_, window, *surface_},
-      mesh_{device_},
+      model_{device_, std::filesystem::path{"assets/models/bunny.obj"}},
       uniform_buffers_{device_},
       depth_buffer_{device_,
                     vk::Format::eD32Sfloat,
@@ -221,7 +232,20 @@ gfx::Engine::Engine(const Window& window)
       command_buffers_{AllocateCommandBuffers<kMaxRenderFrames>(*device_, *command_pool_)},
       acquire_next_image_semaphores_{CreateSemaphores<kMaxRenderFrames>(*device_)},
       present_image_semaphores_{CreateSemaphores<kMaxRenderFrames>(*device_)},
-      draw_fences_{CreateFences<kMaxRenderFrames>(*device_)} {}
+      draw_fences_{CreateFences<kMaxRenderFrames>(*device_)} {
+  // TODO(matthew-rister): move to a camera class
+  for (std::size_t i = 0; i < kMaxRenderFrames; ++i) {
+    const auto [width, height] = swapchain_.image_extent();
+    CameraTransforms camera_transforms{
+        .view_transform = glm::lookAt(glm::vec3{0.0f, 0.4f, 2.0f}, glm::vec3{0.0f}, glm::vec3{0.0f, 1.0f, 0.0f}),
+        .projection_transform = glm::perspective(glm::radians(45.0f), static_cast<float>(width) / height, 0.1f, 100.f)};
+    camera_transforms.projection_transform[1][1] *= -1;  // account for inverted y-axis convention in OpenGL
+    uniform_buffers_[i].Copy(camera_transforms);
+  }
+
+  model_.Translate(0.2f, -0.25f, 0.0f);
+  model_.Scale(0.35f, 0.35f, 0.35f);
+}
 
 gfx::Engine::~Engine() noexcept {
   try {
@@ -238,7 +262,7 @@ void gfx::Engine::Render() {
   const auto& acquire_next_image_semaphore = *acquire_next_image_semaphores_[current_frame_index_];
   const auto& present_image_semaphore = *present_image_semaphores_[current_frame_index_];
   const auto& draw_fence = *draw_fences_[current_frame_index_];
-  auto& uniform_buffer = uniform_buffers_[current_frame_index_];
+  const auto& uniform_buffer = uniform_buffers_[current_frame_index_];
   // NOLINTEND(cppcoreguidelines-pro-bounds-constant-array-index)
 
   static constexpr auto kMaxTimeout = std::numeric_limits<std::uint64_t>::max();
@@ -249,14 +273,6 @@ void gfx::Engine::Render() {
   std::uint32_t image_index{};
   std::tie(result, image_index) = device_->acquireNextImageKHR(*swapchain_, kMaxTimeout, acquire_next_image_semaphore);
   vk::resultCheck(result, std::format("vkAcquireNextImageKHR failed with error {}", vk::to_string(result)).c_str());
-
-  const auto [width, height] = swapchain_.image_extent();
-  VertexTransforms vertex_transform{
-      .model_transform = glm::mat4{1.0f},
-      .view_transform = glm::lookAt(glm::vec3{2.0f}, glm::vec3{0.0f}, glm::vec3{0.0f, 0.0f, 1.0f}),
-      .projection_transform = glm::perspective(glm::radians(45.0f), static_cast<float>(width) / height, 0.1f, 100.f)};
-  vertex_transform.projection_transform[1][1] *= -1;  // account for inverted y-axis convention in OpenGL
-  uniform_buffer.Copy(vertex_transform);
 
   command_buffer.begin(vk::CommandBufferBeginInfo{.flags = vk::CommandBufferUsageFlagBits::eOneTimeSubmit});
   {
@@ -279,7 +295,7 @@ void gfx::Engine::Render() {
                                         0,
                                         uniform_buffer.descriptor_set(),
                                         nullptr);
-      mesh_.Render(command_buffer);
+      model_.Render(command_buffer, *graphics_pipeline_layout_);
     }
     command_buffer.endRenderPass();
   }

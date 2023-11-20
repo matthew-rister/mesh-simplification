@@ -4,6 +4,7 @@ add_library(engine STATIC device.cpp
                           image.cpp
                           instance.cpp
                           memory.cpp
+                          model.cpp
                           shader_module.cpp
                           swapchain.cpp
                           window.cpp)
