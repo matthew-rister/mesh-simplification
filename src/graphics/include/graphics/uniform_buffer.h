@@ -1,5 +1,5 @@
-#ifndef SRC_ENGINE_INCLUDE_ENGINE_UNIFORM_BUFFER_H_
-#define SRC_ENGINE_INCLUDE_ENGINE_UNIFORM_BUFFER_H_
+#ifndef SRC_GRAPHICS_INCLUDE_GRAPHICS_UNIFORM_BUFFER_H_
+#define SRC_GRAPHICS_INCLUDE_GRAPHICS_UNIFORM_BUFFER_H_
 
 #include <algorithm>
 #include <ranges>
@@ -8,8 +8,8 @@
 
 #include <vulkan/vulkan.hpp>
 
-#include "engine/buffer.h"
-#include "engine/device.h"
+#include "graphics/buffer.h"
+#include "graphics/device.h"
 
 namespace gfx {
 
@@ -114,4 +114,4 @@ private:
 
 }  // namespace gfx
 
-#endif  // SRC_ENGINE_INCLUDE_ENGINE_UNIFORM_BUFFER_H_
+#endif  // SRC_GRAPHICS_INCLUDE_GRAPHICS_UNIFORM_BUFFER_H_

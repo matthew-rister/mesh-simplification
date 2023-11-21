@@ -1,9 +1,9 @@
-#include "engine/instance.h"
+#include "graphics/instance.h"
 
 #include <cstdint>
 #include <initializer_list>
 
-#include "engine/window.h"
+#include "graphics/window.h"
 
 #if VULKAN_HPP_DISPATCH_LOADER_DYNAMIC == 1
 VULKAN_HPP_DEFAULT_DISPATCH_LOADER_DYNAMIC_STORAGE

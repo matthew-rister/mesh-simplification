@@ -1,9 +1,9 @@
-#ifndef SRC_ENGINE_INCLUDE_ENGINE_IMAGE_H_
-#define SRC_ENGINE_INCLUDE_ENGINE_IMAGE_H_
+#ifndef SRC_GRAPHICS_INCLUDE_GRAPHICS_IMAGE_H_
+#define SRC_GRAPHICS_INCLUDE_GRAPHICS_IMAGE_H_
 
 #include <vulkan/vulkan.hpp>
 
-#include "engine/memory.h"
+#include "graphics/memory.h"
 
 namespace gfx {
 class Device;
@@ -29,4 +29,4 @@ private:
 
 }  // namespace gfx
 
-#endif  // SRC_ENGINE_INCLUDE_ENGINE_IMAGE_H_
+#endif  // SRC_GRAPHICS_INCLUDE_GRAPHICS_IMAGE_H_

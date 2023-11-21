@@ -1,4 +1,4 @@
-#include "engine/memory.h"
+#include "graphics/memory.h"
 
 #include <algorithm>
 #include <cassert>
@@ -6,7 +6,7 @@
 #include <ranges>
 #include <stdexcept>
 
-#include "engine/device.h"
+#include "graphics/device.h"
 
 namespace {
 

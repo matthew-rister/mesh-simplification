@@ -1,13 +1,13 @@
-#ifndef SRC_ENGINE_INCLUDE_ENGINE_MESH_H_
-#define SRC_ENGINE_INCLUDE_ENGINE_MESH_H_
+#ifndef SRC_GRAPHICS_INCLUDE_GRAPHICS_MESH_H_
+#define SRC_GRAPHICS_INCLUDE_GRAPHICS_MESH_H_
 
 #include <array>
 
 #include <glm/vec3.hpp>
 #include <vulkan/vulkan.hpp>
 
-#include "engine/buffer.h"
-#include "engine/device.h"
+#include "graphics/buffer.h"
+#include "graphics/device.h"
 
 namespace gfx {
 
@@ -63,4 +63,4 @@ private:
 
 }  // namespace gfx
 
-#endif  // SRC_ENGINE_INCLUDE_ENGINE_MESH_H_
+#endif  // SRC_GRAPHICS_INCLUDE_GRAPHICS_MESH_H_

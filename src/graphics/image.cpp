@@ -1,6 +1,6 @@
-#include "engine/image.h"
+#include "graphics/image.h"
 
-#include "engine/device.h"
+#include "graphics/device.h"
 
 namespace {
 

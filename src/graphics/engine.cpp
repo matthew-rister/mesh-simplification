@@ -1,4 +1,4 @@
-#include "engine/engine.h"
+#include "graphics/engine.h"
 
 #include <algorithm>
 #include <iostream>
@@ -8,9 +8,9 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/vec3.hpp>
 
-#include "engine/mesh.h"
-#include "engine/shader_module.h"
-#include "engine/window.h"
+#include "graphics/mesh.h"
+#include "graphics/shader_module.h"
+#include "graphics/window.h"
 
 namespace {
 

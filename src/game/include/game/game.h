@@ -1,8 +1,8 @@
 #ifndef SRC_GAME_INCLUDE_GAME_GAME_H_
 #define SRC_GAME_INCLUDE_GAME_GAME_H_
 
-#include "engine/engine.h"
-#include "engine/window.h"
+#include "graphics/engine.h"
+#include "graphics/window.h"
 
 namespace gfx {
 

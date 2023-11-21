@@ -1,5 +1,5 @@
-#ifndef SRC_ENGINE_INCLUDE_ENGINE_ENGINE_H_
-#define SRC_ENGINE_INCLUDE_ENGINE_ENGINE_H_
+#ifndef SRC_GRAPHICS_INCLUDE_GRAPHICS_ENGINE_H_
+#define SRC_GRAPHICS_INCLUDE_GRAPHICS_ENGINE_H_
 
 #include <array>
 #include <cstdint>
@@ -8,12 +8,12 @@
 #include <glm/mat4x4.hpp>
 #include <vulkan/vulkan.hpp>
 
-#include "engine/device.h"
-#include "engine/image.h"
-#include "engine/instance.h"
-#include "engine/mesh.h"
-#include "engine/swapchain.h"
-#include "engine/uniform_buffer.h"
+#include "graphics/device.h"
+#include "graphics/image.h"
+#include "graphics/instance.h"
+#include "graphics/mesh.h"
+#include "graphics/swapchain.h"
+#include "graphics/uniform_buffer.h"
 
 namespace gfx {
 class Window;
@@ -61,4 +61,4 @@ private:
 
 }  // namespace gfx
 
-#endif  // SRC_ENGINE_INCLUDE_ENGINE_ENGINE_H_
+#endif  // SRC_GRAPHICS_INCLUDE_GRAPHICS_ENGINE_H_

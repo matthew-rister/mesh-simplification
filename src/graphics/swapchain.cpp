@@ -1,4 +1,4 @@
-#include "engine/swapchain.h"
+#include "graphics/swapchain.h"
 
 #include <algorithm>
 #include <array>
@@ -8,8 +8,8 @@
 #include <ranges>
 #include <tuple>
 
-#include "engine/device.h"
-#include "engine/window.h"
+#include "graphics/device.h"
+#include "graphics/window.h"
 
 namespace {
 
