@@ -30,7 +30,7 @@ glslang_stage_t GetGlslangStage(const vk::ShaderStageFlagBits shader_stage) {
 }
 
 std::string ReadFile(const std::filesystem::path& filepath) {
-  if (std::ifstream ifs{filepath, std::ios::ate}; ifs.good()) {
+  if (std::ifstream ifs{filepath, std::ios::ate}) {
     const std::streamsize size = ifs.tellg();
     std::string source(static_cast<std::size_t>(size), '\0');
     ifs.seekg(0, std::ios::beg);

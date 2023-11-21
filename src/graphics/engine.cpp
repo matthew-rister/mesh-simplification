@@ -1,6 +1,7 @@
 #include "graphics/engine.h"
 
 #include <algorithm>
+#include <filesystem>
 #include <iostream>
 #include <ranges>
 #include <utility>
@@ -9,6 +10,7 @@
 #include <glm/vec3.hpp>
 
 #include "graphics/mesh.h"
+#include "graphics/obj_loader.h"
 #include "graphics/shader_module.h"
 #include "graphics/window.h"
 
@@ -82,8 +84,11 @@ vk::UniquePipeline CreateGraphicsPipeline(const vk::Device& device,
                                           const gfx::Swapchain& swapchain,
                                           const vk::PipelineLayout& pipeline_layout,
                                           const vk::RenderPass& render_pass) {
-  const gfx::ShaderModule vertex_shader_module{device, vk::ShaderStageFlagBits::eVertex, "shaders/vertex.glsl"};
-  const gfx::ShaderModule fragment_shader_module{device, vk::ShaderStageFlagBits::eFragment, "shaders/fragment.glsl"};
+  const std::filesystem::path vertex_shader_filepath{"assets/shaders/vertex.glsl"};
+  const gfx::ShaderModule vertex_shader_module{device, vk::ShaderStageFlagBits::eVertex, vertex_shader_filepath};
+
+  const std::filesystem::path fragment_shader_filepath{"assets/shaders/fragment.glsl"};
+  const gfx::ShaderModule fragment_shader_module{device, vk::ShaderStageFlagBits::eFragment, fragment_shader_filepath};
 
   const std::array shader_stage_create_info{
       vk::PipelineShaderStageCreateInfo{.stage = vk::ShaderStageFlagBits::eVertex,
@@ -118,7 +123,7 @@ vk::UniquePipeline CreateGraphicsPipeline(const vk::Device& device,
 
   static constexpr vk::PipelineRasterizationStateCreateInfo kRasterizationStateCreateInfo{
       .polygonMode = vk::PolygonMode::eFill,
-      .cullMode = vk::CullModeFlagBits::eFront,  // TODO(matthew-rister): change to eBack when model loading is complete
+      .cullMode = vk::CullModeFlagBits::eBack,
       .frontFace = vk::FrontFace::eCounterClockwise,
       .lineWidth = 1.0f};
 
@@ -175,11 +180,9 @@ vk::UniqueCommandPool CreateCommandPool(const gfx::Device& device) {
 template <std::size_t N>
 std::vector<vk::UniqueCommandBuffer> AllocateCommandBuffers(const vk::Device& device,
                                                             const vk::CommandPool& command_pool) {
-  return device.allocateCommandBuffersUnique(vk::CommandBufferAllocateInfo{
-      .commandPool = command_pool,
-      .level = vk::CommandBufferLevel::ePrimary,
-      .commandBufferCount = N,
-  });
+  return device.allocateCommandBuffersUnique(vk::CommandBufferAllocateInfo{.commandPool = command_pool,
+                                                                           .level = vk::CommandBufferLevel::ePrimary,
+                                                                           .commandBufferCount = N});
 }
 
 template <std::size_t N>
@@ -206,7 +209,7 @@ gfx::Engine::Engine(const Window& window)
     : surface_{window.CreateSurface(*instance_)},
       device_{*instance_, *surface_},
       swapchain_{device_, window, *surface_},
-      mesh_{device_},
+      mesh_{obj_loader::LoadMesh(device_, "assets/models/bunny.obj")},
       uniform_buffers_{device_},
       depth_buffer_{device_,
                     vk::Format::eD32Sfloat,
@@ -253,8 +256,8 @@ void gfx::Engine::Render() {
 
   const auto [width, height] = swapchain_.image_extent();
   VertexTransforms vertex_transform{
-      .model_transform = glm::mat4{1.0f},
-      .view_transform = glm::lookAt(glm::vec3{2.0f}, glm::vec3{0.0f}, glm::vec3{0.0f, 0.0f, 1.0f}),
+      .model_transform = glm::scale(glm::translate(glm::mat4{1.0f}, glm::vec3{.2f, -.25f, 0.f}), glm::vec3{0.35f}),
+      .view_transform = glm::lookAt(glm::vec3{0.0f, 0.0f, 2.0f}, glm::vec3{0.0f}, glm::vec3{0.0f, 1.0f, 0.0f}),
       .projection_transform = glm::perspective(glm::radians(45.0f), static_cast<float>(width) / height, 0.1f, 100.f)};
   vertex_transform.projection_transform[1][1] *= -1;  // account for inverted y-axis convention in OpenGL
   uniform_buffer.Copy(vertex_transform);

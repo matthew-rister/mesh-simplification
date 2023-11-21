@@ -15,7 +15,8 @@ class Mesh {
 public:
   struct Vertex {
     glm::vec3 position;
-    glm::vec3 color;
+    glm::vec2 texture_coordinates;
+    glm::vec3 normal;
   };
 
   static constexpr vk::VertexInputBindingDescription kVertexInputBindingDescription{
@@ -30,25 +31,19 @@ public:
                                           .offset = offsetof(Vertex, position)},
       vk::VertexInputAttributeDescription{.location = 1,
                                           .binding = 0,
+                                          .format = vk::Format::eR32G32Sfloat,
+                                          .offset = offsetof(Vertex, texture_coordinates)},
+      vk::VertexInputAttributeDescription{.location = 2,
+                                          .binding = 0,
                                           .format = vk::Format::eR32G32B32Sfloat,
-                                          .offset = offsetof(Vertex, color)}};
+                                          .offset = offsetof(Vertex, normal)},
+  };
 
-  static constexpr std::array kVertices{
-      Vertex{.position = glm::vec3{-0.5f, -0.5f, 0.0f}, .color = glm::vec3{1.0f, 0.0f, 0.0f}},
-      Vertex{.position = glm::vec3{-0.5f, 0.5f, 0.0f}, .color = glm::vec3{0.0f, 1.0f, 0.0f}},
-      Vertex{.position = glm::vec3{0.5f, 0.5f, 0.0f}, .color = glm::vec3{0.0f, 0.0f, 1.0f}},
-      Vertex{.position = glm::vec3{0.5f, -0.5f, 0.0f}, .color = glm::vec3{1.0f, 0.0f, 1.0f}},
-      Vertex{.position = glm::vec3{-0.5f, -0.5f, -0.5f}, .color = glm::vec3{0.0f, 0.0f, 1.0f}},
-      Vertex{.position = glm::vec3{-0.5f, 0.5f, -0.5f}, .color = glm::vec3{0.0f, 0.0f, 1.0f}},
-      Vertex{.position = glm::vec3{0.5f, 0.5f, -0.5f}, .color = glm::vec3{0.0f, 0.0f, 1.0f}},
-      Vertex{.position = glm::vec3{0.5f, -0.5f, -0.5f}, .color = glm::vec3{0.0f, 0.0f, 1.0f}}};
-
-  static constexpr std::array<std::uint32_t, 12> kIndices{0, 1, 2, 0, 2, 3, 4, 5, 6, 4, 6, 7};
-
-  explicit Mesh(const Device& device)
-      : vertex_buffer_{CreateDeviceLocalBuffer<Vertex>(device, vk::BufferUsageFlagBits::eVertexBuffer, kVertices)},
-        index_buffer_{CreateDeviceLocalBuffer<std::uint32_t>(device, vk::BufferUsageFlagBits::eIndexBuffer, kIndices)} {
-  }
+  Mesh(const Device& device,
+       const vk::ArrayProxy<const Vertex>& vertices,
+       const vk::ArrayProxy<const std::uint32_t> indices)
+      : vertex_buffer_{CreateDeviceLocalBuffer(device, vk::BufferUsageFlagBits::eVertexBuffer, vertices)},
+        index_buffer_{CreateDeviceLocalBuffer(device, vk::BufferUsageFlagBits::eIndexBuffer, indices)} {}
 
   void Render(const vk::CommandBuffer& command_buffer) const {
     command_buffer.bindVertexBuffers(0, *vertex_buffer_, static_cast<vk::DeviceSize>(0));
