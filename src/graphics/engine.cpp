@@ -76,8 +76,14 @@ std::vector<vk::UniqueFramebuffer> CreateFramebuffers(const vk::Device& device,
 
 vk::UniquePipelineLayout CreateGraphicsPipelineLayout(const vk::Device& device,
                                                       const vk::DescriptorSetLayout& descriptor_set_layout) {
-  return device.createPipelineLayoutUnique(
-      vk::PipelineLayoutCreateInfo{.setLayoutCount = 1, .pSetLayouts = &descriptor_set_layout});
+  static constexpr vk::PushConstantRange kPushConstantRange{.stageFlags = vk::ShaderStageFlagBits::eVertex,
+                                                            .offset = 0,
+                                                            .size = sizeof(gfx::Mesh::PushConstants)};
+
+  return device.createPipelineLayoutUnique(vk::PipelineLayoutCreateInfo{.setLayoutCount = 1,
+                                                                        .pSetLayouts = &descriptor_set_layout,
+                                                                        .pushConstantRangeCount = 1,
+                                                                        .pPushConstantRanges = &kPushConstantRange});
 }
 
 vk::UniquePipeline CreateGraphicsPipeline(const vk::Device& device,
@@ -225,7 +231,21 @@ gfx::Engine::Engine(const Window& window)
       command_buffers_{AllocateCommandBuffers<kMaxRenderFrames>(*device_, *command_pool_)},
       acquire_next_image_semaphores_{CreateSemaphores<kMaxRenderFrames>(*device_)},
       present_image_semaphores_{CreateSemaphores<kMaxRenderFrames>(*device_)},
-      draw_fences_{CreateFences<kMaxRenderFrames>(*device_)} {}
+      draw_fences_{CreateFences<kMaxRenderFrames>(*device_)} {
+  mesh_.Translate(0.2f, -0.25f, 0.f);
+  mesh_.Scale(0.35f, 0.35f, 0.35f);
+
+  const auto [width, height] = swapchain_.image_extent();
+  const auto aspect_ratio = static_cast<float>(width) / static_cast<float>(height);
+  CameraTransforms camera_transforms{
+      .view_transform = glm::lookAt(glm::vec3{0.0f, 0.0f, 2.0f}, glm::vec3{0.0f}, glm::vec3{0.0f, 1.0f, 0.0f}),
+      .projection_transform = glm::perspective(glm::radians(45.0f), aspect_ratio, 0.1f, 100.f)};
+  camera_transforms.projection_transform[1][1] *= -1;  // account for inverted y-axis convention in OpenGL
+
+  for (std::size_t index = 0; index < kMaxRenderFrames; ++index) {
+    uniform_buffers_[index].Copy(camera_transforms);
+  }
+}
 
 gfx::Engine::~Engine() noexcept {
   try {
@@ -242,7 +262,7 @@ void gfx::Engine::Render() {
   const auto& acquire_next_image_semaphore = *acquire_next_image_semaphores_[current_frame_index_];
   const auto& present_image_semaphore = *present_image_semaphores_[current_frame_index_];
   const auto& draw_fence = *draw_fences_[current_frame_index_];
-  auto& uniform_buffer = uniform_buffers_[current_frame_index_];
+  const auto& uniform_buffer = uniform_buffers_[current_frame_index_];
   // NOLINTEND(cppcoreguidelines-pro-bounds-constant-array-index)
 
   static constexpr auto kMaxTimeout = std::numeric_limits<std::uint64_t>::max();
@@ -253,14 +273,6 @@ void gfx::Engine::Render() {
   std::uint32_t image_index{};
   std::tie(result, image_index) = device_->acquireNextImageKHR(*swapchain_, kMaxTimeout, acquire_next_image_semaphore);
   vk::resultCheck(result, std::format("vkAcquireNextImageKHR failed with error {}", vk::to_string(result)).c_str());
-
-  const auto [width, height] = swapchain_.image_extent();
-  VertexTransforms vertex_transform{
-      .model_transform = glm::scale(glm::translate(glm::mat4{1.0f}, glm::vec3{.2f, -.25f, 0.f}), glm::vec3{0.35f}),
-      .view_transform = glm::lookAt(glm::vec3{0.0f, 0.0f, 2.0f}, glm::vec3{0.0f}, glm::vec3{0.0f, 1.0f, 0.0f}),
-      .projection_transform = glm::perspective(glm::radians(45.0f), static_cast<float>(width) / height, 0.1f, 100.f)};
-  vertex_transform.projection_transform[1][1] *= -1;  // account for inverted y-axis convention in OpenGL
-  uniform_buffer.Copy(vertex_transform);
 
   command_buffer.begin(vk::CommandBufferBeginInfo{.flags = vk::CommandBufferUsageFlagBits::eOneTimeSubmit});
   {
@@ -283,7 +295,7 @@ void gfx::Engine::Render() {
                                         0,
                                         uniform_buffer.descriptor_set(),
                                         nullptr);
-      mesh_.Render(command_buffer);
+      mesh_.Render(command_buffer, *graphics_pipeline_layout_);
     }
     command_buffer.endRenderPass();
   }

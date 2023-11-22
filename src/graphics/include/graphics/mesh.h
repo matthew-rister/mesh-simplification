@@ -3,6 +3,7 @@
 
 #include <array>
 
+#include <glm/gtc/matrix_transform.hpp>
 #include <glm/vec3.hpp>
 #include <vulkan/vulkan.hpp>
 
@@ -17,6 +18,10 @@ public:
     glm::vec3 position;
     glm::vec2 texture_coordinates;
     glm::vec3 normal;
+  };
+
+  struct PushConstants {
+    glm::mat4 model_transform;
   };
 
   static constexpr vk::VertexInputBindingDescription kVertexInputBindingDescription{
@@ -36,8 +41,7 @@ public:
       vk::VertexInputAttributeDescription{.location = 2,
                                           .binding = 0,
                                           .format = vk::Format::eR32G32B32Sfloat,
-                                          .offset = offsetof(Vertex, normal)},
-  };
+                                          .offset = offsetof(Vertex, normal)}};
 
   Mesh(const Device& device,
        const vk::ArrayProxy<const Vertex>& vertices,
@@ -45,7 +49,23 @@ public:
       : vertex_buffer_{CreateDeviceLocalBuffer(device, vk::BufferUsageFlagBits::eVertexBuffer, vertices)},
         index_buffer_{CreateDeviceLocalBuffer(device, vk::BufferUsageFlagBits::eIndexBuffer, indices)} {}
 
-  void Render(const vk::CommandBuffer& command_buffer) const {
+  void Translate(const float dx, const float dy, const float dz) {
+    model_transform_ = glm::translate(model_transform_, glm::vec3{dx, dy, dz});
+  }
+
+  void Rotate(const glm::vec3& axis, const float angle) {
+    model_transform_ = glm::rotate(model_transform_, angle, axis);
+  }
+
+  void Scale(const float sx, const float sy, const float sz) {
+    model_transform_ = glm::scale(model_transform_, glm::vec3{sx, sy, sz});
+  }
+
+  void Render(const vk::CommandBuffer& command_buffer, const vk::PipelineLayout& pipeline_layout) const {
+    command_buffer.pushConstants<PushConstants>(pipeline_layout,
+                                                vk::ShaderStageFlagBits::eVertex,
+                                                0,
+                                                PushConstants{.model_transform = model_transform_});
     command_buffer.bindVertexBuffers(0, *vertex_buffer_, static_cast<vk::DeviceSize>(0));
     command_buffer.bindIndexBuffer(*index_buffer_, 0, vk::IndexType::eUint32);
     command_buffer.drawIndexed(static_cast<std::uint32_t>(index_buffer_.length()), 1, 0, 0, 0);
@@ -54,6 +74,7 @@ public:
 private:
   Buffer<Vertex> vertex_buffer_;
   Buffer<std::uint32_t> index_buffer_;
+  glm::mat4 model_transform_{1.0f};
 };
 
 }  // namespace gfx

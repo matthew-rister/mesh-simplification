@@ -33,8 +33,7 @@ public:
   void Render();
 
 private:
-  struct VertexTransforms {
-    glm::mat4 model_transform;
+  struct CameraTransforms {
     glm::mat4 view_transform;
     glm::mat4 projection_transform;
   };
@@ -46,7 +45,7 @@ private:
   Device device_;
   Swapchain swapchain_;
   Mesh mesh_;
-  UniformBuffers<VertexTransforms, kMaxRenderFrames> uniform_buffers_;
+  UniformBuffers<CameraTransforms, kMaxRenderFrames> uniform_buffers_;
   Image depth_buffer_;
   vk::UniqueRenderPass render_pass_;
   std::vector<vk::UniqueFramebuffer> framebuffers_;
