@@ -44,7 +44,7 @@ public:
                                           .offset = offsetof(Vertex, normal)}};
 
   Mesh(const Device& device,
-       const vk::ArrayProxy<const Vertex>& vertices,
+       const vk::ArrayProxy<const Vertex> vertices,
        const vk::ArrayProxy<const std::uint32_t> indices)
       : vertex_buffer_{CreateDeviceLocalBuffer(device, vk::BufferUsageFlagBits::eVertexBuffer, vertices)},
         index_buffer_{CreateDeviceLocalBuffer(device, vk::BufferUsageFlagBits::eIndexBuffer, indices)} {}

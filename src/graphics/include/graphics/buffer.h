@@ -37,7 +37,7 @@ public:
 
   [[nodiscard]] vk::DeviceSize length() const noexcept { return size_ / sizeof(T); }
 
-  void Copy(const vk::ArrayProxy<const T>& data) {
+  void Copy(const vk::ArrayProxy<const T> data) {
     auto* mapped_memory = memory_.Map();
     const auto size_bytes = data.size() * sizeof(T);
     assert(size_bytes <= size_);
@@ -59,7 +59,7 @@ private:
 template <typename T>
 [[nodiscard]] Buffer<T> CreateDeviceLocalBuffer(const Device& device,
                                                 const vk::BufferUsageFlags& buffer_usage_flags,
-                                                const vk::ArrayProxy<const T>& data) {
+                                                const vk::ArrayProxy<const T> data) {
   const auto size_bytes = data.size() * sizeof(T);
 
   Buffer<T> host_visible_buffer{device,

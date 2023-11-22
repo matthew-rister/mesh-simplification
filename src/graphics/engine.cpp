@@ -2,15 +2,13 @@
 
 #include <algorithm>
 #include <filesystem>
-#include <iostream>
 #include <ranges>
 #include <utility>
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/vec3.hpp>
 
-#include "graphics/mesh.h"
-#include "graphics/obj_loader.h"
+#include "graphics/scene.h"
 #include "graphics/shader_module.h"
 #include "graphics/window.h"
 
@@ -215,7 +213,6 @@ gfx::Engine::Engine(const Window& window)
     : surface_{window.CreateSurface(*instance_)},
       device_{*instance_, *surface_},
       swapchain_{device_, window, *surface_},
-      mesh_{obj_loader::LoadMesh(device_, "assets/models/bunny.obj")},
       uniform_buffers_{device_},
       depth_buffer_{device_,
                     vk::Format::eD32Sfloat,
@@ -232,9 +229,6 @@ gfx::Engine::Engine(const Window& window)
       acquire_next_image_semaphores_{CreateSemaphores<kMaxRenderFrames>(*device_)},
       present_image_semaphores_{CreateSemaphores<kMaxRenderFrames>(*device_)},
       draw_fences_{CreateFences<kMaxRenderFrames>(*device_)} {
-  mesh_.Translate(0.2f, -0.25f, 0.f);
-  mesh_.Scale(0.35f, 0.35f, 0.35f);
-
   const auto [width, height] = swapchain_.image_extent();
   const auto aspect_ratio = static_cast<float>(width) / static_cast<float>(height);
   CameraTransforms camera_transforms{
@@ -247,15 +241,7 @@ gfx::Engine::Engine(const Window& window)
   }
 }
 
-gfx::Engine::~Engine() noexcept {
-  try {
-    device_->waitIdle();
-  } catch (const vk::SystemError& error) {
-    std::cerr << error.what() << std::endl;
-  }
-}
-
-void gfx::Engine::Render() {
+void gfx::Engine::Render(const Scene& scene) {
   current_frame_index_ = (current_frame_index_ + 1) % kMaxRenderFrames;
   const auto& command_buffer = *command_buffers_[current_frame_index_];
   // NOLINTBEGIN(cppcoreguidelines-pro-bounds-constant-array-index)
@@ -295,7 +281,7 @@ void gfx::Engine::Render() {
                                         0,
                                         uniform_buffer.descriptor_set(),
                                         nullptr);
-      mesh_.Render(command_buffer, *graphics_pipeline_layout_);
+      scene.Render(command_buffer, *graphics_pipeline_layout_);
     }
     command_buffer.endRenderPass();
   }

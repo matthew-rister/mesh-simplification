@@ -64,7 +64,7 @@ gfx::Window::Window(const char* const title, const int width, const int height)
 }
 
 std::pair<int, int> gfx::Window::GetFramebufferSize() const noexcept {
-  auto width = 0, height = 0;
+  int width{}, height{};
   glfwGetFramebufferSize(glfw_window_.get(), &width, &height);
   return std::pair{width, height};
 }
