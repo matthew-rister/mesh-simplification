@@ -24,6 +24,7 @@ public:
   void Close() const noexcept { glfwSetWindowShouldClose(glfw_window_.get(), GLFW_TRUE); }
 
   [[nodiscard]] std::pair<int, int> GetFramebufferSize() const noexcept;
+  [[nodiscard]] float GetAspectRatio() const noexcept;
 
   static void Update() noexcept { glfwPollEvents(); }
 

@@ -5,9 +5,6 @@
 #include <ranges>
 #include <utility>
 
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/vec3.hpp>
-
 #include "graphics/scene.h"
 #include "graphics/shader_module.h"
 #include "graphics/window.h"
@@ -228,18 +225,7 @@ gfx::Engine::Engine(const Window& window)
       command_buffers_{AllocateCommandBuffers<kMaxRenderFrames>(*device_, *command_pool_)},
       acquire_next_image_semaphores_{CreateSemaphores<kMaxRenderFrames>(*device_)},
       present_image_semaphores_{CreateSemaphores<kMaxRenderFrames>(*device_)},
-      draw_fences_{CreateFences<kMaxRenderFrames>(*device_)} {
-  const auto [width, height] = swapchain_.image_extent();
-  const auto aspect_ratio = static_cast<float>(width) / static_cast<float>(height);
-  CameraTransforms camera_transforms{
-      .view_transform = glm::lookAt(glm::vec3{0.0f, 0.0f, 2.0f}, glm::vec3{0.0f}, glm::vec3{0.0f, 1.0f, 0.0f}),
-      .projection_transform = glm::perspective(glm::radians(45.0f), aspect_ratio, 0.1f, 100.f)};
-  camera_transforms.projection_transform[1][1] *= -1;  // account for inverted y-axis convention in OpenGL
-
-  for (std::size_t index = 0; index < kMaxRenderFrames; ++index) {
-    uniform_buffers_[index].Copy(camera_transforms);
-  }
-}
+      draw_fences_{CreateFences<kMaxRenderFrames>(*device_)} {}
 
 void gfx::Engine::Render(const Scene& scene) {
   current_frame_index_ = (current_frame_index_ + 1) % kMaxRenderFrames;
@@ -248,7 +234,7 @@ void gfx::Engine::Render(const Scene& scene) {
   const auto& acquire_next_image_semaphore = *acquire_next_image_semaphores_[current_frame_index_];
   const auto& present_image_semaphore = *present_image_semaphores_[current_frame_index_];
   const auto& draw_fence = *draw_fences_[current_frame_index_];
-  const auto& uniform_buffer = uniform_buffers_[current_frame_index_];
+  auto& uniform_buffer = uniform_buffers_[current_frame_index_];
   // NOLINTEND(cppcoreguidelines-pro-bounds-constant-array-index)
 
   static constexpr auto kMaxTimeout = std::numeric_limits<std::uint64_t>::max();
@@ -259,6 +245,10 @@ void gfx::Engine::Render(const Scene& scene) {
   std::uint32_t image_index{};
   std::tie(result, image_index) = device_->acquireNextImageKHR(*swapchain_, kMaxTimeout, acquire_next_image_semaphore);
   vk::resultCheck(result, std::format("vkAcquireNextImageKHR failed with error {}", vk::to_string(result)).c_str());
+
+  const auto& camera = scene.camera();
+  uniform_buffer.Copy(CameraTransforms{.view_transform = camera.view_transform(),
+                                       .projection_transform = camera.projection_transform()});
 
   command_buffer.begin(vk::CommandBufferBeginInfo{.flags = vk::CommandBufferUsageFlagBits::eOneTimeSubmit});
   {
@@ -281,7 +271,7 @@ void gfx::Engine::Render(const Scene& scene) {
                                         0,
                                         uniform_buffer.descriptor_set(),
                                         nullptr);
-      scene.Render(command_buffer, *graphics_pipeline_layout_);
+      scene.mesh().Render(command_buffer, *graphics_pipeline_layout_);
     }
     command_buffer.endRenderPass();
   }

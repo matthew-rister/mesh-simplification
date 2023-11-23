@@ -68,6 +68,11 @@ std::pair<int, int> gfx::Window::GetFramebufferSize() const noexcept {
   glfwGetFramebufferSize(glfw_window_.get(), &width, &height);
   return std::pair{width, height};
 }
+float gfx::Window::GetAspectRatio() const noexcept {
+  int width{}, height{};
+  glfwGetWindowSize(glfw_window_.get(), &width, &height);  // TODO(matthew-rister): can this be getFramebufferSize?
+  return static_cast<float>(width) / static_cast<float>(height);
+}
 
 #ifdef GLFW_INCLUDE_VULKAN
 
