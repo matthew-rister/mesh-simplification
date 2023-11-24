@@ -7,7 +7,7 @@ add_library(graphics STATIC device.cpp
                             obj_loader.cpp
                             shader_module.cpp
                             swapchain.cpp
-                            window.cpp)
+                            window.cpp "camera.cpp")
 
 find_package(VulkanHeaders CONFIG REQUIRED)
 find_package(glfw3 CONFIG REQUIRED)

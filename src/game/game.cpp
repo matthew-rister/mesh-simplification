@@ -47,6 +47,22 @@ gfx::Game::Game()
       window_.Close();
     }
   });
+
+  window_.OnMouseButtonEvent([this](const auto button, const auto action) {
+    std::optional<glm::vec2> previous_cursor_position;
+
+    if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
+      const auto [x, y] = window_.GetCursorPosition();
+      const glm::vec2 cursor_position{x, y};
+      if (previous_cursor_position.has_value()) {
+        const auto delta_cursor_position = cursor_position - *previous_cursor_position;
+        // TODO(matthew-rister): rotate mesh
+      }
+      previous_cursor_position = cursor_position;
+    } else if (previous_cursor_position.has_value()) {
+      previous_cursor_position = std::nullopt;
+    }
+  });
 }
 
 void gfx::Game::Run() {

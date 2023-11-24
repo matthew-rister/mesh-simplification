@@ -59,14 +59,27 @@ gfx::Window::Window(const char* const title, const int width, const int height)
       [](GLFWwindow* glfw_window, const int key, const int /*scancode*/, const int action, const int /*modifiers*/) {
         const auto* self = static_cast<Window*>(glfwGetWindowUserPointer(glfw_window));
         assert(self != nullptr);
-        if (self->on_key_event_) self->on_key_event_(key, action);
+        if (self->key_event_) self->key_event_(key, action);
       });
+
+  glfwSetMouseButtonCallback(glfw_window_.get(),
+                             [](GLFWwindow* glfw_window, const int button, const int action, const int /*modifiers*/) {
+                               const auto* self = static_cast<Window*>(glfwGetWindowUserPointer(glfw_window));
+                               assert(self != nullptr);
+                               if (self->mouse_button_event_) self->mouse_button_event_(button, action);
+                             });
 }
 
 std::pair<int, int> gfx::Window::GetFramebufferSize() const noexcept {
   int width{}, height{};
   glfwGetFramebufferSize(glfw_window_.get(), &width, &height);
   return std::pair{width, height};
+}
+
+std::pair<float, float> gfx::Window::GetCursorPosition() const noexcept {
+  double x{}, y{};
+  glfwGetCursorPos(glfw_window_.get(), &x, &y);
+  return std::pair{static_cast<float>(x), static_cast<float>(y)};
 }
 
 float gfx::Window::GetAspectRatio() const noexcept {
