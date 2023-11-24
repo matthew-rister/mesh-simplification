@@ -11,6 +11,7 @@ namespace {
 constexpr auto kWindowHeight = 1600;
 constexpr auto kWindowWidth = 900;
 
+// NOLINTBEGIN(*-magic-numbers)
 gfx::Camera CreateCamera(const gfx::Window& window) {
   return gfx::Camera{glm::vec3{0.0f, 0.0f, 2.0f},
                      glm::vec3{0.0f},
@@ -21,20 +22,26 @@ gfx::Camera CreateCamera(const gfx::Window& window) {
                                       .z_far = 10'000.0f}};
 }
 
-gfx::Mesh CreateMesh(const gfx::Device& device) {
+std::vector<gfx::Mesh> CreateMeshes(const gfx::Device& device) {
   const std::filesystem::path mesh_filepath{"assets/models/bunny.obj"};
   auto mesh = gfx::obj_loader::LoadMesh(device, mesh_filepath);
+
   mesh.Translate(0.2f, -0.25f, 0.0f);
   mesh.Scale(0.35f, 0.35f, 0.35f);
-  return mesh;
+
+  std::vector<gfx::Mesh> meshes;
+  meshes.emplace_back(std::move(mesh));
+
+  return meshes;
 }
+// NOLINTEND(*-magic-numbers)
 
 }  // namespace
 
 gfx::Game::Game()
     : window_{"VkRender", kWindowHeight, kWindowWidth},
       engine_{window_},
-      scene_{CreateCamera(window_), CreateMesh(engine_.device())} {
+      scene_{CreateCamera(window_), CreateMeshes(engine_.device())} {
   window_.OnKeyEvent([this](const auto key, const auto action) {
     if (action == GLFW_PRESS && key == GLFW_KEY_ESCAPE) {
       window_.Close();

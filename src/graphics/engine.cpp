@@ -271,7 +271,7 @@ void gfx::Engine::Render(const Scene& scene) {
                                     0,
                                     uniform_buffer.descriptor_set(),
                                     nullptr);
-  scene.mesh().Render(command_buffer, *graphics_pipeline_layout_);
+  scene.Render(command_buffer, *graphics_pipeline_layout_);
 
   command_buffer.endRenderPass();
   command_buffer.end();
