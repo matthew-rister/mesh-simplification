@@ -29,7 +29,7 @@ std::optional<QueueFamilyIndices> FindQueueFamilyIndices(const vk::PhysicalDevic
                                                          const vk::SurfaceKHR& surface) {
   std::optional<std::uint32_t> graphics_index, present_index;
   for (std::uint32_t index = 0; const auto& queue_family_properties : physical_device.getQueueFamilyProperties()) {
-    assert(queue_family_properties.queueCount > 0u);  // required by the Vulkan specification
+    assert(queue_family_properties.queueCount > 0u);
     if (static_cast<bool>(queue_family_properties.queueFlags & vk::QueueFlagBits::eGraphics)) {
       graphics_index = index;
     }

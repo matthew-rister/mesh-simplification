@@ -229,12 +229,10 @@ gfx::Engine::Engine(const Window& window)
 
 void gfx::Engine::Render(const Scene& scene) {
   current_frame_index_ = (current_frame_index_ + 1) % kMaxRenderFrames;
-  const auto& command_buffer = *command_buffers_[current_frame_index_];
   // NOLINTBEGIN(cppcoreguidelines-pro-bounds-constant-array-index)
   const auto& acquire_next_image_semaphore = *acquire_next_image_semaphores_[current_frame_index_];
   const auto& present_image_semaphore = *present_image_semaphores_[current_frame_index_];
   const auto& draw_fence = *draw_fences_[current_frame_index_];
-  auto& uniform_buffer = uniform_buffers_[current_frame_index_];
   // NOLINTEND(cppcoreguidelines-pro-bounds-constant-array-index)
 
   static constexpr auto kMaxTimeout = std::numeric_limits<std::uint64_t>::max();
@@ -247,40 +245,41 @@ void gfx::Engine::Render(const Scene& scene) {
   vk::resultCheck(result, std::format("vkAcquireNextImageKHR failed with error {}", vk::to_string(result)).c_str());
 
   const auto& camera = scene.camera();
+  auto& uniform_buffer = uniform_buffers_[current_frame_index_];
   uniform_buffer.Copy(CameraTransforms{.view_transform = camera.view_transform(),
                                        .projection_transform = camera.projection_transform()});
 
+  const auto& command_buffer = *command_buffers_[current_frame_index_];
   command_buffer.begin(vk::CommandBufferBeginInfo{.flags = vk::CommandBufferUsageFlagBits::eOneTimeSubmit});
-  {
-    static constexpr std::array kClearValues{
-        vk::ClearValue{.color = vk::ClearColorValue{.float32 = std::array{0.0f, 0.0f, 0.0f, 1.0f}}},
-        vk::ClearValue{.depthStencil = vk::ClearDepthStencilValue{1.0f, 0}}};
 
-    command_buffer.beginRenderPass(
-        vk::RenderPassBeginInfo{
-            .renderPass = *render_pass_,
-            .framebuffer = *framebuffers_[image_index],
-            .renderArea = vk::Rect2D{.offset = vk::Offset2D{0, 0}, .extent = swapchain_.image_extent()},
-            .clearValueCount = static_cast<std::uint32_t>(kClearValues.size()),
-            .pClearValues = kClearValues.data()},
-        vk::SubpassContents::eInline);
-    {
-      command_buffer.bindPipeline(vk::PipelineBindPoint::eGraphics, *graphics_pipeline_);
-      command_buffer.bindDescriptorSets(vk::PipelineBindPoint::eGraphics,
-                                        *graphics_pipeline_layout_,
-                                        0,
-                                        uniform_buffer.descriptor_set(),
-                                        nullptr);
-      scene.mesh().Render(command_buffer, *graphics_pipeline_layout_);
-    }
-    command_buffer.endRenderPass();
-  }
+  static constexpr std::array kClearValues{
+      vk::ClearValue{.color = vk::ClearColorValue{.float32 = std::array{0.0f, 0.0f, 0.0f, 1.0f}}},
+      vk::ClearValue{.depthStencil = vk::ClearDepthStencilValue{1.0f, 0}}};
+
+  command_buffer.beginRenderPass(
+      vk::RenderPassBeginInfo{
+          .renderPass = *render_pass_,
+          .framebuffer = *framebuffers_[image_index],
+          .renderArea = vk::Rect2D{.offset = vk::Offset2D{0, 0}, .extent = swapchain_.image_extent()},
+          .clearValueCount = static_cast<std::uint32_t>(kClearValues.size()),
+          .pClearValues = kClearValues.data()},
+      vk::SubpassContents::eInline);
+
+  command_buffer.bindPipeline(vk::PipelineBindPoint::eGraphics, *graphics_pipeline_);
+  command_buffer.bindDescriptorSets(vk::PipelineBindPoint::eGraphics,
+                                    *graphics_pipeline_layout_,
+                                    0,
+                                    uniform_buffer.descriptor_set(),
+                                    nullptr);
+  scene.mesh().Render(command_buffer, *graphics_pipeline_layout_);
+
+  command_buffer.endRenderPass();
   command_buffer.end();
 
-  static constexpr vk::PipelineStageFlags kWaitPipelineStage = vk::PipelineStageFlagBits::eTopOfPipe;
+  static constexpr vk::PipelineStageFlags kTopOfPipe = vk::PipelineStageFlagBits::eTopOfPipe;
   device_.graphics_queue()->submit(vk::SubmitInfo{.waitSemaphoreCount = 1,
                                                   .pWaitSemaphores = &acquire_next_image_semaphore,
-                                                  .pWaitDstStageMask = &kWaitPipelineStage,
+                                                  .pWaitDstStageMask = &kTopOfPipe,
                                                   .commandBufferCount = 1,
                                                   .pCommandBuffers = &command_buffer,
                                                   .signalSemaphoreCount = 1,
