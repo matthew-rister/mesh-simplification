@@ -2,15 +2,10 @@
 
 #include <algorithm>
 #include <filesystem>
-#include <iostream>
 #include <ranges>
 #include <utility>
 
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/vec3.hpp>
-
-#include "graphics/mesh.h"
-#include "graphics/obj_loader.h"
+#include "graphics/scene.h"
 #include "graphics/shader_module.h"
 #include "graphics/window.h"
 
@@ -215,7 +210,6 @@ gfx::Engine::Engine(const Window& window)
     : surface_{window.CreateSurface(*instance_)},
       device_{*instance_, *surface_},
       swapchain_{device_, window, *surface_},
-      mesh_{obj_loader::LoadMesh(device_, "assets/models/bunny.obj")},
       uniform_buffers_{device_},
       depth_buffer_{device_,
                     vk::Format::eD32Sfloat,
@@ -231,38 +225,14 @@ gfx::Engine::Engine(const Window& window)
       command_buffers_{AllocateCommandBuffers<kMaxRenderFrames>(*device_, *command_pool_)},
       acquire_next_image_semaphores_{CreateSemaphores<kMaxRenderFrames>(*device_)},
       present_image_semaphores_{CreateSemaphores<kMaxRenderFrames>(*device_)},
-      draw_fences_{CreateFences<kMaxRenderFrames>(*device_)} {
-  mesh_.Translate(0.2f, -0.25f, 0.f);
-  mesh_.Scale(0.35f, 0.35f, 0.35f);
+      draw_fences_{CreateFences<kMaxRenderFrames>(*device_)} {}
 
-  const auto [width, height] = swapchain_.image_extent();
-  const auto aspect_ratio = static_cast<float>(width) / static_cast<float>(height);
-  CameraTransforms camera_transforms{
-      .view_transform = glm::lookAt(glm::vec3{0.0f, 0.0f, 2.0f}, glm::vec3{0.0f}, glm::vec3{0.0f, 1.0f, 0.0f}),
-      .projection_transform = glm::perspective(glm::radians(45.0f), aspect_ratio, 0.1f, 100.f)};
-  camera_transforms.projection_transform[1][1] *= -1;  // account for inverted y-axis convention in OpenGL
-
-  for (std::size_t index = 0; index < kMaxRenderFrames; ++index) {
-    uniform_buffers_[index].Copy(camera_transforms);
-  }
-}
-
-gfx::Engine::~Engine() noexcept {
-  try {
-    device_->waitIdle();
-  } catch (const vk::SystemError& error) {
-    std::cerr << error.what() << std::endl;
-  }
-}
-
-void gfx::Engine::Render() {
+void gfx::Engine::Render(const Scene& scene) {
   current_frame_index_ = (current_frame_index_ + 1) % kMaxRenderFrames;
-  const auto& command_buffer = *command_buffers_[current_frame_index_];
   // NOLINTBEGIN(cppcoreguidelines-pro-bounds-constant-array-index)
   const auto& acquire_next_image_semaphore = *acquire_next_image_semaphores_[current_frame_index_];
   const auto& present_image_semaphore = *present_image_semaphores_[current_frame_index_];
   const auto& draw_fence = *draw_fences_[current_frame_index_];
-  const auto& uniform_buffer = uniform_buffers_[current_frame_index_];
   // NOLINTEND(cppcoreguidelines-pro-bounds-constant-array-index)
 
   static constexpr auto kMaxTimeout = std::numeric_limits<std::uint64_t>::max();
@@ -274,37 +244,42 @@ void gfx::Engine::Render() {
   std::tie(result, image_index) = device_->acquireNextImageKHR(*swapchain_, kMaxTimeout, acquire_next_image_semaphore);
   vk::resultCheck(result, std::format("vkAcquireNextImageKHR failed with error {}", vk::to_string(result)).c_str());
 
-  command_buffer.begin(vk::CommandBufferBeginInfo{.flags = vk::CommandBufferUsageFlagBits::eOneTimeSubmit});
-  {
-    static constexpr std::array kClearValues{
-        vk::ClearValue{.color = vk::ClearColorValue{.float32 = std::array{0.0f, 0.0f, 0.0f, 1.0f}}},
-        vk::ClearValue{.depthStencil = vk::ClearDepthStencilValue{1.0f, 0}}};
+  const auto& camera = scene.camera();
+  auto& uniform_buffer = uniform_buffers_[current_frame_index_];
+  uniform_buffer.Copy(CameraTransforms{.view_transform = camera.view_transform(),
+                                       .projection_transform = camera.projection_transform()});
 
-    command_buffer.beginRenderPass(
-        vk::RenderPassBeginInfo{
-            .renderPass = *render_pass_,
-            .framebuffer = *framebuffers_[image_index],
-            .renderArea = vk::Rect2D{.offset = vk::Offset2D{0, 0}, .extent = swapchain_.image_extent()},
-            .clearValueCount = static_cast<std::uint32_t>(kClearValues.size()),
-            .pClearValues = kClearValues.data()},
-        vk::SubpassContents::eInline);
-    {
-      command_buffer.bindPipeline(vk::PipelineBindPoint::eGraphics, *graphics_pipeline_);
-      command_buffer.bindDescriptorSets(vk::PipelineBindPoint::eGraphics,
-                                        *graphics_pipeline_layout_,
-                                        0,
-                                        uniform_buffer.descriptor_set(),
-                                        nullptr);
-      mesh_.Render(command_buffer, *graphics_pipeline_layout_);
-    }
-    command_buffer.endRenderPass();
-  }
+  const auto& command_buffer = *command_buffers_[current_frame_index_];
+  command_buffer.begin(vk::CommandBufferBeginInfo{.flags = vk::CommandBufferUsageFlagBits::eOneTimeSubmit});
+
+  static constexpr std::array kClearValues{
+      vk::ClearValue{.color = vk::ClearColorValue{.float32 = std::array{0.0f, 0.0f, 0.0f, 1.0f}}},
+      vk::ClearValue{.depthStencil = vk::ClearDepthStencilValue{1.0f, 0}}};
+
+  command_buffer.beginRenderPass(
+      vk::RenderPassBeginInfo{
+          .renderPass = *render_pass_,
+          .framebuffer = *framebuffers_[image_index],
+          .renderArea = vk::Rect2D{.offset = vk::Offset2D{0, 0}, .extent = swapchain_.image_extent()},
+          .clearValueCount = static_cast<std::uint32_t>(kClearValues.size()),
+          .pClearValues = kClearValues.data()},
+      vk::SubpassContents::eInline);
+
+  command_buffer.bindPipeline(vk::PipelineBindPoint::eGraphics, *graphics_pipeline_);
+  command_buffer.bindDescriptorSets(vk::PipelineBindPoint::eGraphics,
+                                    *graphics_pipeline_layout_,
+                                    0,
+                                    uniform_buffer.descriptor_set(),
+                                    nullptr);
+  scene.Render(command_buffer, *graphics_pipeline_layout_);
+
+  command_buffer.endRenderPass();
   command_buffer.end();
 
-  static constexpr vk::PipelineStageFlags kWaitPipelineStage = vk::PipelineStageFlagBits::eTopOfPipe;
+  static constexpr vk::PipelineStageFlags kTopOfPipe = vk::PipelineStageFlagBits::eTopOfPipe;
   device_.graphics_queue()->submit(vk::SubmitInfo{.waitSemaphoreCount = 1,
                                                   .pWaitSemaphores = &acquire_next_image_semaphore,
-                                                  .pWaitDstStageMask = &kWaitPipelineStage,
+                                                  .pWaitDstStageMask = &kTopOfPipe,
                                                   .commandBufferCount = 1,
                                                   .pCommandBuffers = &command_buffer,
                                                   .signalSemaphoreCount = 1,

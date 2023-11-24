@@ -11,26 +11,20 @@
 #include "graphics/device.h"
 #include "graphics/image.h"
 #include "graphics/instance.h"
-#include "graphics/mesh.h"
 #include "graphics/swapchain.h"
 #include "graphics/uniform_buffer.h"
 
 namespace gfx {
+class Scene;
 class Window;
 
 class Engine {
 public:
   explicit Engine(const Window& window);
 
-  Engine(const Engine&) = delete;
-  Engine(Engine&&) noexcept = delete;
+  [[nodiscard]] const Device& device() const noexcept { return device_; }
 
-  Engine& operator=(const Engine&) = delete;
-  Engine& operator=(Engine&&) noexcept = delete;
-
-  ~Engine() noexcept;
-
-  void Render();
+  void Render(const Scene& scene);
 
 private:
   struct CameraTransforms {
@@ -44,7 +38,6 @@ private:
   vk::UniqueSurfaceKHR surface_;
   Device device_;
   Swapchain swapchain_;
-  Mesh mesh_;
   UniformBuffers<CameraTransforms, kMaxRenderFrames> uniform_buffers_;
   Image depth_buffer_;
   vk::UniqueRenderPass render_pass_;

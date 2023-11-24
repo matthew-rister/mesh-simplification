@@ -1,6 +1,6 @@
-# VkRender
+# Mesh Simplification
 
-A cross-platform Vulkan renderer written in C++23.
+A work in progress implementation of Surface Simplification using Quadric Error Metrics in Vulkan and C++.
 
 ## Prerequisites
 

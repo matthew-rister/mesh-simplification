@@ -59,14 +59,20 @@ gfx::Window::Window(const char* const title, const int width, const int height)
       [](GLFWwindow* glfw_window, const int key, const int /*scancode*/, const int action, const int /*modifiers*/) {
         const auto* self = static_cast<Window*>(glfwGetWindowUserPointer(glfw_window));
         assert(self != nullptr);
-        if (self->on_key_event_) self->on_key_event_(key, action);
+        if (self->key_event_) self->key_event_(key, action);
       });
 }
 
 std::pair<int, int> gfx::Window::GetFramebufferSize() const noexcept {
-  auto width = 0, height = 0;
+  int width{}, height{};
   glfwGetFramebufferSize(glfw_window_.get(), &width, &height);
   return std::pair{width, height};
+}
+
+float gfx::Window::GetAspectRatio() const noexcept {
+  int width{}, height{};
+  glfwGetWindowSize(glfw_window_.get(), &width, &height);
+  return static_cast<float>(width) / static_cast<float>(height);
 }
 
 #ifdef GLFW_INCLUDE_VULKAN

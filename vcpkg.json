@@ -1,7 +1,7 @@
 {
   "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg-tool/main/docs/vcpkg.schema.json",
-  "name": "vkrender",
-  "version": "0.1.0",
+  "name": "mesh-simplification",
+  "version": "1.0.0",
   "dependencies": [
     "glfw3",
     "glm",
