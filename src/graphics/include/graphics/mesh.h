@@ -49,6 +49,8 @@ public:
       : vertex_buffer_{CreateDeviceLocalBuffer(device, vk::BufferUsageFlagBits::eVertexBuffer, vertices)},
         index_buffer_{CreateDeviceLocalBuffer(device, vk::BufferUsageFlagBits::eIndexBuffer, indices)} {}
 
+  [[nodiscard]] const glm::mat4& model_transform() const noexcept { return model_transform_; }
+
   void Translate(const float dx, const float dy, const float dz) {
     model_transform_ = glm::translate(model_transform_, glm::vec3{dx, dy, dz});
   }

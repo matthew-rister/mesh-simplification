@@ -15,7 +15,7 @@ struct gfx::RankedPhysicalDevice {
     static constexpr std::uint32_t kInvalidIndex = std::numeric_limits<std::uint32_t>::max();
     std::uint32_t graphics_index = kInvalidIndex, present_index = kInvalidIndex;
   };
-  static constexpr std::uint32_t kInvalidRank{};
+  static constexpr std::uint32_t kInvalidRank = 0;
   vk::PhysicalDevice physical_device;
   QueueFamilyIndices queue_family_indices;
   std::uint32_t rank = kInvalidRank;

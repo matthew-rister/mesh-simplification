@@ -41,38 +41,55 @@ private:
 
 using UniqueGlfwWindow = std::unique_ptr<GLFWwindow, decltype(&glfwDestroyWindow)>;
 
-UniqueGlfwWindow CreateGlfwWindow(const char* const title, const int width, const int height) {
+UniqueGlfwWindow CreateGlfwWindow(const char* const title, const gfx::Window::Size& size) {
   [[maybe_unused]] const auto& glfw_context = GlfwContext::Get();
-  auto* glfw_window = glfwCreateWindow(width, height, title, nullptr, nullptr);
-  if (glfw_window == nullptr) throw std::runtime_error{"GLFW window creation failed"};
-  return UniqueGlfwWindow{glfw_window, glfwDestroyWindow};
+  auto* window = glfwCreateWindow(size.width, size.height, title, nullptr, nullptr);
+  if (window == nullptr) throw std::runtime_error{"GLFW window creation failed"};
+  return UniqueGlfwWindow{window, glfwDestroyWindow};
 }
 
 }  // namespace
 
-gfx::Window::Window(const char* const title, const int width, const int height)
-    : glfw_window_{CreateGlfwWindow(title, width, height)} {
-  glfwSetWindowUserPointer(glfw_window_.get(), this);
+gfx::Window::Window(const char* const title, const Size& size) : window_{CreateGlfwWindow(title, size)} {
+  glfwSetWindowUserPointer(window_.get(), this);
+  glfwSetInputMode(window_.get(), GLFW_STICKY_MOUSE_BUTTONS, GLFW_TRUE);
 
   glfwSetKeyCallback(
-      glfw_window_.get(),
-      [](GLFWwindow* glfw_window, const int key, const int /*scancode*/, const int action, const int /*modifiers*/) {
-        const auto* self = static_cast<Window*>(glfwGetWindowUserPointer(glfw_window));
-        assert(self != nullptr);
-        if (self->key_event_) self->key_event_(key, action);
+      window_.get(),
+      [](GLFWwindow* const window, const int key, const int /*scancode*/, const int action, const int /*modifiers*/) {
+        if (const auto* self = static_cast<Window*>(glfwGetWindowUserPointer(window)); self->key_event_handler_) {
+          self->key_event_handler_(key, action);
+        }
       });
+
+  glfwSetCursorPosCallback(window_.get(), [](GLFWwindow* const window, const double x, const double y) {
+    if (const auto* self = static_cast<Window*>(glfwGetWindowUserPointer(window)); self->cursor_event_handler_) {
+      self->cursor_event_handler_(static_cast<float>(x), static_cast<float>(y));
+    }
+  });
+
+  glfwSetScrollCallback(window_.get(), [](GLFWwindow* const window, const double /*x_offset*/, const double y_offset) {
+    if (const auto* self = static_cast<Window*>(glfwGetWindowUserPointer(window)); self->scroll_event_handler_) {
+      self->scroll_event_handler_(static_cast<float>(y_offset));
+    }
+  });
 }
 
-std::pair<int, int> gfx::Window::GetFramebufferSize() const noexcept {
+gfx::Window::Size gfx::Window::GetSize() const noexcept {
   int width{}, height{};
-  glfwGetFramebufferSize(glfw_window_.get(), &width, &height);
-  return std::pair{width, height};
+  glfwGetWindowSize(window_.get(), &width, &height);
+  return Size{.width = width, .height = height};
 }
 
 float gfx::Window::GetAspectRatio() const noexcept {
-  int width{}, height{};
-  glfwGetWindowSize(glfw_window_.get(), &width, &height);
+  const auto [width, height] = GetSize();
   return static_cast<float>(width) / static_cast<float>(height);
+}
+
+gfx::Window::Size gfx::Window::GetFramebufferSize() const noexcept {
+  int width{}, height{};
+  glfwGetFramebufferSize(window_.get(), &width, &height);
+  return Size{.width = width, .height = height};
 }
 
 #ifdef GLFW_INCLUDE_VULKAN
@@ -86,7 +103,7 @@ std::span<const char* const> gfx::Window::GetInstanceExtensions() {
 
 vk::UniqueSurfaceKHR gfx::Window::CreateSurface(const vk::Instance& instance) const {
   VkSurfaceKHR surface{};
-  const auto result = static_cast<vk::Result>(glfwCreateWindowSurface(instance, glfw_window_.get(), nullptr, &surface));
+  const auto result = static_cast<vk::Result>(glfwCreateWindowSurface(instance, window_.get(), nullptr, &surface));
   vk::resultCheck(result, std::format("Window surface creation failed with error {}", vk::to_string(result)).c_str());
   const vk::ObjectDestroy<vk::Instance, VULKAN_HPP_DEFAULT_DISPATCHER_TYPE> deleter{instance};
   return vk::UniqueSurfaceKHR{vk::SurfaceKHR{surface}, deleter};

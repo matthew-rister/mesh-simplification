@@ -1,4 +1,5 @@
 add_executable(mesh_simplification main.cpp
+                                   graphics/arcball.cpp
                                    graphics/device.cpp
                                    graphics/engine.cpp
                                    graphics/glslang_compiler.cpp
@@ -27,7 +28,10 @@ target_compile_definitions(mesh_simplification PRIVATE GLFW_INCLUDE_VULKAN
                                                        GLM_ENABLE_EXPERIMENTAL
                                                        GLM_FORCE_DEFAULT_ALIGNED_GENTYPES
                                                        GLM_FORCE_DEPTH_ZERO_TO_ONE
+                                                       GLM_FORCE_EXPLICIT_CTOR
+                                                       GLM_FORCE_XYZW_ONLY
                                                        VULKAN_HPP_NO_CONSTRUCTORS
+                                                       VULKAN_HPP_NO_SPACESHIP_OPERATOR
                                                        VULKAN_HPP_DISPATCH_LOADER_DYNAMIC=1)
 
 target_include_directories(mesh_simplification PRIVATE graphics/include)

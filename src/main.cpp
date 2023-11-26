@@ -7,12 +7,12 @@
 #include "graphics/window.h"
 
 void Run() {
-  gfx::Window window{"Mesh Simplification", 1920, 1080};
+  gfx::Window window{"Mesh Simplification", gfx::Window::Size{.width = 1920, .height = 1080}};
   gfx::Engine engine{window};
   gfx::Scene scene{engine, &window};
 
   while (!window.IsClosed()) {
-    gfx::Window::Update();
+    window.Update();
     engine.Render(scene);
   }
 

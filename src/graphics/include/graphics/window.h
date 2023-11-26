@@ -1,7 +1,6 @@
 #ifndef SRC_GRAPHICS_INCLUDE_GRAPHICS_WINDOW_H_
 #define SRC_GRAPHICS_INCLUDE_GRAPHICS_WINDOW_H_
 
-#include <concepts>
 #include <functional>
 #include <memory>
 #include <span>
@@ -16,15 +15,28 @@ namespace gfx {
 
 class Window {
 public:
-  Window(const char* title, int width, int height);
+  struct Size {
+    int width;
+    int height;
+  };
 
-  void OnKeyEvent(std::invocable<int, int> auto&& fn) { key_event_ = std::forward<decltype(key_event_)>(fn); }
+  Window(const char* title, const Size& size);
 
-  [[nodiscard]] bool IsClosed() const noexcept { return glfwWindowShouldClose(glfw_window_.get()) == GLFW_TRUE; }
-  void Close() const noexcept { glfwSetWindowShouldClose(glfw_window_.get(), GLFW_TRUE); }
+  void OnKeyEvent(std::function<void(int, int)> fn) { key_event_handler_ = std::move(fn); }
+  void OnCursorEvent(std::function<void(float, float)> fn) { cursor_event_handler_ = std::move(fn); }
+  void OnScrollEvent(std::function<void(float)> fn) { scroll_event_handler_ = std::move(fn); }
 
-  [[nodiscard]] std::pair<int, int> GetFramebufferSize() const noexcept;
+  [[nodiscard]] bool IsClosed() const noexcept { return glfwWindowShouldClose(window_.get()) == GLFW_TRUE; }
+  void Close() const noexcept { glfwSetWindowShouldClose(window_.get(), GLFW_TRUE); }
+
+  [[nodiscard]] bool IsMouseButtonPressed(const int button) const noexcept {
+    return glfwGetMouseButton(window_.get(), button) == GLFW_PRESS;
+  }
+
+  [[nodiscard]] Size GetSize() const noexcept;
   [[nodiscard]] float GetAspectRatio() const noexcept;
+
+  [[nodiscard]] Size GetFramebufferSize() const noexcept;
 
   static void Update() noexcept { glfwPollEvents(); }
 
@@ -35,8 +47,10 @@ public:
 #endif
 
 private:
-  std::unique_ptr<GLFWwindow, std::function<void(GLFWwindow*)>> glfw_window_;
-  std::function<void(int, int)> key_event_;
+  std::unique_ptr<GLFWwindow, std::function<void(GLFWwindow*)>> window_;
+  std::function<void(int, int)> key_event_handler_;
+  std::function<void(float, float)> cursor_event_handler_;
+  std::function<void(float)> scroll_event_handler_;
 };
 
 }  // namespace gfx

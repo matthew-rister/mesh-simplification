@@ -19,6 +19,10 @@ public:
   void Render(const vk::CommandBuffer& command_buffer, const vk::PipelineLayout& pipeline_layout) const;
 
 private:
+  void HandleKeyEvent(const Window& window, const int key, const int action);
+  void HandleCursorEvent(const Window& window, const float x, const float y);
+  void HandleScrollEvent(const float y_offset);
+
   Camera camera_;
   Mesh mesh_;
 };
