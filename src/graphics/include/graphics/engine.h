@@ -15,7 +15,8 @@
 #include "graphics/uniform_buffer.h"
 
 namespace gfx {
-class Scene;
+class Camera;
+class Mesh;
 class Window;
 
 class Engine {
@@ -24,7 +25,7 @@ public:
 
   [[nodiscard]] const Device& device() const noexcept { return device_; }
 
-  void Render(const Scene& scene);
+  void Render(const Camera& camera, const Mesh& mesh);
 
 private:
   struct CameraTransforms {

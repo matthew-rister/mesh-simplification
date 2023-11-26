@@ -5,7 +5,8 @@
 #include <ranges>
 #include <utility>
 
-#include "graphics/scene.h"
+#include "graphics/camera.h"
+#include "graphics/mesh.h"
 #include "graphics/shader_module.h"
 #include "graphics/window.h"
 
@@ -227,7 +228,7 @@ gfx::Engine::Engine(const Window& window)
       present_image_semaphores_{CreateSemaphores<kMaxRenderFrames>(*device_)},
       draw_fences_{CreateFences<kMaxRenderFrames>(*device_)} {}
 
-void gfx::Engine::Render(const Scene& scene) {
+void gfx::Engine::Render(const Camera& camera, const Mesh& mesh) {
   current_frame_index_ = (current_frame_index_ + 1) % kMaxRenderFrames;
   // NOLINTBEGIN(cppcoreguidelines-pro-bounds-constant-array-index)
   const auto& acquire_next_image_semaphore = *acquire_next_image_semaphores_[current_frame_index_];
@@ -244,7 +245,6 @@ void gfx::Engine::Render(const Scene& scene) {
   std::tie(result, image_index) = device_->acquireNextImageKHR(*swapchain_, kMaxTimeout, acquire_next_image_semaphore);
   vk::resultCheck(result, std::format("vkAcquireNextImageKHR failed with error {}", vk::to_string(result)).c_str());
 
-  const auto& camera = scene.camera();
   auto& uniform_buffer = uniform_buffers_[current_frame_index_];
   uniform_buffer.Copy(CameraTransforms{.view_transform = camera.view_transform(),
                                        .projection_transform = camera.projection_transform()});
@@ -271,7 +271,7 @@ void gfx::Engine::Render(const Scene& scene) {
                                     0,
                                     uniform_buffer.descriptor_set(),
                                     nullptr);
-  scene.Render(command_buffer, *graphics_pipeline_layout_);
+  mesh.Render(command_buffer, *graphics_pipeline_layout_);
 
   command_buffer.endRenderPass();
   command_buffer.end();

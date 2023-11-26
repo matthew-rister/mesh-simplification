@@ -1,4 +1,5 @@
 add_executable(mesh_simplification main.cpp
+                                   game/game.cpp
                                    graphics/arcball.cpp
                                    graphics/device.cpp
                                    graphics/engine.cpp
@@ -7,7 +8,6 @@ add_executable(mesh_simplification main.cpp
                                    graphics/instance.cpp
                                    graphics/memory.cpp
                                    graphics/obj_loader.cpp
-                                   graphics/scene.cpp
                                    graphics/shader_module.cpp
                                    graphics/swapchain.cpp
                                    graphics/window.cpp)
@@ -28,13 +28,13 @@ target_compile_definitions(mesh_simplification PRIVATE GLFW_INCLUDE_VULKAN
                                                        GLM_ENABLE_EXPERIMENTAL
                                                        GLM_FORCE_DEFAULT_ALIGNED_GENTYPES
                                                        GLM_FORCE_DEPTH_ZERO_TO_ONE
-                                                       GLM_FORCE_EXPLICIT_CTOR
                                                        GLM_FORCE_XYZW_ONLY
                                                        VULKAN_HPP_NO_CONSTRUCTORS
                                                        VULKAN_HPP_NO_SPACESHIP_OPERATOR
                                                        VULKAN_HPP_DISPATCH_LOADER_DYNAMIC=1)
 
-target_include_directories(mesh_simplification PRIVATE graphics/include)
+target_include_directories(mesh_simplification PRIVATE game/include
+                                                       graphics/include)
 
 add_custom_target(copy_assets COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/assets
                                                                          ${CMAKE_CURRENT_BINARY_DIR}/assets)
