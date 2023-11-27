@@ -13,6 +13,10 @@
 
 namespace {
 
+struct PushConstants {
+  glm::mat4 model_transform;
+};
+
 vk::UniqueRenderPass CreateRenderPass(const vk::Device& device,
                                       const vk::Format color_attachment_format,
                                       const vk::Format depth_attachment_format) {
@@ -76,7 +80,7 @@ vk::UniquePipelineLayout CreateGraphicsPipelineLayout(const vk::Device& device,
                                                       const vk::DescriptorSetLayout& descriptor_set_layout) {
   static constexpr vk::PushConstantRange kPushConstantRange{.stageFlags = vk::ShaderStageFlagBits::eVertex,
                                                             .offset = 0,
-                                                            .size = sizeof(gfx::Mesh::PushConstants)};
+                                                            .size = sizeof(PushConstants)};
 
   return device.createPipelineLayoutUnique(vk::PipelineLayoutCreateInfo{.setLayoutCount = 1,
                                                                         .pSetLayouts = &descriptor_set_layout,
@@ -102,11 +106,30 @@ vk::UniquePipeline CreateGraphicsPipeline(const vk::Device& device,
                                         .module = *fragment_shader_module,
                                         .pName = "main"}};
 
+  static constexpr vk::VertexInputBindingDescription kVertexInputBindingDescription{
+      .binding = 0,
+      .stride = sizeof(gfx::Mesh::Vertex),
+      .inputRate = vk::VertexInputRate::eVertex};
+
+  static constexpr std::array kVertexAttributeDescriptions{
+      vk::VertexInputAttributeDescription{.location = 0,
+                                          .binding = 0,
+                                          .format = vk::Format::eR32G32B32Sfloat,
+                                          .offset = offsetof(gfx::Mesh::Vertex, position)},
+      vk::VertexInputAttributeDescription{.location = 1,
+                                          .binding = 0,
+                                          .format = vk::Format::eR32G32Sfloat,
+                                          .offset = offsetof(gfx::Mesh::Vertex, texture_coordinates)},
+      vk::VertexInputAttributeDescription{.location = 2,
+                                          .binding = 0,
+                                          .format = vk::Format::eR32G32B32Sfloat,
+                                          .offset = offsetof(gfx::Mesh::Vertex, normal)}};
+
   static constexpr vk::PipelineVertexInputStateCreateInfo kVertexInputStateCreateInfo{
       .vertexBindingDescriptionCount = 1,
-      .pVertexBindingDescriptions = &gfx::Mesh::kVertexInputBindingDescription,
-      .vertexAttributeDescriptionCount = static_cast<std::uint32_t>(gfx::Mesh::kVertexAttributeDescriptions.size()),
-      .pVertexAttributeDescriptions = gfx::Mesh::kVertexAttributeDescriptions.data()};
+      .pVertexBindingDescriptions = &kVertexInputBindingDescription,
+      .vertexAttributeDescriptionCount = static_cast<std::uint32_t>(kVertexAttributeDescriptions.size()),
+      .pVertexAttributeDescriptions = kVertexAttributeDescriptions.data()};
 
   static constexpr vk::PipelineInputAssemblyStateCreateInfo kInputAssemblyStateCreateInfo{
       .topology = vk::PrimitiveTopology::eTriangleList};
@@ -273,7 +296,11 @@ void gfx::Engine::Render(const Camera& camera, const Mesh& mesh) {
                                     0,
                                     uniform_buffer.descriptor_set(),
                                     nullptr);
-  mesh.Render(command_buffer, *graphics_pipeline_layout_);
+  command_buffer.pushConstants<PushConstants>(*graphics_pipeline_layout_,
+                                              vk::ShaderStageFlagBits::eVertex,
+                                              0,
+                                              PushConstants{.model_transform = mesh.model_transform()});
+  mesh.Render(command_buffer);
 
   command_buffer.endRenderPass();
   command_buffer.end();
