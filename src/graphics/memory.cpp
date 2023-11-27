@@ -45,14 +45,11 @@ vk::UniqueDeviceMemory AllocateMemory(const gfx::Device& device,
 gfx::Memory::Memory(const Device& device,
                     const vk::MemoryRequirements& memory_requirements,
                     const vk::MemoryPropertyFlags& memory_property_flags)
-    : device_{*device},
-      memory_requirements_{memory_requirements},
-      memory_{AllocateMemory(device, memory_requirements_, memory_property_flags)} {}
+    : device_{*device}, memory_{AllocateMemory(device, memory_requirements, memory_property_flags)} {}
 
 gfx::Memory& gfx::Memory::operator=(Memory&& memory) noexcept {
   if (this != &memory) {
     device_ = memory.device_;
-    memory_requirements_ = memory.memory_requirements_;
     memory_ = std::move(memory.memory_);
     mapped_memory_ = memory.mapped_memory_;
     memory.mapped_memory_ = nullptr;
@@ -62,7 +59,7 @@ gfx::Memory& gfx::Memory::operator=(Memory&& memory) noexcept {
 
 void* gfx::Memory::Map() {
   if (mapped_memory_ == nullptr) {
-    mapped_memory_ = device_.mapMemory(*memory_, 0, memory_requirements_.size);
+    mapped_memory_ = device_.mapMemory(*memory_, 0, vk::WholeSize);
     assert(mapped_memory_ != nullptr);
   }
   return mapped_memory_;

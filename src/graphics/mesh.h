@@ -1,12 +1,18 @@
 #ifndef SRC_GRAPHICS_MESH_H_
 #define SRC_GRAPHICS_MESH_H_
 
+#include <utility>
+#include <vector>
+
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/vec3.hpp>
 #include <vulkan/vulkan.hpp>
 
 #include "graphics/buffer.h"
 #include "graphics/device.h"
+
+// TODO(matthew-rister): evaluate struct default initialization
+// TODO(matthew-rister): rename model_transform to transform
 
 namespace gfx {
 
@@ -18,10 +24,15 @@ public:
     glm::vec3 normal;
   };
 
-  Mesh(const Device& device, const DataView<const Vertex> vertices, const DataView<const std::uint32_t> indices)
-      : vertex_buffer_{CreateDeviceLocalBuffer(device, vk::BufferUsageFlagBits::eVertexBuffer, vertices)},
-        index_buffer_{CreateDeviceLocalBuffer(device, vk::BufferUsageFlagBits::eIndexBuffer, indices)} {}
+  Mesh(const Device& device, std::vector<Vertex> vertices, std::vector<std::uint32_t> indices)
+      : vertices_{std::move(vertices)},
+        indices_{std::move(indices)},
+        vertex_buffer_{CreateDeviceLocalBuffer<Vertex>(device, vk::BufferUsageFlagBits::eVertexBuffer, vertices_)},
+        index_buffer_{CreateDeviceLocalBuffer<std::uint32_t>(device, vk::BufferUsageFlagBits::eIndexBuffer, indices_)} {
+  }
 
+  [[nodiscard]] const std::vector<Vertex>& vertices() const noexcept { return vertices_; }
+  [[nodiscard]] const std::vector<std::uint32_t>& indices() const noexcept { return indices_; }
   [[nodiscard]] const glm::mat4& model_transform() const noexcept { return model_transform_; }
 
   void Translate(const float dx, const float dy, const float dz) {
@@ -39,13 +50,15 @@ public:
   void Render(const vk::CommandBuffer& command_buffer) const {
     command_buffer.bindVertexBuffers(0, *vertex_buffer_, static_cast<vk::DeviceSize>(0));
     command_buffer.bindIndexBuffer(*index_buffer_, 0, vk::IndexType::eUint32);
-    command_buffer.drawIndexed(static_cast<std::uint32_t>(index_buffer_.length()), 1, 0, 0, 0);
+    command_buffer.drawIndexed(static_cast<std::uint32_t>(indices_.size()), 1, 0, 0, 0);
   }
 
 private:
-  Buffer<Vertex> vertex_buffer_;
-  Buffer<std::uint32_t> index_buffer_;
+  std::vector<Vertex> vertices_;
+  std::vector<std::uint32_t> indices_;
   glm::mat4 model_transform_{1.0f};
+  Buffer vertex_buffer_;
+  Buffer index_buffer_;
 };
 
 }  // namespace gfx

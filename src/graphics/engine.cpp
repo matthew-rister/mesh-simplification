@@ -6,6 +6,8 @@
 #include <ranges>
 #include <utility>
 
+#include <glm/mat4x4.hpp>
+
 #include "graphics/camera.h"
 #include "graphics/mesh.h"
 #include "graphics/shader_module.h"
@@ -13,9 +15,73 @@
 
 namespace {
 
-struct PushConstants {
+struct MeshPushConstants {
   glm::mat4 model_transform;
 };
+
+struct CameraUniformBuffer {
+  glm::mat4 view_transform;
+  glm::mat4 projection_transform;
+};
+
+template <std::uint32_t N>
+vk::UniqueDescriptorPool CreateDescriptorPool(const vk::Device& device) {
+  static constexpr vk::DescriptorPoolSize kDescriptorPoolSize{.type = vk::DescriptorType::eUniformBuffer,
+                                                              .descriptorCount = N};
+
+  return device.createDescriptorPoolUnique(vk::DescriptorPoolCreateInfo{
+      .flags = vk::DescriptorPoolCreateFlagBits::eFreeDescriptorSet,  // required when using vk::UniqueDescriptorSet
+      .maxSets = N,
+      .poolSizeCount = 1,
+      .pPoolSizes = &kDescriptorPoolSize});
+}
+
+vk::UniqueDescriptorSetLayout CreateDescriptorSetLayout(const vk::Device& device) {
+  static constexpr vk::DescriptorSetLayoutBinding kDescriptorSetLayoutBinding{
+      .binding = 0,
+      .descriptorType = vk::DescriptorType::eUniformBuffer,
+      .descriptorCount = 1,
+      .stageFlags = vk::ShaderStageFlagBits::eVertex};
+
+  return device.createDescriptorSetLayoutUnique(
+      vk::DescriptorSetLayoutCreateInfo{.bindingCount = 1, .pBindings = &kDescriptorSetLayoutBinding});
+}
+
+template <std::uint32_t N>
+std::vector<vk::UniqueDescriptorSet> AllocateDescriptorSets(const vk::Device& device,
+                                                            const vk::DescriptorPool& descriptor_pool,
+                                                            const vk::DescriptorSetLayout& descriptor_set_layout) {
+  std::array<vk::DescriptorSetLayout, N> descriptor_set_layouts{};
+  std::ranges::fill(descriptor_set_layouts, descriptor_set_layout);
+
+  return device.allocateDescriptorSetsUnique(
+      vk::DescriptorSetAllocateInfo{.descriptorPool = descriptor_pool,
+                                    .descriptorSetCount = N,
+                                    .pSetLayouts = descriptor_set_layouts.data()});
+}
+
+std::vector<gfx::Buffer> CreateUniformBuffers(const gfx::Device& device,
+                                              const std::vector<vk::UniqueDescriptorSet>& descriptor_sets) {
+  return descriptor_sets  //
+         | std::views::transform([&device](const auto& descriptor_set) {
+             gfx::Buffer buffer{device,
+                                sizeof(CameraUniformBuffer),
+                                vk::BufferUsageFlagBits::eUniformBuffer,
+                                vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent};
+
+             const vk::DescriptorBufferInfo buffer_info{.buffer = *buffer, .offset = 0, .range = vk::WholeSize};
+             device->updateDescriptorSets(vk::WriteDescriptorSet{.dstSet = *descriptor_set,
+                                                                 .dstBinding = 0,
+                                                                 .dstArrayElement = 0,
+                                                                 .descriptorCount = 1,
+                                                                 .descriptorType = vk::DescriptorType::eUniformBuffer,
+                                                                 .pBufferInfo = &buffer_info},
+                                          nullptr);
+
+             return buffer;
+           })
+         | std::ranges::to<std::vector>();
+}
 
 vk::UniqueRenderPass CreateRenderPass(const vk::Device& device,
                                       const vk::Format color_attachment_format,
@@ -62,7 +128,6 @@ std::vector<vk::UniqueFramebuffer> CreateFramebuffers(const vk::Device& device,
                                                       const vk::RenderPass& render_pass,
                                                       const vk::ImageView& depth_attachment) {
   return swapchain.image_views()
-         // NOLINTNEXTLINE(whitespace/braces): cpplint false positive
          | std::views::transform([&, &extent = swapchain.image_extent()](const auto& color_attachment) {
              const std::array image_attachments{color_attachment, depth_attachment};
              return device.createFramebufferUnique(
@@ -80,7 +145,7 @@ vk::UniquePipelineLayout CreateGraphicsPipelineLayout(const vk::Device& device,
                                                       const vk::DescriptorSetLayout& descriptor_set_layout) {
   static constexpr vk::PushConstantRange kPushConstantRange{.stageFlags = vk::ShaderStageFlagBits::eVertex,
                                                             .offset = 0,
-                                                            .size = sizeof(PushConstants)};
+                                                            .size = sizeof(MeshPushConstants)};
 
   return device.createPipelineLayoutUnique(vk::PipelineLayoutCreateInfo{.setLayoutCount = 1,
                                                                         .pSetLayouts = &descriptor_set_layout,
@@ -236,16 +301,19 @@ gfx::Engine::Engine(const Window& window)
     : surface_{window.CreateSurface(*instance_)},
       device_{*instance_, *surface_},
       swapchain_{device_, window, *surface_},
-      uniform_buffers_{device_},
       depth_buffer_{device_,
                     vk::Format::eD32Sfloat,
                     swapchain_.image_extent(),
                     vk::ImageUsageFlagBits::eDepthStencilAttachment,
                     vk::ImageAspectFlagBits::eDepth,
                     vk::MemoryPropertyFlagBits::eDeviceLocal},
+      descriptor_pool_{CreateDescriptorPool<kMaxRenderFrames>(*device_)},
+      descriptor_set_layout_{CreateDescriptorSetLayout(*device_)},
+      descriptor_sets_{AllocateDescriptorSets<kMaxRenderFrames>(*device_, *descriptor_pool_, *descriptor_set_layout_)},
+      uniform_buffers_{CreateUniformBuffers(device_, descriptor_sets_)},
       render_pass_{CreateRenderPass(*device_, swapchain_.image_format(), depth_buffer_.format())},
       framebuffers_{CreateFramebuffers(*device_, swapchain_, *render_pass_, depth_buffer_.image_view())},
-      graphics_pipeline_layout_{CreateGraphicsPipelineLayout(*device_, uniform_buffers_.descriptor_set_layout())},
+      graphics_pipeline_layout_{CreateGraphicsPipelineLayout(*device_, *descriptor_set_layout_)},
       graphics_pipeline_{CreateGraphicsPipeline(*device_, swapchain_, *graphics_pipeline_layout_, *render_pass_)},
       command_pool_{CreateCommandPool(device_)},
       command_buffers_{AllocateCommandBuffers<kMaxRenderFrames>(*device_, *command_pool_)},
@@ -259,6 +327,9 @@ void gfx::Engine::Render(const Camera& camera, const Mesh& mesh) {
   const auto& acquire_next_image_semaphore = *acquire_next_image_semaphores_[current_frame_index_];
   const auto& present_image_semaphore = *present_image_semaphores_[current_frame_index_];
   const auto& draw_fence = *draw_fences_[current_frame_index_];
+  const auto& descriptor_set = *descriptor_sets_[current_frame_index_];
+  const auto& command_buffer = *command_buffers_[current_frame_index_];
+  auto& uniform_buffer = uniform_buffers_[current_frame_index_];
   // NOLINTEND(cppcoreguidelines-pro-bounds-constant-array-index)
 
   static constexpr auto kMaxTimeout = std::numeric_limits<std::uint64_t>::max();
@@ -270,11 +341,9 @@ void gfx::Engine::Render(const Camera& camera, const Mesh& mesh) {
   std::tie(result, image_index) = device_->acquireNextImageKHR(*swapchain_, kMaxTimeout, acquire_next_image_semaphore);
   vk::resultCheck(result, std::format("vkAcquireNextImageKHR failed with error {}", vk::to_string(result)).c_str());
 
-  auto& uniform_buffer = uniform_buffers_[current_frame_index_];
-  uniform_buffer.Copy(CameraTransforms{.view_transform = camera.view_transform(),
-                                       .projection_transform = camera.projection_transform()});
+  uniform_buffer.Copy<CameraUniformBuffer>(CameraUniformBuffer{.view_transform = camera.view_transform(),
+                                                               .projection_transform = camera.projection_transform()});
 
-  const auto& command_buffer = *command_buffers_[current_frame_index_];
   command_buffer.begin(vk::CommandBufferBeginInfo{.flags = vk::CommandBufferUsageFlagBits::eOneTimeSubmit});
 
   static constexpr std::array kClearValues{
@@ -294,12 +363,12 @@ void gfx::Engine::Render(const Camera& camera, const Mesh& mesh) {
   command_buffer.bindDescriptorSets(vk::PipelineBindPoint::eGraphics,
                                     *graphics_pipeline_layout_,
                                     0,
-                                    uniform_buffer.descriptor_set(),
+                                    descriptor_set,
                                     nullptr);
-  command_buffer.pushConstants<PushConstants>(*graphics_pipeline_layout_,
-                                              vk::ShaderStageFlagBits::eVertex,
-                                              0,
-                                              PushConstants{.model_transform = mesh.model_transform()});
+  command_buffer.pushConstants<MeshPushConstants>(*graphics_pipeline_layout_,
+                                                  vk::ShaderStageFlagBits::eVertex,
+                                                  0,
+                                                  MeshPushConstants{.model_transform = mesh.model_transform()});
   mesh.Render(command_buffer);
 
   command_buffer.endRenderPass();

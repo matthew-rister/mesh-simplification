@@ -30,7 +30,6 @@ public:
 
 private:
   vk::Device device_;
-  vk::MemoryRequirements memory_requirements_;
   vk::UniqueDeviceMemory memory_;
   void* mapped_memory_{};
 };

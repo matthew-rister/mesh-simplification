@@ -5,14 +5,13 @@
 #include <cstdint>
 #include <vector>
 
-#include <glm/mat4x4.hpp>
 #include <vulkan/vulkan.hpp>
 
+#include "graphics/buffer.h"
 #include "graphics/device.h"
 #include "graphics/image.h"
 #include "graphics/instance.h"
 #include "graphics/swapchain.h"
-#include "graphics/uniform_buffer.h"
 
 namespace gfx {
 class Camera;
@@ -28,19 +27,17 @@ public:
   void Render(const Camera& camera, const Mesh& mesh);
 
 private:
-  struct CameraTransforms {
-    glm::mat4 view_transform;
-    glm::mat4 projection_transform;
-  };
-
   static constexpr std::size_t kMaxRenderFrames = 2;
   std::uint32_t current_frame_index_ = 0;
   Instance instance_;
   vk::UniqueSurfaceKHR surface_;
   Device device_;
   Swapchain swapchain_;
-  UniformBuffers<CameraTransforms, kMaxRenderFrames> uniform_buffers_;
   Image depth_buffer_;
+  vk::UniqueDescriptorPool descriptor_pool_;
+  vk::UniqueDescriptorSetLayout descriptor_set_layout_;
+  std::vector<vk::UniqueDescriptorSet> descriptor_sets_;
+  std::vector<Buffer> uniform_buffers_;
   vk::UniqueRenderPass render_pass_;
   std::vector<vk::UniqueFramebuffer> framebuffers_;
   vk::UniquePipelineLayout graphics_pipeline_layout_;

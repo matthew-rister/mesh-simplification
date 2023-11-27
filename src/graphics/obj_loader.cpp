@@ -10,6 +10,7 @@
 #include <string>
 #include <string_view>
 #include <unordered_map>
+#include <utility>
 #include <vector>
 
 #include <glm/glm.hpp>
@@ -154,7 +155,7 @@ gfx::Mesh LoadMesh(const gfx::Device& device, std::istream& is) {
     }
   }
 
-  return gfx::Mesh{device, vertices, indices};
+  return gfx::Mesh{device, std::move(vertices), std::move(indices)};
 }
 
 }  // namespace
