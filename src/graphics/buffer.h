@@ -6,10 +6,11 @@
 
 #include <vulkan/vulkan.hpp>
 
+#include "graphics/data_view.h"
 #include "graphics/device.h"
 #include "graphics/memory.h"
 
-// TODO(matthew-rister): should create own DataView class instead of relying on vk::ArrayProxy
+// TODO(matthew-rister): remove template type
 
 namespace gfx {
 
@@ -39,9 +40,9 @@ public:
 
   [[nodiscard]] vk::DeviceSize length() const noexcept { return size_ / sizeof(T); }
 
-  void Copy(const vk::ArrayProxy<const T> data) {
+  void Copy(const DataView<const T> data) {
     auto* mapped_memory = memory_.Map();
-    const auto size_bytes = data.size() * sizeof(T);
+    const auto size_bytes = data.size_bytes();
     assert(size_bytes <= size_);
     memcpy(mapped_memory, data.data(), size_bytes);
   }
@@ -61,8 +62,8 @@ private:
 template <typename T>
 [[nodiscard]] Buffer<T> CreateDeviceLocalBuffer(const Device& device,
                                                 const vk::BufferUsageFlags& buffer_usage_flags,
-                                                const vk::ArrayProxy<const T> data) {
-  const auto size_bytes = data.size() * sizeof(T);
+                                                const DataView<const T> data) {
+  const auto size_bytes = data.size_bytes();
 
   Buffer<T> host_visible_buffer{device,
                                 size_bytes,
