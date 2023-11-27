@@ -1,5 +1,5 @@
-#ifndef SRC_GRAPHICS_INCLUDE_GRAPHICS_MEMORY_H_
-#define SRC_GRAPHICS_INCLUDE_GRAPHICS_MEMORY_H_
+#ifndef SRC_GRAPHICS_MEMORY_H_
+#define SRC_GRAPHICS_MEMORY_H_
 
 #include <utility>
 
@@ -37,4 +37,4 @@ private:
 
 }  // namespace gfx
 
-#endif  // SRC_GRAPHICS_INCLUDE_GRAPHICS_MEMORY_H_
+#endif  // SRC_GRAPHICS_MEMORY_H_

@@ -1,5 +1,5 @@
-#ifndef SRC_GAME_INCLUDE_GAME_GAME_H_
-#define SRC_GAME_INCLUDE_GAME_GAME_H_
+#ifndef SRC_GAME_GAME_H_
+#define SRC_GAME_GAME_H_
 
 #include "graphics/camera.h"
 #include "graphics/engine.h"
@@ -23,4 +23,4 @@ private:
   gfx::Mesh mesh_;
 };
 
-#endif  // SRC_GAME_INCLUDE_GAME_GAME_H_
+#endif  // SRC_GAME_GAME_H_

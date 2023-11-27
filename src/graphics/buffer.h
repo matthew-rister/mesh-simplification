@@ -1,5 +1,5 @@
-#ifndef SRC_GRAPHICS_INCLUDE_GRAPHICS_BUFFER_H_
-#define SRC_GRAPHICS_INCLUDE_GRAPHICS_BUFFER_H_
+#ifndef SRC_GRAPHICS_BUFFER_H_
+#define SRC_GRAPHICS_BUFFER_H_
 
 #include <cassert>
 #include <cstring>
@@ -8,6 +8,8 @@
 
 #include "graphics/device.h"
 #include "graphics/memory.h"
+
+// TODO(matthew-rister): should create own DataView class instead of relying on vk::ArrayProxy
 
 namespace gfx {
 
@@ -79,4 +81,4 @@ template <typename T>
 
 }  // namespace gfx
 
-#endif  // SRC_GRAPHICS_INCLUDE_GRAPHICS_BUFFER_H_
+#endif  // SRC_GRAPHICS_BUFFER_H_

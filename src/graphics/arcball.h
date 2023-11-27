@@ -1,5 +1,5 @@
-#ifndef SRC_GRAPHICS_INCLUDE_GRAPHICS_ARCBALL_H_
-#define SRC_GRAPHICS_INCLUDE_GRAPHICS_ARCBALL_H_
+#ifndef SRC_GRAPHICS_ARCBALL_H_
+#define SRC_GRAPHICS_ARCBALL_H_
 
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
@@ -19,4 +19,4 @@ Rotation GetRotation(const glm::vec2& cursor_position_start,
 
 }  // namespace gfx::arcball
 
-#endif  // SRC_GRAPHICS_INCLUDE_GRAPHICS_ARCBALL_H_
+#endif  // SRC_GRAPHICS_ARCBALL_H_

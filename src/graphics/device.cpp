@@ -1,5 +1,6 @@
 #include "graphics/device.h"
 
+#include <algorithm>
 #include <array>
 #include <cassert>
 #include <cstdint>
@@ -76,6 +77,7 @@ vk::UniqueDevice CreateDevice(const vk::PhysicalDevice& physical_device,
   static constexpr auto kHighestNormalizedQueuePriority = 1.0f;
 
   const auto device_queue_create_info =
+      // NOLINTNEXTLINE(whitespace/braces): cpplint false positive
       std::unordered_set{queue_family_indices.graphics_index, queue_family_indices.present_index}
       | std::views::transform([](const auto queue_family_index) {
           assert(queue_family_index != QueueFamilyIndices::kInvalidIndex);
@@ -100,7 +102,7 @@ vk::UniqueDevice CreateDevice(const vk::PhysicalDevice& physical_device,
   return device;
 }
 
-vk::UniqueCommandPool CreateOneTimeSubmitCommandPool(const vk::Device& device, const gfx::Queue& graphics_queue) {
+vk::UniqueCommandPool CreateOneTimeSubmitCommandPool(const vk::Device& device, const gfx::DeviceQueue& graphics_queue) {
   return device.createCommandPoolUnique(
       vk::CommandPoolCreateInfo{.flags = vk::CommandPoolCreateFlagBits::eTransient,
                                 .queueFamilyIndex = graphics_queue.queue_family_index()});

@@ -4,6 +4,7 @@
 #include <fstream>
 #include <ios>
 #include <stdexcept>
+#include <string>
 
 #include <glslang/Include/glslang_c_shader_types.h>
 

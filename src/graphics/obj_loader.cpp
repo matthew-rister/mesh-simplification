@@ -94,7 +94,6 @@ glm::ivec3 ParseIndexGroup(const std::string_view token) {
       }
       break;
     }
-    default: break;
   }
 
   throw std::invalid_argument{std::format("Unsupported format {}", token)};

@@ -1,5 +1,5 @@
-#ifndef SRC_GRAPHICS_INCLUDE_GRAPHICS_CAMERA_H_
-#define SRC_GRAPHICS_INCLUDE_GRAPHICS_CAMERA_H_
+#ifndef SRC_GRAPHICS_CAMERA_H_
+#define SRC_GRAPHICS_CAMERA_H_
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/mat4x4.hpp>
@@ -34,4 +34,4 @@ private:
 
 }  // namespace gfx
 
-#endif  // SRC_GRAPHICS_INCLUDE_GRAPHICS_CAMERA_H_
+#endif  // SRC_GRAPHICS_CAMERA_H_

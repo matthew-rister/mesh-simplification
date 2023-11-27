@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <filesystem>
+#include <limits>
 #include <ranges>
 #include <utility>
 
@@ -57,6 +58,7 @@ std::vector<vk::UniqueFramebuffer> CreateFramebuffers(const vk::Device& device,
                                                       const vk::RenderPass& render_pass,
                                                       const vk::ImageView& depth_attachment) {
   return swapchain.image_views()
+         // NOLINTNEXTLINE(whitespace/braces): cpplint false positive
          | std::views::transform([&, &extent = swapchain.image_extent()](const auto& color_attachment) {
              const std::array image_attachments{color_attachment, depth_attachment};
              return device.createFramebufferUnique(
@@ -229,8 +231,8 @@ gfx::Engine::Engine(const Window& window)
       draw_fences_{CreateFences<kMaxRenderFrames>(*device_)} {}
 
 void gfx::Engine::Render(const Camera& camera, const Mesh& mesh) {
-  current_frame_index_ = (current_frame_index_ + 1) % kMaxRenderFrames;
   // NOLINTBEGIN(cppcoreguidelines-pro-bounds-constant-array-index)
+  current_frame_index_ = (current_frame_index_ + 1) % kMaxRenderFrames;
   const auto& acquire_next_image_semaphore = *acquire_next_image_semaphores_[current_frame_index_];
   const auto& present_image_semaphore = *present_image_semaphores_[current_frame_index_];
   const auto& draw_fence = *draw_fences_[current_frame_index_];

@@ -1,5 +1,5 @@
-#ifndef SRC_GRAPHICS_INCLUDE_GRAPHICS_MESH_H_
-#define SRC_GRAPHICS_INCLUDE_GRAPHICS_MESH_H_
+#ifndef SRC_GRAPHICS_MESH_H_
+#define SRC_GRAPHICS_MESH_H_
 
 #include <array>
 
@@ -9,6 +9,8 @@
 
 #include "graphics/buffer.h"
 #include "graphics/device.h"
+
+// TODO(matthew-rister): vulkan pipeline constructs should not live here
 
 namespace gfx {
 
@@ -81,4 +83,4 @@ private:
 
 }  // namespace gfx
 
-#endif  // SRC_GRAPHICS_INCLUDE_GRAPHICS_MESH_H_
+#endif  // SRC_GRAPHICS_MESH_H_

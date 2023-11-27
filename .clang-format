@@ -11,6 +11,5 @@ ColumnLimit: 120
 DerivePointerAlignment: false
 IncludeBlocks: Preserve
 InsertNewlineAtEOF: true
-PackConstructorInitializers: NextLine
 PointerAlignment: Left
 QualifierAlignment: Left

@@ -1,5 +1,5 @@
-#ifndef SRC_GRAPHICS_INCLUDE_GRAPHICS_UNIFORM_BUFFER_H_
-#define SRC_GRAPHICS_INCLUDE_GRAPHICS_UNIFORM_BUFFER_H_
+#ifndef SRC_GRAPHICS_UNIFORM_BUFFER_H_
+#define SRC_GRAPHICS_UNIFORM_BUFFER_H_
 
 #include <algorithm>
 #include <ranges>
@@ -10,6 +10,8 @@
 
 #include "graphics/buffer.h"
 #include "graphics/device.h"
+
+// TODO(matthew-rister): remove these abstraction
 
 namespace gfx {
 
@@ -100,7 +102,8 @@ private:
   static std::vector<UniformBuffer<T>> CreateUniformBuffers(const Device& device,
                                                             const vk::DescriptorPool& descriptor_pool,
                                                             const vk::DescriptorSetLayout& descriptor_set_layout) {
-    return AllocateDescriptorSets(*device, descriptor_pool, descriptor_set_layout) | std::views::as_rvalue
+    return AllocateDescriptorSets(*device, descriptor_pool, descriptor_set_layout)  //
+           | std::views::as_rvalue                                                  //
            | std::views::transform([&device](vk::UniqueDescriptorSet&& descriptor_set) {
                return UniformBuffer<T>{device, std::move(descriptor_set)};
              })
@@ -114,4 +117,4 @@ private:
 
 }  // namespace gfx
 
-#endif  // SRC_GRAPHICS_INCLUDE_GRAPHICS_UNIFORM_BUFFER_H_
+#endif  // SRC_GRAPHICS_UNIFORM_BUFFER_H_

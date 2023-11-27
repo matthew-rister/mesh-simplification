@@ -33,8 +33,7 @@ target_compile_definitions(mesh_simplification PRIVATE GLFW_INCLUDE_VULKAN
                                                        VULKAN_HPP_NO_SPACESHIP_OPERATOR
                                                        VULKAN_HPP_DISPATCH_LOADER_DYNAMIC=1)
 
-target_include_directories(mesh_simplification PRIVATE game/include
-                                                       graphics/include)
+target_include_directories(mesh_simplification PRIVATE .)
 
 add_custom_target(copy_assets COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/assets
                                                                          ${CMAKE_CURRENT_BINARY_DIR}/assets)

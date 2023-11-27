@@ -65,8 +65,8 @@ void Game::HandleCursorEvent(const float x, const float y) {
       const auto window_size = window_.GetSize();
       const auto arcball_rotation = gfx::arcball::GetRotation(*prev_cursor_position, cursor_position, window_size);
       const auto [view_rotation_axis, angle] = arcball_rotation;
-      const auto model_view_inverse = glm::transpose(camera_.view_transform() * mesh_.model_transform());
-      const auto model_rotation_axis = glm::normalize(glm::mat3{model_view_inverse} * view_rotation_axis);
+      const glm::mat3 model_view_inverse = glm::transpose(camera_.view_transform() * mesh_.model_transform());
+      const auto model_rotation_axis = glm::normalize(model_view_inverse * view_rotation_axis);
       mesh_.Rotate(model_rotation_axis, kRotationSpeed * angle);
     }
     prev_cursor_position = cursor_position;
@@ -74,9 +74,9 @@ void Game::HandleCursorEvent(const float x, const float y) {
     const glm::vec2 cursor_position{x, y};
     if (prev_cursor_position.has_value()) {
       const auto delta_cursor_position = cursor_position - *prev_cursor_position;
-      const auto view_translation = glm::vec2{delta_cursor_position.x, -delta_cursor_position.y};
-      const auto model_view_inverse = glm::transpose(camera_.view_transform() * mesh_.model_transform());
-      const auto model_translation = glm::mat3{model_view_inverse} * glm::vec3{view_translation, 0.0f};
+      const glm::vec2 view_translation{delta_cursor_position.x, -delta_cursor_position.y};
+      const glm::mat3 model_view_inverse = glm::transpose(camera_.view_transform() * mesh_.model_transform());
+      const auto model_translation = model_view_inverse * glm::vec3{view_translation, 0.0f};
       mesh_.Translate(kTranslationSpeed * model_translation.x,
                       kTranslationSpeed * model_translation.y,
                       kTranslationSpeed * model_translation.z);
