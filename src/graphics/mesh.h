@@ -1,6 +1,7 @@
 #ifndef SRC_GRAPHICS_MESH_H_
 #define SRC_GRAPHICS_MESH_H_
 
+#include <cassert>
 #include <utility>
 #include <vector>
 
@@ -10,9 +11,6 @@
 
 #include "graphics/buffer.h"
 #include "graphics/device.h"
-
-// TODO(matthew-rister): evaluate struct default initialization
-// TODO(matthew-rister): rename model_transform to transform
 
 namespace gfx {
 
@@ -29,23 +27,16 @@ public:
         indices_{std::move(indices)},
         vertex_buffer_{CreateDeviceLocalBuffer<Vertex>(device, vk::BufferUsageFlagBits::eVertexBuffer, vertices_)},
         index_buffer_{CreateDeviceLocalBuffer<std::uint32_t>(device, vk::BufferUsageFlagBits::eIndexBuffer, indices_)} {
+    assert(indices_.size() % 3 == 0);
   }
 
   [[nodiscard]] const std::vector<Vertex>& vertices() const noexcept { return vertices_; }
   [[nodiscard]] const std::vector<std::uint32_t>& indices() const noexcept { return indices_; }
-  [[nodiscard]] const glm::mat4& model_transform() const noexcept { return model_transform_; }
+  [[nodiscard]] const glm::mat4& transform() const noexcept { return transform_; }
 
-  void Translate(const float dx, const float dy, const float dz) {
-    model_transform_ = glm::translate(model_transform_, glm::vec3{dx, dy, dz});
-  }
-
-  void Rotate(const glm::vec3& axis, const float angle) {
-    model_transform_ = glm::rotate(model_transform_, angle, axis);
-  }
-
-  void Scale(const float sx, const float sy, const float sz) {
-    model_transform_ = glm::scale(model_transform_, glm::vec3{sx, sy, sz});
-  }
+  void Translate(const glm::vec3& translation) { transform_ = glm::translate(transform_, translation); }
+  void Rotate(const glm::vec3& axis, const float angle) { transform_ = glm::rotate(transform_, angle, axis); }
+  void Scale(const glm::vec3& scale) { transform_ = glm::scale(transform_, scale); }
 
   void Render(const vk::CommandBuffer& command_buffer) const {
     command_buffer.bindVertexBuffers(0, *vertex_buffer_, static_cast<vk::DeviceSize>(0));
@@ -56,7 +47,7 @@ public:
 private:
   std::vector<Vertex> vertices_;
   std::vector<std::uint32_t> indices_;
-  glm::mat4 model_transform_{1.0f};
+  glm::mat4 transform_{1.0f};
   Buffer vertex_buffer_;
   Buffer index_buffer_;
 };

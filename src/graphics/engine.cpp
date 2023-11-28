@@ -368,7 +368,7 @@ void gfx::Engine::Render(const Camera& camera, const Mesh& mesh) {
   command_buffer.pushConstants<MeshPushConstants>(*graphics_pipeline_layout_,
                                                   vk::ShaderStageFlagBits::eVertex,
                                                   0,
-                                                  MeshPushConstants{.model_transform = mesh.model_transform()});
+                                                  MeshPushConstants{.model_transform = mesh.transform()});
   mesh.Render(command_buffer);
 
   command_buffer.endRenderPass();

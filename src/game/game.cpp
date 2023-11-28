@@ -14,17 +14,17 @@ gfx::Camera CreateCamera(const gfx::Window& window) {
   return gfx::Camera{glm::vec3{0.0f, 0.0f, 2.0f},
                      glm::vec3{0.0f},
                      glm::vec3{0.0f, 1.0f, 0.0f},
-                     gfx::ViewFrustum{.field_of_view_y = glm::radians(45.0f),
-                                      .aspect_ratio = window.GetAspectRatio(),
-                                      .z_near = 0.1f,
-                                      .z_far = 10'000.0f}};
+                     gfx::Camera::ViewFrustum{.field_of_view_y = glm::radians(45.0f),
+                                              .aspect_ratio = window.GetAspectRatio(),
+                                              .z_near = 0.1f,
+                                              .z_far = 10'000.0f}};
 }
 
 gfx::Mesh CreateMesh(const gfx::Device& device) {
   const std::filesystem::path mesh_filepath{"assets/models/bunny.obj"};
   auto mesh = gfx::obj_loader::LoadMesh(device, mesh_filepath);
-  mesh.Translate(0.2f, -0.25f, 0.0f);
-  mesh.Scale(0.35f, 0.35f, 0.35f);
+  mesh.Translate(glm::vec3{0.2f, -0.25f, 0.0f});
+  mesh.Scale(glm::vec3{0.35f});
   return mesh;
 }
 
@@ -65,7 +65,7 @@ void Game::HandleCursorEvent(const float x, const float y) {
       const auto window_size = window_.GetSize();
       const auto arcball_rotation = gfx::arcball::GetRotation(*prev_cursor_position, cursor_position, window_size);
       const auto [view_rotation_axis, angle] = arcball_rotation;
-      const glm::mat3 model_view_inverse = glm::transpose(camera_.view_transform() * mesh_.model_transform());
+      const glm::mat3 model_view_inverse = glm::transpose(camera_.view_transform() * mesh_.transform());
       const auto model_rotation_axis = glm::normalize(model_view_inverse * view_rotation_axis);
       mesh_.Rotate(model_rotation_axis, kRotationSpeed * angle);
     }
@@ -75,11 +75,9 @@ void Game::HandleCursorEvent(const float x, const float y) {
     if (prev_cursor_position.has_value()) {
       const auto delta_cursor_position = cursor_position - *prev_cursor_position;
       const glm::vec2 view_translation{delta_cursor_position.x, -delta_cursor_position.y};
-      const glm::mat3 model_view_inverse = glm::transpose(camera_.view_transform() * mesh_.model_transform());
+      const glm::mat3 model_view_inverse = glm::transpose(camera_.view_transform() * mesh_.transform());
       const auto model_translation = model_view_inverse * glm::vec3{view_translation, 0.0f};
-      mesh_.Translate(kTranslationSpeed * model_translation.x,
-                      kTranslationSpeed * model_translation.y,
-                      kTranslationSpeed * model_translation.z);
+      mesh_.Translate(kTranslationSpeed * model_translation);
     }
     prev_cursor_position = cursor_position;
   } else {
@@ -89,6 +87,5 @@ void Game::HandleCursorEvent(const float x, const float y) {
 
 void Game::HandleScrollEvent(const float y_offset) {
   static constexpr auto kScaleSpeed = 0.02f;
-  const auto uniform_scale = 1.0f + kScaleSpeed * y_offset;
-  mesh_.Scale(uniform_scale, uniform_scale, uniform_scale);
+  mesh_.Scale(glm::vec3{1.0f + kScaleSpeed * y_offset});
 }
