@@ -10,30 +10,35 @@
 
 namespace {
 
-gfx::Camera CreateCamera(const gfx::Window& window) {
-  return gfx::Camera{glm::vec3{0.0f, 0.0f, 2.0f},
-                     glm::vec3{0.0f},
-                     glm::vec3{0.0f, 1.0f, 0.0f},
-                     gfx::Camera::ViewFrustum{.field_of_view_y = glm::radians(45.0f),
-                                              .aspect_ratio = window.GetAspectRatio(),
+constexpr auto kWindowWidth = 1920;
+constexpr auto kWindowHeight = 1080;
+
+gfx::Camera CreateCamera(const float aspect_ratio) {
+  static constexpr glm::vec3 kLookFrom{0.0f, 0.0f, 2.0f};
+  static constexpr glm::vec3 kLookAt{0.0f};
+  static constexpr glm::vec3 kUp{0.0f, 1.0f, 0.0f};
+  const gfx::Camera::ViewFrustum view_frustum{.field_of_view_y = glm::radians(45.0f),
+                                              .aspect_ratio = aspect_ratio,
                                               .z_near = 0.1f,
-                                              .z_far = 10'000.0f}};
+                                              .z_far = 10'000.0f};
+  return gfx::Camera{kLookFrom, kLookAt, kUp, view_frustum};
 }
 
 gfx::Mesh CreateMesh(const gfx::Device& device) {
-  const std::filesystem::path mesh_filepath{"assets/models/bunny.obj"};
-  auto mesh = gfx::obj_loader::LoadMesh(device, mesh_filepath);
-  mesh.Translate(glm::vec3{0.2f, -0.25f, 0.0f});
-  mesh.Scale(glm::vec3{0.35f});
+  static constexpr glm::vec3 kTranslation{0.2f, -0.25f, 0.0f};
+  static constexpr glm::vec3 kScale{0.35f};
+  auto mesh = gfx::obj_loader::LoadMesh(device, "assets/models/bunny.obj");
+  mesh.Translate(kTranslation);
+  mesh.Scale(kScale);
   return mesh;
 }
 
 }  // namespace
 
 Game::Game()
-    : window_{"Mesh Simplification", gfx::Window::Size{.width = 1920, .height = 1080}},
+    : window_{"Mesh Simplification", gfx::Window::Size{.width = kWindowWidth, .height = kWindowHeight}},
       engine_{window_},
-      camera_{CreateCamera(window_)},
+      camera_{CreateCamera(window_.GetAspectRatio())},
       mesh_{CreateMesh(engine_.device())} {
   window_.OnKeyEvent([this](const auto key, const auto action) { HandleKeyEvent(key, action); });
   window_.OnCursorEvent([this](const auto x, const auto y) { HandleCursorEvent(x, y); });
@@ -42,13 +47,13 @@ Game::Game()
 
 void Game::Run() {
   while (!window_.IsClosed()) {
-    window_.Update();
+    gfx::Window::Update();
     engine_.Render(camera_, mesh_);
   }
   engine_.device()->waitIdle();
 }
 
-void Game::HandleKeyEvent(const int key, const int action) {
+void Game::HandleKeyEvent(const int key, const int action) const {
   if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
     window_.Close();
   }
@@ -85,7 +90,7 @@ void Game::HandleCursorEvent(const float x, const float y) {
   }
 }
 
-void Game::HandleScrollEvent(const float y_offset) {
+void Game::HandleScrollEvent(const float y) {
   static constexpr auto kScaleSpeed = 0.02f;
-  mesh_.Scale(glm::vec3{1.0f + kScaleSpeed * y_offset});
+  mesh_.Scale(glm::vec3{1.0f + kScaleSpeed * y});
 }

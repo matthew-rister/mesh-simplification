@@ -38,7 +38,7 @@ vk::PresentModeKHR GetSwapchainPresentMode(const vk::PhysicalDevice& physical_de
 
 std::uint32_t GetSwapchainImageCount(const vk::SurfaceCapabilitiesKHR& surface_capabilities) {
   const auto min_image_count = surface_capabilities.minImageCount;
-  assert(min_image_count > 0u);
+  assert(min_image_count > 0);
   auto max_image_count = surface_capabilities.maxImageCount;
   if (constexpr std::uint32_t kNoMaxLimitImageCount = 0; max_image_count == kNoMaxLimitImageCount) {
     max_image_count = std::numeric_limits<std::uint32_t>::max();

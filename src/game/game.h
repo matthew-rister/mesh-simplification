@@ -13,9 +13,9 @@ public:
   void Run();
 
 private:
-  void HandleKeyEvent(const int key, const int action);
+  void HandleKeyEvent(const int key, const int action) const;
   void HandleCursorEvent(const float x, const float y);
-  void HandleScrollEvent(const float y_offset);
+  void HandleScrollEvent(const float y);
 
   gfx::Window window_;
   gfx::Engine engine_;

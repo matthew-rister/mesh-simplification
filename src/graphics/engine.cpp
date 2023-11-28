@@ -29,11 +29,11 @@ vk::UniqueDescriptorPool CreateDescriptorPool(const vk::Device& device) {
   static constexpr vk::DescriptorPoolSize kDescriptorPoolSize{.type = vk::DescriptorType::eUniformBuffer,
                                                               .descriptorCount = N};
 
-  return device.createDescriptorPoolUnique(vk::DescriptorPoolCreateInfo{
-      .flags = vk::DescriptorPoolCreateFlagBits::eFreeDescriptorSet,  // required when using vk::UniqueDescriptorSet
-      .maxSets = N,
-      .poolSizeCount = 1,
-      .pPoolSizes = &kDescriptorPoolSize});
+  return device.createDescriptorPoolUnique(
+      vk::DescriptorPoolCreateInfo{.flags = vk::DescriptorPoolCreateFlagBits::eFreeDescriptorSet,
+                                   .maxSets = N,
+                                   .poolSizeCount = 1,
+                                   .pPoolSizes = &kDescriptorPoolSize});
 }
 
 vk::UniqueDescriptorSetLayout CreateDescriptorSetLayout(const vk::Device& device) {

@@ -14,7 +14,8 @@
 struct gfx::RankedPhysicalDevice {
   struct QueueFamilyIndices {
     static constexpr std::uint32_t kInvalidIndex = std::numeric_limits<std::uint32_t>::max();
-    std::uint32_t graphics_index = kInvalidIndex, present_index = kInvalidIndex;
+    std::uint32_t graphics_index = kInvalidIndex;
+    std::uint32_t present_index = kInvalidIndex;
   };
   static constexpr std::uint32_t kInvalidRank = 0;
   vk::PhysicalDevice physical_device;
@@ -28,7 +29,9 @@ using QueueFamilyIndices = gfx::RankedPhysicalDevice::QueueFamilyIndices;
 
 std::optional<QueueFamilyIndices> FindQueueFamilyIndices(const vk::PhysicalDevice& physical_device,
                                                          const vk::SurfaceKHR& surface) {
-  std::optional<std::uint32_t> graphics_index, present_index;
+  std::optional<std::uint32_t> graphics_index;
+  std::optional<std::uint32_t> present_index;
+
   for (std::uint32_t index = 0; const auto& queue_family_properties : physical_device.getQueueFamilyProperties()) {
     assert(queue_family_properties.queueCount > 0);
     if (static_cast<bool>(queue_family_properties.queueFlags & vk::QueueFlagBits::eGraphics)) {
@@ -42,6 +45,7 @@ std::optional<QueueFamilyIndices> FindQueueFamilyIndices(const vk::PhysicalDevic
     }
     ++index;
   }
+
   return std::nullopt;
 }
 
@@ -76,8 +80,7 @@ vk::UniqueDevice CreateDevice(const vk::PhysicalDevice& physical_device,
                               const QueueFamilyIndices& queue_family_indices) {
   static constexpr auto kHighestNormalizedQueuePriority = 1.0f;
 
-  const auto device_queue_create_info =
-      // NOLINTNEXTLINE(whitespace/braces): cpplint false positive
+  const auto device_queue_create_info =  // NOLINTNEXTLINE(whitespace/braces)
       std::unordered_set{queue_family_indices.graphics_index, queue_family_indices.present_index}
       | std::views::transform([](const auto queue_family_index) {
           assert(queue_family_index != QueueFamilyIndices::kInvalidIndex);
