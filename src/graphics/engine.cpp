@@ -51,7 +51,7 @@ template <std::uint32_t N>
 std::vector<vk::UniqueDescriptorSet> AllocateDescriptorSets(const vk::Device& device,
                                                             const vk::DescriptorPool& descriptor_pool,
                                                             const vk::DescriptorSetLayout& descriptor_set_layout) {
-  std::array<vk::DescriptorSetLayout, N> descriptor_set_layouts{};
+  std::array<vk::DescriptorSetLayout, N> descriptor_set_layouts;
   std::ranges::fill(descriptor_set_layouts, descriptor_set_layout);
 
   return device.allocateDescriptorSetsUnique(
@@ -157,10 +157,10 @@ vk::UniquePipeline CreateGraphicsPipeline(const vk::Device& device,
                                           const gfx::Swapchain& swapchain,
                                           const vk::PipelineLayout& pipeline_layout,
                                           const vk::RenderPass& render_pass) {
-  const std::filesystem::path vertex_shader_filepath{"assets/shaders/vertex.glsl"};
+  const std::filesystem::path vertex_shader_filepath{"assets/shaders/mesh.vert"};
   const gfx::ShaderModule vertex_shader_module{device, vk::ShaderStageFlagBits::eVertex, vertex_shader_filepath};
 
-  const std::filesystem::path fragment_shader_filepath{"assets/shaders/fragment.glsl"};
+  const std::filesystem::path fragment_shader_filepath{"assets/shaders/mesh.frag"};
   const gfx::ShaderModule fragment_shader_module{device, vk::ShaderStageFlagBits::eFragment, fragment_shader_filepath};
 
   const std::array shader_stage_create_info{
@@ -321,29 +321,26 @@ gfx::Engine::Engine(const Window& window)
       present_image_semaphores_{CreateSemaphores<kMaxRenderFrames>(*device_)},
       draw_fences_{CreateFences<kMaxRenderFrames>(*device_)} {}
 
+// NOLINTBEGIN(cppcoreguidelines-pro-bounds-constant-array-index)
 void gfx::Engine::Render(const Camera& camera, const Mesh& mesh) {
-  // NOLINTBEGIN(cppcoreguidelines-pro-bounds-constant-array-index)
   current_frame_index_ = (current_frame_index_ + 1) % kMaxRenderFrames;
-  const auto& acquire_next_image_semaphore = *acquire_next_image_semaphores_[current_frame_index_];
-  const auto& present_image_semaphore = *present_image_semaphores_[current_frame_index_];
-  const auto& draw_fence = *draw_fences_[current_frame_index_];
-  const auto& descriptor_set = *descriptor_sets_[current_frame_index_];
-  const auto& command_buffer = *command_buffers_[current_frame_index_];
-  auto& uniform_buffer = uniform_buffers_[current_frame_index_];
-  // NOLINTEND(cppcoreguidelines-pro-bounds-constant-array-index)
 
   static constexpr auto kMaxTimeout = std::numeric_limits<std::uint64_t>::max();
+  const auto& draw_fence = *draw_fences_[current_frame_index_];
   auto result = device_->waitForFences(draw_fence, vk::True, kMaxTimeout);
   vk::resultCheck(result, std::format("vkWaitForFences failed with result {}", vk::to_string(result)).c_str());
   device_->resetFences(draw_fence);
 
   std::uint32_t image_index{};
+  const auto& acquire_next_image_semaphore = *acquire_next_image_semaphores_[current_frame_index_];
   std::tie(result, image_index) = device_->acquireNextImageKHR(*swapchain_, kMaxTimeout, acquire_next_image_semaphore);
   vk::resultCheck(result, std::format("vkAcquireNextImageKHR failed with error {}", vk::to_string(result)).c_str());
 
+  auto& uniform_buffer = uniform_buffers_[current_frame_index_];
   uniform_buffer.Copy<CameraUniformBuffer>(CameraUniformBuffer{.view_transform = camera.view_transform(),
                                                                .projection_transform = camera.projection_transform()});
 
+  const auto& command_buffer = *command_buffers_[current_frame_index_];
   command_buffer.begin(vk::CommandBufferBeginInfo{.flags = vk::CommandBufferUsageFlagBits::eOneTimeSubmit});
 
   static constexpr std::array kClearValues{
@@ -360,6 +357,8 @@ void gfx::Engine::Render(const Camera& camera, const Mesh& mesh) {
       vk::SubpassContents::eInline);
 
   command_buffer.bindPipeline(vk::PipelineBindPoint::eGraphics, *graphics_pipeline_);
+
+  const auto& descriptor_set = *descriptor_sets_[current_frame_index_];
   command_buffer.bindDescriptorSets(vk::PipelineBindPoint::eGraphics,
                                     *graphics_pipeline_layout_,
                                     0,
@@ -373,6 +372,8 @@ void gfx::Engine::Render(const Camera& camera, const Mesh& mesh) {
 
   command_buffer.endRenderPass();
   command_buffer.end();
+
+  const auto& present_image_semaphore = *present_image_semaphores_[current_frame_index_];
 
   static constexpr vk::PipelineStageFlags kTopOfPipe = vk::PipelineStageFlagBits::eTopOfPipe;
   device_.graphics_queue()->submit(vk::SubmitInfo{.waitSemaphoreCount = 1,
@@ -391,3 +392,4 @@ void gfx::Engine::Render(const Camera& camera, const Mesh& mesh) {
                                                                   .pImageIndices = &image_index});
   vk::resultCheck(result, std::format("vkQueuePresentKHR failed with error {}", vk::to_string(result)).c_str());
 }
+// NOLINTEND(cppcoreguidelines-pro-bounds-constant-array-index)

@@ -14,13 +14,14 @@ layout(location = 1) in vec2 texture_coordaintes;
 layout(location = 2) in vec3 normal;
 
 layout(location = 0) out Vertex {
+  vec3 position;
   vec3 normal;
 } vertex;
 
 void main() {
-  gl_Position = camera_uniform_buffer.projection_transform *
-                camera_uniform_buffer.view_transform *
-                mesh_push_constants.model_transform *
-                vec4(position, 1.0);
+  const mat4 model_view_transform = camera_uniform_buffer.view_transform * mesh_push_constants.model_transform;
+  const vec4 model_view_position = model_view_transform * vec4(position, 1.0);
+  vertex.position = model_view_position.xyz;
   vertex.normal = normal;
+  gl_Position = camera_uniform_buffer.projection_transform * model_view_position;
 }

@@ -16,7 +16,8 @@ namespace {
 vk::SurfaceFormatKHR GetSwapchainSurfaceFormat(const vk::PhysicalDevice& physical_device,
                                                const vk::SurfaceKHR& surface) {
   const auto surface_formats = physical_device.getSurfaceFormatsKHR(surface);
-  if (constexpr vk::SurfaceFormatKHR kTargetSurfaceFormat{vk::Format::eB8G8R8A8Srgb, vk::ColorSpaceKHR::eSrgbNonlinear};
+  if (constexpr vk::SurfaceFormatKHR kTargetSurfaceFormat{vk::Format::eB8G8R8A8Unorm,
+                                                          vk::ColorSpaceKHR::eSrgbNonlinear};
       std::ranges::contains(surface_formats, kTargetSurfaceFormat)) {
     return kTargetSurfaceFormat;
   }
