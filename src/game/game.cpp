@@ -5,6 +5,7 @@
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 
+#include "geometry/half_edge_mesh.h"
 #include "graphics/arcball.h"
 #include "graphics/obj_loader.h"
 
@@ -35,8 +36,8 @@ gfx::Mesh CreateMesh(const gfx::Device& device) {
 
 }  // namespace
 
-Game::Game()
-    : window_{"Mesh Simplification", gfx::Window::Size{.width = kWindowWidth, .height = kWindowHeight}},
+gfx::Game::Game()
+    : window_{"Mesh Simplification", Window::Size{.width = kWindowWidth, .height = kWindowHeight}},
       engine_{window_},
       camera_{CreateCamera(window_.GetAspectRatio())},
       mesh_{CreateMesh(engine_.device())} {
@@ -45,21 +46,31 @@ Game::Game()
   window_.OnScrollEvent([this](const auto y_offset) { HandleScrollEvent(y_offset); });
 }
 
-void Game::Run() {
+void gfx::Game::Run() {
   while (!window_.IsClosed()) {
-    gfx::Window::Update();
+    Window::Update();
     engine_.Render(camera_, mesh_);
   }
   engine_.device()->waitIdle();
 }
 
-void Game::HandleKeyEvent(const int key, const int action) const {
-  if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
-    window_.Close();
+void gfx::Game::HandleKeyEvent(const int key, const int action) {
+  if (action != GLFW_PRESS) return;
+
+  switch (key) {
+    case GLFW_KEY_ESCAPE: {
+      window_.Close();
+      break;
+    }
+    case GLFW_KEY_S: {
+      const HalfEdgeMesh half_edge_mesh{mesh_};
+      mesh_ = half_edge_mesh.ToMesh(engine_.device());
+      break;
+    }
   }
 }
 
-void Game::HandleCursorEvent(const float x, const float y) {
+void gfx::Game::HandleCursorEvent(const float x, const float y) {
   static constexpr auto kTranslationSpeed = 0.01f;
   static constexpr auto kRotationSpeed = 2.0f;
   static std::optional<glm::vec2> prev_cursor_position;
@@ -67,8 +78,7 @@ void Game::HandleCursorEvent(const float x, const float y) {
   if (window_.IsMouseButtonPressed(GLFW_MOUSE_BUTTON_LEFT)) {
     const glm::vec2 cursor_position{x, y};
     if (prev_cursor_position.has_value()) {
-      const auto window_size = window_.GetSize();
-      const auto arcball_rotation = gfx::arcball::GetRotation(*prev_cursor_position, cursor_position, window_size);
+      const auto arcball_rotation = arcball::GetRotation(*prev_cursor_position, cursor_position, window_.GetSize());
       const auto [view_rotation_axis, angle] = arcball_rotation;
       const glm::mat3 model_view_inverse = glm::transpose(camera_.view_transform() * mesh_.transform());
       const auto model_rotation_axis = glm::normalize(model_view_inverse * view_rotation_axis);
@@ -90,7 +100,7 @@ void Game::HandleCursorEvent(const float x, const float y) {
   }
 }
 
-void Game::HandleScrollEvent(const float y) {
+void gfx::Game::HandleScrollEvent(const float y) {
   static constexpr auto kScaleSpeed = 0.02f;
   mesh_.Scale(glm::vec3{1.0f + kScaleSpeed * y});
 }

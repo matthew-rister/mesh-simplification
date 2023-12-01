@@ -22,9 +22,13 @@ public:
     glm::vec3 normal;
   };
 
-  Mesh(const Device& device, std::vector<Vertex> vertices, std::vector<std::uint32_t> indices)
-      : vertices_{std::move(vertices)},
-        indices_{std::move(indices)},
+  Mesh(const Device& device,
+       const std::vector<Vertex>& vertices,
+       const std::vector<std::uint32_t>& indices,
+       const glm::mat4& transform = glm::mat4{1.0f})
+      : vertices_{vertices},
+        indices_{indices},
+        transform_{transform},
         vertex_buffer_{CreateDeviceLocalBuffer<Vertex>(device, vk::BufferUsageFlagBits::eVertexBuffer, vertices_)},
         index_buffer_{CreateDeviceLocalBuffer<std::uint32_t>(device, vk::BufferUsageFlagBits::eIndexBuffer, indices_)} {
     assert(indices_.size() % 3 == 0);
@@ -47,7 +51,7 @@ public:
 private:
   std::vector<Vertex> vertices_;
   std::vector<std::uint32_t> indices_;
-  glm::mat4 transform_{1.0f};
+  glm::mat4 transform_;
   Buffer vertex_buffer_;
   Buffer index_buffer_;
 };

@@ -6,7 +6,7 @@
 
 int main() {
   try {
-    Game game;
+    gfx::Game game;
     game.Run();
   } catch (const std::exception& e) {
     std::cerr << e.what() << std::endl;

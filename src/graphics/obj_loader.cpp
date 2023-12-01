@@ -51,7 +51,7 @@ constexpr T ParseToken(const std::string_view token) {
 template <typename T, glm::length_t N>
 constexpr glm::vec<N, T> ParseLine(const std::string_view line) {
   if (const auto tokens = Split(line); tokens.size() == N + 1) {
-    glm::vec<N, T> vec{};
+    glm::vec<N, T> vec;
     for (glm::length_t i = 0; i < N; ++i) {
       const auto j = static_cast<std::size_t>(i) + 1;
       vec[i] = ParseToken<T>(tokens[j]);
@@ -155,7 +155,7 @@ gfx::Mesh LoadMesh(const gfx::Device& device, std::istream& is) {
     }
   }
 
-  return gfx::Mesh{device, std::move(vertices), std::move(indices)};
+  return gfx::Mesh{device, vertices, indices};
 }
 
 }  // namespace

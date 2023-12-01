@@ -321,18 +321,20 @@ gfx::Engine::Engine(const Window& window)
       present_image_semaphores_{CreateSemaphores<kMaxRenderFrames>(*device_)},
       draw_fences_{CreateFences<kMaxRenderFrames>(*device_)} {}
 
-// NOLINTBEGIN(cppcoreguidelines-pro-bounds-constant-array-index)
 void gfx::Engine::Render(const Camera& camera, const Mesh& mesh) {
+  // NOLINTBEGIN(cppcoreguidelines-pro-bounds-constant-array-index)
   current_frame_index_ = (current_frame_index_ + 1) % kMaxRenderFrames;
+  const auto& draw_fence = *draw_fences_[current_frame_index_];
+  const auto& acquire_next_image_semaphore = *acquire_next_image_semaphores_[current_frame_index_];
+  const auto& present_image_semaphore = *present_image_semaphores_[current_frame_index_];
+  // NOLINTEND(cppcoreguidelines-pro-bounds-constant-array-index)
 
   static constexpr auto kMaxTimeout = std::numeric_limits<std::uint64_t>::max();
-  const auto& draw_fence = *draw_fences_[current_frame_index_];
   auto result = device_->waitForFences(draw_fence, vk::True, kMaxTimeout);
   vk::resultCheck(result, std::format("vkWaitForFences failed with result {}", vk::to_string(result)).c_str());
   device_->resetFences(draw_fence);
 
   std::uint32_t image_index{};
-  const auto& acquire_next_image_semaphore = *acquire_next_image_semaphores_[current_frame_index_];
   std::tie(result, image_index) = device_->acquireNextImageKHR(*swapchain_, kMaxTimeout, acquire_next_image_semaphore);
   vk::resultCheck(result, std::format("vkAcquireNextImageKHR failed with error {}", vk::to_string(result)).c_str());
 
@@ -373,8 +375,6 @@ void gfx::Engine::Render(const Camera& camera, const Mesh& mesh) {
   command_buffer.endRenderPass();
   command_buffer.end();
 
-  const auto& present_image_semaphore = *present_image_semaphores_[current_frame_index_];
-
   static constexpr vk::PipelineStageFlags kTopOfPipe = vk::PipelineStageFlagBits::eTopOfPipe;
   device_.graphics_queue()->submit(vk::SubmitInfo{.waitSemaphoreCount = 1,
                                                   .pWaitSemaphores = &acquire_next_image_semaphore,
@@ -392,4 +392,3 @@ void gfx::Engine::Render(const Camera& camera, const Mesh& mesh) {
                                                                   .pImageIndices = &image_index});
   vk::resultCheck(result, std::format("vkQueuePresentKHR failed with error {}", vk::to_string(result)).c_str());
 }
-// NOLINTEND(cppcoreguidelines-pro-bounds-constant-array-index)
