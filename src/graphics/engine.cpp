@@ -257,8 +257,7 @@ vk::UniquePipeline CreateGraphicsPipeline(const vk::Device& device,
                                      .layout = pipeline_layout,
                                      .renderPass = render_pass,
                                      .subpass = 0});
-  vk::resultCheck(result,
-                  std::format("Graphics pipeline creation failed with error {}", vk::to_string(result)).c_str());
+  vk::resultCheck(result, "Graphics pipeline creation failed");
 
   return std::move(graphics_pipeline);  // return value optimization not available here
 }
@@ -322,8 +321,10 @@ gfx::Engine::Engine(const Window& window)
       draw_fences_{CreateFences<kMaxRenderFrames>(*device_)} {}
 
 void gfx::Engine::Render(const Camera& camera, const Mesh& mesh) {
+  if (++current_frame_index_ == kMaxRenderFrames) {
+    current_frame_index_ = 0;
+  }
   // NOLINTBEGIN(cppcoreguidelines-pro-bounds-constant-array-index)
-  current_frame_index_ = (current_frame_index_ + 1) % kMaxRenderFrames;
   const auto& draw_fence = *draw_fences_[current_frame_index_];
   const auto& acquire_next_image_semaphore = *acquire_next_image_semaphores_[current_frame_index_];
   const auto& present_image_semaphore = *present_image_semaphores_[current_frame_index_];
@@ -331,12 +332,12 @@ void gfx::Engine::Render(const Camera& camera, const Mesh& mesh) {
 
   static constexpr auto kMaxTimeout = std::numeric_limits<std::uint64_t>::max();
   auto result = device_->waitForFences(draw_fence, vk::True, kMaxTimeout);
-  vk::resultCheck(result, std::format("vkWaitForFences failed with result {}", vk::to_string(result)).c_str());
+  vk::resultCheck(result, "Draw fence failed to enter a signaled state");
   device_->resetFences(draw_fence);
 
   std::uint32_t image_index{};
   std::tie(result, image_index) = device_->acquireNextImageKHR(*swapchain_, kMaxTimeout, acquire_next_image_semaphore);
-  vk::resultCheck(result, std::format("vkAcquireNextImageKHR failed with error {}", vk::to_string(result)).c_str());
+  vk::resultCheck(result, "Failed to acquire the next presentable image");
 
   auto& uniform_buffer = uniform_buffers_[current_frame_index_];
   uniform_buffer.Copy<CameraUniformBuffer>(CameraUniformBuffer{.view_transform = camera.view_transform(),
@@ -390,5 +391,5 @@ void gfx::Engine::Render(const Camera& camera, const Mesh& mesh) {
                                                                   .swapchainCount = 1,
                                                                   .pSwapchains = &(*swapchain_),
                                                                   .pImageIndices = &image_index});
-  vk::resultCheck(result, std::format("vkQueuePresentKHR failed with error {}", vk::to_string(result)).c_str());
+  vk::resultCheck(result, "Failed to queue an image for presentation");
 }

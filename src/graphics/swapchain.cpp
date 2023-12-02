@@ -29,7 +29,7 @@ vk::SurfaceFormatKHR GetSwapchainSurfaceFormat(const vk::PhysicalDevice& physica
 
 vk::PresentModeKHR GetSwapchainPresentMode(const vk::PhysicalDevice& physical_device, const vk::SurfaceKHR& surface) {
   const auto present_modes = physical_device.getSurfacePresentModesKHR(surface);
-  if (constexpr auto kTargetPresentMode = vk::PresentModeKHR::eMailbox;
+  if (constexpr auto kTargetPresentMode = vk::PresentModeKHR::eFifoRelaxed;
       std::ranges::contains(present_modes, kTargetPresentMode)) {
     return kTargetPresentMode;
   }

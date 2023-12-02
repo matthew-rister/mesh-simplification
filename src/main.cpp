@@ -8,6 +8,9 @@ int main() {
   try {
     gfx::Game game;
     game.Run();
+  } catch (const std::system_error& e) {
+    std::cerr << '[' << e.code() << "] " << e.what() << std::endl;
+    return EXIT_FAILURE;
   } catch (const std::exception& e) {
     std::cerr << e.what() << std::endl;
     return EXIT_FAILURE;
