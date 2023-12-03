@@ -7,6 +7,7 @@ namespace {
 vk::UniqueImage CreateImage(const vk::Device& device,
                             const vk::Format format,
                             const vk::Extent2D& extent,
+                            const vk::SampleCountFlagBits sample_count,
                             const vk::ImageUsageFlags& image_usage_flags) {
   return device.createImageUnique(
       vk::ImageCreateInfo{.imageType = vk::ImageType::e2D,
@@ -14,6 +15,7 @@ vk::UniqueImage CreateImage(const vk::Device& device,
                           .extent = vk::Extent3D{.width = extent.width, .height = extent.height, .depth = 1},
                           .mipLevels = 1,
                           .arrayLayers = 1,
+                          .samples = sample_count,
                           .usage = image_usage_flags});
 }
 
@@ -35,10 +37,11 @@ vk::UniqueImageView CreateImageView(const vk::Device& device,
 gfx::Image::Image(const Device& device,
                   const vk::Format format,
                   const vk::Extent2D& extent,
+                  const vk::SampleCountFlagBits sample_count,
                   const vk::ImageUsageFlags& image_usage_flags,
                   const vk::ImageAspectFlags& image_aspect_flags,
                   const vk::MemoryPropertyFlags& memory_property_flags)
-    : image_{CreateImage(*device, format, extent, image_usage_flags)},
+    : image_{CreateImage(*device, format, extent, sample_count, image_usage_flags)},
       memory_{device, device->getImageMemoryRequirements(*image_), memory_property_flags},
       format_{format} {
   device->bindImageMemory(*image_, *memory_, 0);

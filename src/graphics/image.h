@@ -13,6 +13,7 @@ public:
   Image(const Device& device,
         const vk::Format format,
         const vk::Extent2D& extent,
+        const vk::SampleCountFlagBits sample_count,
         const vk::ImageUsageFlags& image_usage_flags,
         const vk::ImageAspectFlags& image_aspect_flags,
         const vk::MemoryPropertyFlags& memory_property_flags);

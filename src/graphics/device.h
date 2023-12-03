@@ -5,24 +5,24 @@
 
 #include <vulkan/vulkan.hpp>
 
+#include "graphics/queue.h"
+
 namespace gfx {
 struct RankedPhysicalDevice;
 
-class DeviceQueue {
+class PhysicalDevice {
 public:
-  DeviceQueue(const vk::Device& device,
-              const std::uint32_t queue_family_index,
-              const std::uint32_t queue_index) noexcept
-      : queue_{device.getQueue(queue_family_index, queue_index)}, queue_family_index_{queue_family_index} {}
+  PhysicalDevice(const vk::PhysicalDevice& physical_device, const vk::PhysicalDeviceLimits& physical_device_limits)
+      : physical_device_{physical_device}, physical_device_limits_{physical_device_limits} {}
 
-  [[nodiscard]] const vk::Queue& operator*() const noexcept { return queue_; }
-  [[nodiscard]] const vk::Queue* operator->() const noexcept { return &queue_; }
+  [[nodiscard]] const vk::PhysicalDevice& operator*() const noexcept { return physical_device_; }
+  [[nodiscard]] const vk::PhysicalDevice* operator->() const noexcept { return &physical_device_; }
 
-  [[nodiscard]] std::uint32_t queue_family_index() const noexcept { return queue_family_index_; }
+  [[nodiscard]] const vk::PhysicalDeviceLimits& limits() const noexcept { return physical_device_limits_; }
 
 private:
-  vk::Queue queue_;
-  std::uint32_t queue_family_index_;
+  vk::PhysicalDevice physical_device_;
+  vk::PhysicalDeviceLimits physical_device_limits_;
 };
 
 class Device {
@@ -32,10 +32,10 @@ public:
   [[nodiscard]] const vk::Device& operator*() const noexcept { return *device_; }
   [[nodiscard]] const vk::Device* operator->() const noexcept { return &(*device_); }
 
-  [[nodiscard]] const vk::PhysicalDevice& physical_device() const noexcept { return physical_device_; }
+  [[nodiscard]] const PhysicalDevice& physical_device() const noexcept { return physical_device_; }
 
-  [[nodiscard]] const DeviceQueue& graphics_queue() const noexcept { return graphics_queue_; }
-  [[nodiscard]] const DeviceQueue& present_queue() const noexcept { return present_queue_; }
+  [[nodiscard]] const Queue& graphics_queue() const noexcept { return graphics_queue_; }
+  [[nodiscard]] const Queue& present_queue() const noexcept { return present_queue_; }
 
   void SubmitOneTimeCommandBuffer(std::invocable<const vk::CommandBuffer&> auto&& command_sequence) const {
     const auto command_buffers = device_->allocateCommandBuffersUnique(
@@ -55,9 +55,9 @@ public:
 private:
   explicit Device(RankedPhysicalDevice&& ranked_physical_device);
 
-  vk::PhysicalDevice physical_device_;
+  PhysicalDevice physical_device_;
   vk::UniqueDevice device_;
-  DeviceQueue graphics_queue_, present_queue_;
+  Queue graphics_queue_, present_queue_;
   vk::UniqueCommandPool one_time_submit_command_pool_;
 };
 

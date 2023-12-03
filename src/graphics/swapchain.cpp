@@ -79,7 +79,7 @@ std::vector<vk::UniqueImageView> CreateSwapchainImageViews(const vk::Device& dev
 std::tuple<vk::UniqueSwapchainKHR, vk::Format, vk::Extent2D> CreateSwapchain(const gfx::Device& device,
                                                                              const gfx::Window& window,
                                                                              const vk::SurfaceKHR& surface) {
-  const auto& physical_device = device.physical_device();
+  const auto& physical_device = *device.physical_device();
   const auto surface_capabilities = physical_device.getSurfaceCapabilitiesKHR(surface);
   const auto [image_format, image_color_space] = GetSwapchainSurfaceFormat(physical_device, surface);
   const auto image_extent = GetSwapchainImageExtent(window, surface_capabilities);

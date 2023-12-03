@@ -33,7 +33,7 @@ std::uint32_t FindMemoryTypeIndex(const vk::PhysicalDevice& physical_device,
 vk::UniqueDeviceMemory AllocateMemory(const gfx::Device& device,
                                       const vk::MemoryRequirements& memory_requirements,
                                       const vk::MemoryPropertyFlags& memory_property_flags) {
-  const auto& physical_device = device.physical_device();
+  const auto& physical_device = *device.physical_device();
   const auto memory_type_index = FindMemoryTypeIndex(physical_device, memory_requirements, memory_property_flags);
 
   return device->allocateMemoryUnique(

@@ -19,6 +19,7 @@ struct gfx::RankedPhysicalDevice {
   };
   static constexpr std::uint32_t kInvalidRank = 0;
   vk::PhysicalDevice physical_device;
+  vk::PhysicalDeviceLimits physical_device_limits;
   QueueFamilyIndices queue_family_indices;
   std::uint32_t rank = kInvalidRank;
 };
@@ -53,10 +54,12 @@ gfx::RankedPhysicalDevice GetRankedPhysicalDevice(const vk::PhysicalDevice& phys
                                                   const vk::SurfaceKHR& surface) {
   return FindQueueFamilyIndices(physical_device, surface)
       .transform([&physical_device](const auto& queue_family_indices) {
+        const auto physical_device_properties = physical_device.getProperties();
         return gfx::RankedPhysicalDevice{
             .physical_device = physical_device,
+            .physical_device_limits = physical_device_properties.limits,
             .queue_family_indices = queue_family_indices,
-            .rank = 1u + (physical_device.getProperties().deviceType == vk::PhysicalDeviceType::eDiscreteGpu)};
+            .rank = 1u + (physical_device_properties.deviceType == vk::PhysicalDeviceType::eDiscreteGpu)};
       })
       .value_or(gfx::RankedPhysicalDevice{.rank = gfx::RankedPhysicalDevice::kInvalidRank});
 }
@@ -105,7 +108,7 @@ vk::UniqueDevice CreateDevice(const vk::PhysicalDevice& physical_device,
   return device;
 }
 
-vk::UniqueCommandPool CreateOneTimeSubmitCommandPool(const vk::Device& device, const gfx::DeviceQueue& graphics_queue) {
+vk::UniqueCommandPool CreateOneTimeSubmitCommandPool(const vk::Device& device, const gfx::Queue& graphics_queue) {
   return device.createCommandPoolUnique(
       vk::CommandPoolCreateInfo{.flags = vk::CommandPoolCreateFlagBits::eTransient,
                                 .queueFamilyIndex = graphics_queue.queue_family_index()});
@@ -117,8 +120,8 @@ gfx::Device::Device(const vk::Instance& instance, const vk::SurfaceKHR& surface)
     : Device{SelectPhysicalDevice(instance, surface)} {}
 
 gfx::Device::Device(RankedPhysicalDevice&& ranked_physical_device)
-    : physical_device_{ranked_physical_device.physical_device},
-      device_{CreateDevice(physical_device_, ranked_physical_device.queue_family_indices)},
+    : physical_device_{ranked_physical_device.physical_device, ranked_physical_device.physical_device_limits},
+      device_{CreateDevice(*physical_device_, ranked_physical_device.queue_family_indices)},
       graphics_queue_{*device_, ranked_physical_device.queue_family_indices.graphics_index, 0},
       present_queue_{*device_, ranked_physical_device.queue_family_indices.present_index, 0},
       one_time_submit_command_pool_{CreateOneTimeSubmitCommandPool(*device_, graphics_queue_)} {}
