@@ -2,6 +2,7 @@ add_executable(mesh_simplification main.cpp
                                    game/game.cpp
                                    geometry/face.cpp
                                    geometry/half_edge_mesh.cpp
+                                   geometry/mesh_simplifier.cpp
                                    graphics/arcball.cpp
                                    graphics/device.cpp
                                    graphics/engine.cpp

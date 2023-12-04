@@ -33,7 +33,7 @@ const Material kMaterial = {
 };
 
 void main() {
-  const vec3 normal = normalize(vertex.normal);
+  const vec3 normal = normalize(cross(dFdx(vertex.position), -dFdy(vertex.position)));
   fragment_color = vec4(kMaterial.ambient, 1.0);
 
   for (int i = 0; i < kPointLights.length(); ++i) {

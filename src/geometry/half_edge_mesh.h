@@ -17,6 +17,12 @@ class HalfEdgeMesh {
 public:
   explicit HalfEdgeMesh(const Mesh& mesh);
 
+  [[nodiscard]] const auto& vertices() const noexcept { return vertices_; }
+  [[nodiscard]] const auto& edges() const noexcept { return edges_; }
+  [[nodiscard]] const auto& faces() const noexcept { return faces_; }
+
+  void Contract(const HalfEdge& edge01, const std::shared_ptr<Vertex>& v_new);
+
   [[nodiscard]] Mesh ToMesh(const Device& device) const;
 
 private:

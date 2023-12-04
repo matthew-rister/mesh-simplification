@@ -22,6 +22,6 @@ void main() {
   const mat4 model_view_transform = camera_uniform_buffer.view_transform * mesh_push_constants.model_transform;
   const vec4 model_view_position = model_view_transform * vec4(position, 1.0);
   vertex.position = model_view_position.xyz;
-  vertex.normal = normal;
+  vertex.normal = normalize(mat3(model_view_transform) * normal);
   gl_Position = camera_uniform_buffer.projection_transform * model_view_position;
 }

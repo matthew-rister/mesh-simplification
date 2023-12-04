@@ -6,8 +6,8 @@
 namespace gfx {
 
 template <typename R, typename T>
-concept DataRange =
-    std::ranges::contiguous_range<R> && std::same_as<std::ranges::range_value_t<R>, std::remove_cvref_t<T>>;
+concept DataRange = std::ranges::contiguous_range<R> && std::ranges::sized_range<R>
+                    && std::same_as<std::ranges::range_value_t<R>, std::remove_cvref_t<T>>;
 
 template <typename T>
 class DataView {

@@ -5,7 +5,7 @@
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 
-#include "geometry/half_edge_mesh.h"
+#include "geometry/mesh_simplifier.h"
 #include "graphics/arcball.h"
 #include "graphics/obj_loader.h"
 
@@ -63,8 +63,8 @@ void gfx::Game::HandleKeyEvent(const int key, const int action) {
       break;
     }
     case GLFW_KEY_S: {
-      const HalfEdgeMesh half_edge_mesh{mesh_};
-      mesh_ = half_edge_mesh.ToMesh(engine_.device());
+      static constexpr auto kSimplificationRate = 0.5f;
+      mesh_ = mesh::Simplify(engine_.device(), mesh_, kSimplificationRate);
       break;
     }
   }

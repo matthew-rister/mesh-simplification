@@ -4,6 +4,7 @@
 #include <cassert>
 #include <cstdint>
 #include <memory>
+#include <optional>
 
 #include <glm/vec3.hpp>
 
@@ -12,9 +13,17 @@ class HalfEdge;
 
 class Vertex {
 public:
+  explicit Vertex(const glm::vec3& position) noexcept : position_{position} {}
+
   Vertex(const std::uint32_t id, const glm::vec3& position) noexcept : id_{id}, position_{position} {}
 
-  [[nodiscard]] std::uint32_t id() const noexcept { return id_; }
+  [[nodiscard]] std::uint32_t id() const noexcept {
+    assert(id_.has_value());
+    return *id_;
+  }
+
+  void set_id(const std::uint32_t id) noexcept { id_ = id; }
+
   [[nodiscard]] const glm::vec3& position() const noexcept { return position_; }
 
   [[nodiscard]] std::shared_ptr<HalfEdge> edge() const noexcept {
@@ -25,7 +34,7 @@ public:
   void set_edge(const std::shared_ptr<HalfEdge>& edge) noexcept { edge_ = edge; }
 
 private:
-  std::uint32_t id_;
+  std::optional<std::uint32_t> id_;
   glm::vec3 position_;
   std::weak_ptr<HalfEdge> edge_;
 };

@@ -16,11 +16,36 @@
 
 namespace {
 
-template <typename Key, typename Value>
-const Value& Get(const Key id, const std::unordered_map<Key, Value>& map) {
-  const auto iterator = map.find(id);
-  assert(iterator != map.end());
+template <typename Key, typename MapKey, typename MapValue>
+typename std::unordered_map<MapKey, MapValue>::const_iterator Find(const Key key,
+                                                                   const std::unordered_map<MapKey, MapValue>& map) {
+  if constexpr (std::is_same_v<Key, MapKey>) {
+    return map.find(key);
+  } else {
+    return map.find(hash_value(key));
+  }
+}
+
+template <typename Key, typename MapKey, typename MapValue>
+const MapValue& Get(const Key key, const std::unordered_map<MapKey, MapValue>& map) {
+  const auto iterator = Find(key, map);
+  assert(iterator != map.cend());
   return iterator->second;
+}
+
+template <typename Key, typename MapKey, typename MapValue>
+void Delete(const Key key, std::unordered_map<MapKey, MapValue>& map) {
+  if constexpr (std::is_same_v<Key, gfx::HalfEdge>) {
+    // hash values depend on both edges so they must be calculated first before deleting
+    const auto edge_key = hash_value(key);
+    const auto edge_flip_key = hash_value(*key.flip());
+    Delete(edge_key, map);
+    Delete(edge_flip_key, map);
+  } else {
+    const auto iterator = Find(key, map);
+    assert(iterator != map.cend());
+    map.erase(iterator);
+  }
 }
 
 std::shared_ptr<gfx::HalfEdge> CreateHalfEdge(const std::shared_ptr<gfx::Vertex>& v0,
@@ -30,7 +55,7 @@ std::shared_ptr<gfx::HalfEdge> CreateHalfEdge(const std::shared_ptr<gfx::Vertex>
   const auto edge10_key = hash_value(*v1, *v0);
 
   // prevent the creation of duplicate edges
-  if (const auto iterator = edges.find(edge01_key); iterator != edges.end()) {
+  if (const auto iterator = edges.find(edge01_key); iterator != edges.cend()) {
     assert(edges.contains(edge10_key));
     return iterator->second;
   }
@@ -72,7 +97,35 @@ std::shared_ptr<gfx::Face> CreateTriangle(const std::shared_ptr<gfx::Vertex>& v0
   return face012;
 }
 
-glm::vec3 GetWeightedVertexNormal(const gfx::Vertex& v0) {
+void AttachIncidentEdges(const gfx::Vertex& v_target,
+                         const gfx::Vertex& v_start,
+                         const gfx::Vertex& v_end,
+                         const std::shared_ptr<gfx::Vertex>& v_new,
+                         std::unordered_map<std::size_t, std::shared_ptr<gfx::HalfEdge>>& edges,
+                         std::unordered_map<std::size_t, std::shared_ptr<gfx::Face>>& faces) {
+  const auto& edge_start = Get(hash_value(v_target, v_start), edges);
+  const auto& edge_end = Get(hash_value(v_target, v_end), edges);
+
+  for (auto edge0i = edge_start; edge0i != edge_end;) {
+    const auto edgeij = edge0i->next();
+    const auto edgej0 = edgeij->next();
+
+    const auto vi = edge0i->vertex();
+    const auto vj = edgeij->vertex();
+
+    auto face_new = CreateTriangle(v_new, vi, vj, edges);
+    faces.emplace(hash_value(*face_new), std::move(face_new));
+
+    Delete(*edge0i->face(), faces);
+    Delete(*edge0i, edges);
+
+    edge0i = edgej0->flip();
+  }
+
+  Delete(*edge_end, edges);
+}
+
+glm::vec3 AverageVertexNormals(const gfx::Vertex& v0) {
   glm::vec3 normal{0.0f};
   auto edgei0 = v0.edge();
   do {
@@ -104,6 +157,30 @@ gfx::HalfEdgeMesh::HalfEdgeMesh(const Mesh& mesh)
              | std::ranges::to<std::unordered_map>()},
       transform_{mesh.transform()} {}
 
+void gfx::HalfEdgeMesh::Contract(const HalfEdge& edge01, const std::shared_ptr<Vertex>& v_new) {
+  assert(Find(edge01, edges_) != edges_.cend());
+  assert(Find(v_new->id(), vertices_) == vertices_.cend());
+
+  const auto edge10 = edge01.flip();
+  const auto v0 = edge10->vertex();
+  const auto v1 = edge01.vertex();
+  const auto v0_next = edge10->next()->vertex();
+  const auto v1_next = edge01.next()->vertex();
+
+  AttachIncidentEdges(*v0, *v1_next, *v0_next, v_new, edges_, faces_);
+  AttachIncidentEdges(*v1, *v0_next, *v1_next, v_new, edges_, faces_);
+
+  Delete(*edge01.face(), faces_);
+  Delete(*edge10->face(), faces_);
+
+  Delete(edge01, edges_);
+
+  Delete(v0->id(), vertices_);
+  Delete(v1->id(), vertices_);
+
+  vertices_.emplace(v_new->id(), v_new);
+}
+
 gfx::Mesh gfx::HalfEdgeMesh::ToMesh(const Device& device) const {
   std::vector<Mesh::Vertex> vertices;
   vertices.reserve(vertices_.size());
@@ -115,7 +192,7 @@ gfx::Mesh gfx::HalfEdgeMesh::ToMesh(const Device& device) const {
   index_map.reserve(vertices_.size());
 
   for (std::uint32_t index = 0; const auto& vertex : vertices_ | std::views::values) {
-    vertices.push_back(Mesh::Vertex{.position = vertex->position(), .normal = GetWeightedVertexNormal(*vertex)});
+    vertices.push_back(Mesh::Vertex{.position = vertex->position(), .normal = AverageVertexNormals(*vertex)});
     index_map.emplace(vertex->id(), index++);  // map original vertex IDs to new index positions
   }
 
