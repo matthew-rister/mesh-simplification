@@ -8,7 +8,7 @@ This project makes use of GitHub issue templates. If you encounter a problem, pl
 
 ## Getting Started
 
-In addition to the dependencies listed in the [prerequisites](README.md#Prerequisites) section of the README, contributing to this project will require:
+In addition to the dependencies listed in the [Requirements](README.md#Requirements) section of the README, contributing to this project will require:
 
 - [python3](https://www.python.org/downloads/)
   - [pre-commit](https://pre-commit.com)
