@@ -1,6 +1,8 @@
-#include "game/game.h"
+#include "app.h"  // NOLINT(build/include_subdir)
 
-#include <filesystem>
+#include <cstdlib>
+#include <exception>
+#include <iostream>
 
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
@@ -36,7 +38,7 @@ gfx::Mesh CreateMesh(const gfx::Device& device) {
 
 }  // namespace
 
-gfx::Game::Game()
+gfx::App::App()
     : window_{"Mesh Simplification", Window::Size{.width = kWindowWidth, .height = kWindowHeight}},
       engine_{window_},
       camera_{CreateCamera(window_.GetAspectRatio())},
@@ -46,7 +48,7 @@ gfx::Game::Game()
   window_.OnScrollEvent([this](const auto y_offset) { HandleScrollEvent(y_offset); });
 }
 
-void gfx::Game::Run() {
+void gfx::App::Run() {
   while (!window_.IsClosed()) {
     Window::Update();
     engine_.Render(camera_, mesh_);
@@ -54,9 +56,8 @@ void gfx::Game::Run() {
   engine_.device()->waitIdle();
 }
 
-void gfx::Game::HandleKeyEvent(const int key, const int action) {
+void gfx::App::HandleKeyEvent(const int key, const int action) {
   if (action != GLFW_PRESS) return;
-
   switch (key) {
     case GLFW_KEY_ESCAPE: {
       window_.Close();
@@ -70,7 +71,7 @@ void gfx::Game::HandleKeyEvent(const int key, const int action) {
   }
 }
 
-void gfx::Game::HandleCursorEvent(const float x, const float y) {
+void gfx::App::HandleCursorEvent(const float x, const float y) {
   static constexpr auto kTranslationSpeed = 0.01f;
   static constexpr auto kRotationSpeed = 2.0f;
   static std::optional<glm::vec2> prev_cursor_position;
@@ -79,8 +80,8 @@ void gfx::Game::HandleCursorEvent(const float x, const float y) {
     const glm::vec2 cursor_position{x, y};
     if (prev_cursor_position.has_value()) {
       const auto arcball_rotation = arcball::GetRotation(*prev_cursor_position, cursor_position, window_.GetSize());
-      const auto [view_rotation_axis, angle] = arcball_rotation;
-      const glm::mat3 model_view_inverse = glm::transpose(camera_.view_transform() * mesh_.transform());
+      const auto& [view_rotation_axis, angle] = arcball_rotation;
+      glm::mat3 model_view_inverse = glm::transpose(camera_.view_transform() * mesh_.transform());
       const auto model_rotation_axis = glm::normalize(model_view_inverse * view_rotation_axis);
       mesh_.Rotate(model_rotation_axis, kRotationSpeed * angle);
     }
@@ -100,7 +101,24 @@ void gfx::Game::HandleCursorEvent(const float x, const float y) {
   }
 }
 
-void gfx::Game::HandleScrollEvent(const float y) {
+void gfx::App::HandleScrollEvent(const float y) {
   static constexpr auto kScaleSpeed = 0.02f;
   mesh_.Scale(glm::vec3{1.0f + kScaleSpeed * y});
+}
+
+int main() {
+  try {
+    gfx::App app;
+    app.Run();
+  } catch (const std::system_error& e) {
+    std::cerr << '[' << e.code() << "] " << e.what() << std::endl;
+    return EXIT_FAILURE;
+  } catch (const std::exception& e) {
+    std::cerr << e.what() << std::endl;
+    return EXIT_FAILURE;
+  } catch (...) {
+    std::cerr << "An unknown error occurred" << std::endl;
+    return EXIT_FAILURE;
+  }
+  return EXIT_SUCCESS;
 }

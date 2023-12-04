@@ -1,5 +1,5 @@
-#ifndef SRC_GAME_GAME_H_
-#define SRC_GAME_GAME_H_
+#ifndef SRC_APP_H_
+#define SRC_APP_H_
 
 #include "graphics/camera.h"
 #include "graphics/engine.h"
@@ -8,9 +8,9 @@
 
 namespace gfx {
 
-class Game {
+class App {
 public:
-  Game();
+  App();
 
   void Run();
 
@@ -27,4 +27,4 @@ private:
 
 }  // namespace gfx
 
-#endif  // SRC_GAME_GAME_H_
+#endif  // SRC_APP_H_

@@ -24,6 +24,12 @@
 namespace {
 
 struct EdgeContraction {
+  EdgeContraction(const std::shared_ptr<gfx::HalfEdge>& edge,
+                  const std::shared_ptr<gfx::Vertex>& vertex,
+                  const glm::mat4& quadric,
+                  const float cost)
+      : edge{edge}, vertex{vertex}, quadric{quadric}, cost{cost} {}
+
   std::shared_ptr<gfx::HalfEdge> edge;
   std::shared_ptr<gfx::Vertex> vertex;
   glm::mat4 quadric;
@@ -49,8 +55,8 @@ glm::mat4 GetErrorQuadric(const gfx::Vertex& v0) {
   return quadric;
 }
 
-EdgeContraction GetEdgeContraction(const std::shared_ptr<gfx::HalfEdge>& edge01,
-                                   const std::unordered_map<std::uint32_t, glm::mat4>& quadrics) {
+std::shared_ptr<EdgeContraction> GetEdgeContraction(const std::shared_ptr<gfx::HalfEdge>& edge01,
+                                                    const std::unordered_map<std::uint32_t, glm::mat4>& quadrics) {
   const auto v0 = edge01->flip()->vertex();
   const auto q0_iterator = quadrics.find(v0->id());
   assert(q0_iterator != quadrics.cend());
@@ -66,20 +72,14 @@ EdgeContraction GetEdgeContraction(const std::shared_ptr<gfx::HalfEdge>& edge01,
   if (glm::determinant(q01) == 0.0f) {
     // average the edge vertices if the error quadric is not invertible
     const auto position = (v0->position() + v1->position()) / 2.0f;
-    return EdgeContraction{.edge = edge01,
-                           .vertex = std::make_shared<gfx::Vertex>(position),
-                           .quadric = q01,
-                           .cost = 0.0f};
+    return std::make_shared<EdgeContraction>(edge01, std::make_shared<gfx::Vertex>(position), q01, 0.0f);
   }
 
   auto position = glm::inverse(q01) * glm::vec4{0.0f, 0.0f, 0.0f, 1.0f};
   position /= position.w;
 
   const auto squared_distance = glm::dot(position, q01 * position);
-  return EdgeContraction{.edge = edge01,
-                         .vertex = std::make_shared<gfx::Vertex>(position),
-                         .quadric = q01,
-                         .cost = squared_distance};
+  return std::make_shared<EdgeContraction>(edge01, std::make_shared<gfx::Vertex>(position), q01, squared_distance);
 }
 
 bool WillDegenerate(const std::shared_ptr<gfx::HalfEdge>& edge01) {
@@ -136,9 +136,8 @@ gfx::Mesh gfx::mesh::Simplify(const Device& device, const Mesh& mesh, const floa
 
     if (!valid_edges.contains(min_edge_key)) {
       auto edge_contraction = GetEdgeContraction(min_edge, quadrics);
-      auto edge_contraction_ptr = std::make_shared<EdgeContraction>(std::move(edge_contraction));
-      edge_contractions.push(edge_contraction_ptr);
-      valid_edges.emplace(min_edge_key, std::move(edge_contraction_ptr));
+      edge_contractions.push(edge_contraction);
+      valid_edges.emplace(min_edge_key, std::move(edge_contraction));
     }
   }
 
@@ -152,10 +151,9 @@ gfx::Mesh gfx::mesh::Simplify(const Device& device, const Mesh& mesh, const floa
   for (auto next_vertex_id = half_edge_mesh.vertices().size(); !is_simplified(); edge_contractions.pop()) {
     const auto& edge_contraction = edge_contractions.top();
     const auto& edge01 = edge_contraction->edge;
-
     if (!edge_contraction->valid || WillDegenerate(edge01)) continue;
 
-    // start processing the next edge contraction
+    // begin processing the next edge contraction
     const auto& v_new = edge_contraction->vertex;
     v_new->set_id(static_cast<std::uint32_t>(next_vertex_id++));
     quadrics.emplace(v_new->id(), edge_contraction->quadric);
@@ -192,9 +190,8 @@ gfx::Mesh gfx::mesh::Simplify(const Device& device, const Mesh& mesh, const floa
             iterator->second->valid = false;
           }
           auto new_edge_contraction = GetEdgeContraction(min_edge, quadrics);
-          auto new_edge_contraction_ptr = std::make_shared<EdgeContraction>(std::move(new_edge_contraction));
-          valid_edges[min_edge_key] = new_edge_contraction_ptr;
-          edge_contractions.push(std::move(new_edge_contraction_ptr));
+          valid_edges[min_edge_key] = new_edge_contraction;
+          edge_contractions.push(std::move(new_edge_contraction));
           visited_edges.emplace(min_edge_key, min_edge);
         }
         edgekj = edgekj->next()->flip();
