@@ -400,10 +400,10 @@ void gfx::Engine::Render(const Camera& camera, const Mesh& mesh) {
   const auto& command_buffer = *command_buffers_[current_frame_index_];
   command_buffer.begin(vk::CommandBufferBeginInfo{.flags = vk::CommandBufferUsageFlagBits::eOneTimeSubmit});
 
-  static constexpr std::array kClearValues{
-      vk::ClearValue{.color = vk::ClearColorValue{.float32 = std::array{0.0f, 0.0f, 0.0f, 1.0f}}},
-      vk::ClearValue{.color = vk::ClearColorValue{.float32 = std::array{0.0f, 0.0f, 0.0f, 1.0f}}},
-      vk::ClearValue{.depthStencil = vk::ClearDepthStencilValue{1.0f, 0}}};
+  static constexpr std::array kClearColor{0.05098039f, 0.06666667f, 0.08627451f, 1.0f};
+  static constexpr std::array kClearValues{vk::ClearValue{.color = vk::ClearColorValue{kClearColor}},
+                                           vk::ClearValue{.color = vk::ClearColorValue{kClearColor}},
+                                           vk::ClearValue{.depthStencil = vk::ClearDepthStencilValue{1.0f, 0}}};
 
   command_buffer.beginRenderPass(
       vk::RenderPassBeginInfo{
