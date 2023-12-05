@@ -79,11 +79,12 @@ void gfx::App::HandleCursorEvent(const float x, const float y) {
   if (window_.IsMouseButtonPressed(GLFW_MOUSE_BUTTON_LEFT)) {
     const glm::vec2 cursor_position{x, y};
     if (prev_cursor_position.has_value()) {
-      const auto arcball_rotation = arcball::GetRotation(*prev_cursor_position, cursor_position, window_.GetSize());
-      const auto& [view_rotation_axis, angle] = arcball_rotation;
-      glm::mat3 model_view_inverse = glm::transpose(camera_.view_transform() * mesh_.transform());
-      const auto model_rotation_axis = glm::normalize(model_view_inverse * view_rotation_axis);
-      mesh_.Rotate(model_rotation_axis, kRotationSpeed * angle);
+      if (const auto view_rotation = arcball::GetRotation(*prev_cursor_position, cursor_position, window_.GetSize())) {
+        const auto& [view_rotation_axis, angle] = *view_rotation;
+        const glm::mat3 model_view_inverse = glm::transpose(camera_.view_transform() * mesh_.transform());
+        const auto model_rotation_axis = glm::normalize(model_view_inverse * view_rotation_axis);
+        mesh_.Rotate(model_rotation_axis, kRotationSpeed * angle);
+      }
     }
     prev_cursor_position = cursor_position;
   } else if (window_.IsMouseButtonPressed(GLFW_MOUSE_BUTTON_RIGHT)) {

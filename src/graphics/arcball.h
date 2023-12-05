@@ -1,6 +1,8 @@
 #ifndef SRC_GRAPHICS_ARCBALL_H_
 #define SRC_GRAPHICS_ARCBALL_H_
 
+#include <optional>
+
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
 
@@ -13,9 +15,9 @@ struct Rotation {
   float angle;
 };
 
-Rotation GetRotation(const glm::vec2& cursor_position_start,
-                     const glm::vec2& cursor_position_end,
-                     const Window::Size& window_size);
+std::optional<Rotation> GetRotation(const glm::vec2& cursor_position_start,
+                                    const glm::vec2& cursor_position_end,
+                                    const Window::Size& window_size);
 
 }  // namespace gfx::arcball
 
