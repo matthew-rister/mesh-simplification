@@ -4,9 +4,9 @@ An implementation of Surface Simplification using Quadric Error Metrics in Vulka
 
 ## Introduction
 
-In computer graphics, working with highly complex models can degrade rendering performance. One technique to mitigate this situation is to simplify a model by reducing its number of triangle faces. This project presents an efficient algorithm to achieve this based on a research paper by Garland-Heckbert titled [Surface Simplification Using Quadric Error Metrics](docs/surface_simplification.pdf).
+In computer graphics, working with highly complex models can degrade rendering performance. One technique to mitigate this situation is to simplify a model by reducing its constituent triangles. This project presents an efficient algorithm to achieve this based on a research paper by Garland-Heckbert titled [Surface Simplification Using Quadric Error Metrics](docs/surface_simplification.pdf).
 
-The central idea behind the algorithm is use a process known as [edge contraction](https://en.wikipedia.org/wiki/Edge_contraction) to collapse an edge into a vertex that optimally preserves the original shape of the mesh. This process can be solved for analytically by minimizing change in squared distance for each adjacent triangle plane after being attached to the new vertex. With this error metric, edges can be efficiently processed using a priority queue to sort edges by lowest cost until the mesh is sufficiently simplified. To facilitate the implementation of this algorithm, a data structure known as a [half-edge mesh](src/geometry/half_edge_mesh.h) is employed to efficiently traverse and modify edges in the mesh.
+The central idea of the algorithm is to iteratively remove edges in the mesh through a process known as [edge contraction](https://en.wikipedia.org/wiki/Edge_contraction) which merges the vertices at an edge's endpoints into a new vertex that optimally preserves the original shape of the mesh. This vertex position can be solved for analytically by minimizing the squared distance between it and adjacent triangle faces affected by the edge contraction. With this error metric, edges can be efficiently processed using a priority queue to sort edges by lowest cost until the mesh is sufficiently simplified. To facilitate the implementation of this algorithm, a data structure known as a [half-edge mesh](src/geometry/half_edge_mesh.h) is employed to efficiently traverse and modify edges in the mesh.
 
 ## Results
 
@@ -20,7 +20,7 @@ This project requires CMake 3.27 and a compiler that supports the C++23 language
 
 ### Vulkan
 
-This project requires a graphics driver with Vulkan 1.3 support. Because it uses [Vulkan-Hpp](https://github.com/KhronosGroup/Vulkan-Hpp) which provides a dynamic loader implementation, it is unnecessary to manually link against `vulkan-1.lib`. As a result, it is not required to download the [Vulkan SDK](https://www.lunarg.com/vulkan-sdk/) for release builds, however, it is still required for debug builds which enable [validation layers](https://vulkan.lunarg.com/doc/view/latest/windows/validation_layers.html) by default.
+This project requires a graphics driver with Vulkan 1.3 support. Because it uses [Vulkan-Hpp](https://github.com/KhronosGroup/Vulkan-Hpp) which provides a dynamic loader implementation, it is unnecessary to manually link against `vulkan-1.lib`. It is therefore not required to download the [Vulkan SDK](https://www.lunarg.com/vulkan-sdk/) for release builds, however, it is still required for debug builds which enable [validation layers](https://vulkan.lunarg.com/doc/view/latest/windows/validation_layers.html) by default.
 
 ### Package Management
 
@@ -32,21 +32,21 @@ This project enables [Address Sanitizer](https://clang.llvm.org/docs/AddressSani
 
 ## Build
 
-The simplest way to build the project is to use an IDE with CMake integration. Alternatively, the project can be built from the command line using CMake presets. To use the `x64-release` preset, run:
+The simplest way to build the project is to use an IDE with CMake integration. Alternatively, the project can be built from the command line using CMake presets. To use the `windows-x64-release` preset, run:
 
 ```bash
-cmake --preset x64-release
-cmake --build --preset x64-release
+cmake --preset windows-x64-release
+cmake --build --preset windows-x64-release
 ```
 
-A list of available configuration and build presets can be displayed by running  `cmake --list-presets` and `cmake --build --list-presets` respectively. Note that on Windows, `cl` and `ninja` are expected to be available in your environment path which are available by default when using the Developer Command Prompt for Visual Studio.
+A list of available configuration and build presets can be displayed by running  `cmake --list-presets` and `cmake --build --list-presets` respectively. At this time, only x64 builds are supported. Note that on Windows, `cl` and `ninja` are expected to be available in your environment path which are available by default when using the Developer Command Prompt for Visual Studio.
 
 ## Test
 
-This project uses [Google Test](https://github.com/google/googletest) for unit testing which can be run after building the project with [CTest](https://cmake.org/cmake/help/book/mastering-cmake/chapter/Testing%20With%20CMake%20and%20CTest.html). To use the `x64-release` preset, run:
+This project uses [Google Test](https://github.com/google/googletest) for unit testing which can be run after building the project with [CTest](https://cmake.org/cmake/help/book/mastering-cmake/chapter/Testing%20With%20CMake%20and%20CTest.html). To use the `windows-x64-release` preset, run:
 
 ```bash
-ctest --preset x64-release
+ctest --preset windows-x64-release
 ```
 
 To see what test presets are available, run `ctest --list-presets`.  Alternatively, tests can be run from the separate `tests` executable which is built with the project.
