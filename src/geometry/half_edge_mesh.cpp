@@ -17,7 +17,7 @@
 namespace {
 
 template <typename Key, typename MapKey, typename MapValue>
-typename std::unordered_map<MapKey, MapValue>::const_iterator Find(const Key key,
+typename std::unordered_map<MapKey, MapValue>::const_iterator Find(const Key& key,
                                                                    const std::unordered_map<MapKey, MapValue>& map) {
   if constexpr (std::is_same_v<Key, MapKey>) {
     return map.find(key);
@@ -27,14 +27,14 @@ typename std::unordered_map<MapKey, MapValue>::const_iterator Find(const Key key
 }
 
 template <typename Key, typename MapKey, typename MapValue>
-const MapValue& Get(const Key key, const std::unordered_map<MapKey, MapValue>& map) {
+const MapValue& Get(const Key& key, const std::unordered_map<MapKey, MapValue>& map) {
   const auto iterator = Find(key, map);
   assert(iterator != map.cend());
   return iterator->second;
 }
 
 template <typename Key, typename MapKey, typename MapValue>
-void Delete(const Key key, std::unordered_map<MapKey, MapValue>& map) {
+void Delete(const Key& key, std::unordered_map<MapKey, MapValue>& map) {
   if constexpr (std::is_same_v<Key, gfx::HalfEdge>) {
     // hash values depend on both edges so they must be calculated first before deleting
     const auto edge_key = hash_value(key);
