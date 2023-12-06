@@ -66,14 +66,13 @@ glm::ivec3 ParseIndexGroup(const std::string_view token) {
   const auto delimiter_count = std::ranges::count(token, *kDelimiter);
 
   switch (const auto tokens = Split(token, kDelimiter); tokens.size()) {
-    case 1: {
+    case 1:
       if (delimiter_count == 0) {
         const auto v = ParseToken<int>(tokens[0]);
         return glm::ivec3{v - 1, kInvalidIndex, kInvalidIndex};
       }
       break;
-    }
-    case 2: {
+    case 2:
       if (delimiter_count == 1) {
         const auto v = ParseToken<int>(tokens[0]);
         const auto vt = ParseToken<int>(tokens[1]);
@@ -85,8 +84,7 @@ glm::ivec3 ParseIndexGroup(const std::string_view token) {
         return glm::ivec3{v - 1, kInvalidIndex, vn - 1};
       }
       break;
-    }
-    case 3: {
+    case 3:
       if (delimiter_count == 2) {
         const auto v = ParseToken<int>(tokens[0]);
         const auto vt = ParseToken<int>(tokens[1]);
@@ -94,7 +92,8 @@ glm::ivec3 ParseIndexGroup(const std::string_view token) {
         return glm::ivec3{v - 1, vt - 1, vn - 1};
       }
       break;
-    }
+    default:
+      break;
   }
 
   throw std::invalid_argument{std::format("Unsupported format {}", token)};

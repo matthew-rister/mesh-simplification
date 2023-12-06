@@ -58,16 +58,18 @@ void gfx::App::Run() {
 
 void gfx::App::HandleKeyEvent(const int key, const int action) {
   if (action != GLFW_PRESS) return;
+
   switch (key) {
-    case GLFW_KEY_ESCAPE: {
+    case GLFW_KEY_ESCAPE:
       window_.Close();
       break;
-    }
     case GLFW_KEY_S: {
       static constexpr auto kSimplificationRate = 0.5f;
       mesh_ = mesh::Simplify(engine_.device(), mesh_, kSimplificationRate);
       break;
     }
+    default:
+      break;
   }
 }
 

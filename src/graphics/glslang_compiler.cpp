@@ -140,21 +140,36 @@ struct std::formatter<glslang_stage_t> : std::formatter<std::string_view> {
 private:
   static constexpr std::string_view to_string(const glslang_stage_t stage) noexcept {
     switch (stage) {
-      case GLSLANG_STAGE_VERTEX: return "GLSLANG_STAGE_VERTEX";
-      case GLSLANG_STAGE_TESSCONTROL: return "GLSLANG_STAGE_TESSCONTROL";
-      case GLSLANG_STAGE_TESSEVALUATION: return "GLSLANG_STAGE_TESSEVALUATION";
-      case GLSLANG_STAGE_GEOMETRY: return "GLSLANG_STAGE_GEOMETRY";
-      case GLSLANG_STAGE_FRAGMENT: return "GLSLANG_STAGE_FRAGMENT";
-      case GLSLANG_STAGE_COMPUTE: return "GLSLANG_STAGE_COMPUTE";
-      case GLSLANG_STAGE_RAYGEN: return "GLSLANG_STAGE_RAYGEN";
-      case GLSLANG_STAGE_INTERSECT: return "GLSLANG_STAGE_INTERSECT";
-      case GLSLANG_STAGE_ANYHIT: return "GLSLANG_STAGE_ANYHIT";
-      case GLSLANG_STAGE_CLOSESTHIT: return "GLSLANG_STAGE_CLOSESTHIT";
-      case GLSLANG_STAGE_MISS: return "GLSLANG_STAGE_MISS";
-      case GLSLANG_STAGE_CALLABLE: return "GLSLANG_STAGE_CALLABLE";
-      case GLSLANG_STAGE_TASK: return "GLSLANG_STAGE_TASK";
-      case GLSLANG_STAGE_MESH: return "GLSLANG_STAGE_MESH";
-      default: std::unreachable();
+      case GLSLANG_STAGE_VERTEX:
+        return "GLSLANG_STAGE_VERTEX";
+      case GLSLANG_STAGE_TESSCONTROL:
+        return "GLSLANG_STAGE_TESSCONTROL";
+      case GLSLANG_STAGE_TESSEVALUATION:
+        return "GLSLANG_STAGE_TESSEVALUATION";
+      case GLSLANG_STAGE_GEOMETRY:
+        return "GLSLANG_STAGE_GEOMETRY";
+      case GLSLANG_STAGE_FRAGMENT:
+        return "GLSLANG_STAGE_FRAGMENT";
+      case GLSLANG_STAGE_COMPUTE:
+        return "GLSLANG_STAGE_COMPUTE";
+      case GLSLANG_STAGE_RAYGEN:
+        return "GLSLANG_STAGE_RAYGEN";
+      case GLSLANG_STAGE_INTERSECT:
+        return "GLSLANG_STAGE_INTERSECT";
+      case GLSLANG_STAGE_ANYHIT:
+        return "GLSLANG_STAGE_ANYHIT";
+      case GLSLANG_STAGE_CLOSESTHIT:
+        return "GLSLANG_STAGE_CLOSESTHIT";
+      case GLSLANG_STAGE_MISS:
+        return "GLSLANG_STAGE_MISS";
+      case GLSLANG_STAGE_CALLABLE:
+        return "GLSLANG_STAGE_CALLABLE";
+      case GLSLANG_STAGE_TASK:
+        return "GLSLANG_STAGE_TASK";
+      case GLSLANG_STAGE_MESH:
+        return "GLSLANG_STAGE_MESH";
+      default:
+        std::unreachable();
     }
   }
 };

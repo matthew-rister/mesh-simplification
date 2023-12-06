@@ -42,6 +42,7 @@ private:
 inline std::size_t hash_value(const Vertex& v0) noexcept { return v0.id(); }
 
 inline void hash_combine(std::size_t& seed, const Vertex& vertex) {
+  // NOLINTBEGIN(*-magic-numbers)
   seed += 0x9e3779b9 + hash_value(vertex);
   if constexpr (sizeof(std::size_t) == sizeof(std::uint32_t)) {
     seed ^= seed >> 16u;
@@ -57,6 +58,7 @@ inline void hash_combine(std::size_t& seed, const Vertex& vertex) {
     seed *= 0xe9846af9b1a615d;
     seed ^= seed >> 28u;
   }
+  // NOLINTEND(*-magic-numbers)
 }
 
 }  // namespace gfx

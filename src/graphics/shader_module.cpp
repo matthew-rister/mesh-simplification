@@ -14,19 +14,32 @@ namespace {
 
 glslang_stage_t GetGlslangStage(const vk::ShaderStageFlagBits shader_stage) {
   switch (shader_stage) {  // NOLINT(clang-diagnostic-switch-enum)
-    case vk::ShaderStageFlagBits::eVertex: return GLSLANG_STAGE_VERTEX;
-    case vk::ShaderStageFlagBits::eTessellationControl: return GLSLANG_STAGE_TESSCONTROL;
-    case vk::ShaderStageFlagBits::eTessellationEvaluation: return GLSLANG_STAGE_TESSEVALUATION;
-    case vk::ShaderStageFlagBits::eGeometry: return GLSLANG_STAGE_GEOMETRY;
-    case vk::ShaderStageFlagBits::eFragment: return GLSLANG_STAGE_FRAGMENT;
-    case vk::ShaderStageFlagBits::eCompute: return GLSLANG_STAGE_COMPUTE;
-    case vk::ShaderStageFlagBits::eRaygenKHR: return GLSLANG_STAGE_RAYGEN;
-    case vk::ShaderStageFlagBits::eAnyHitKHR: return GLSLANG_STAGE_ANYHIT;
-    case vk::ShaderStageFlagBits::eClosestHitKHR: return GLSLANG_STAGE_CLOSESTHIT;
-    case vk::ShaderStageFlagBits::eMissKHR: return GLSLANG_STAGE_MISS;
-    case vk::ShaderStageFlagBits::eIntersectionKHR: return GLSLANG_STAGE_INTERSECT;
-    case vk::ShaderStageFlagBits::eCallableKHR: return GLSLANG_STAGE_CALLABLE;
-    default: throw std::invalid_argument{std::format("Unsupported shader stage {}", vk::to_string(shader_stage))};
+    case vk::ShaderStageFlagBits::eVertex:
+      return GLSLANG_STAGE_VERTEX;
+    case vk::ShaderStageFlagBits::eTessellationControl:
+      return GLSLANG_STAGE_TESSCONTROL;
+    case vk::ShaderStageFlagBits::eTessellationEvaluation:
+      return GLSLANG_STAGE_TESSEVALUATION;
+    case vk::ShaderStageFlagBits::eGeometry:
+      return GLSLANG_STAGE_GEOMETRY;
+    case vk::ShaderStageFlagBits::eFragment:
+      return GLSLANG_STAGE_FRAGMENT;
+    case vk::ShaderStageFlagBits::eCompute:
+      return GLSLANG_STAGE_COMPUTE;
+    case vk::ShaderStageFlagBits::eRaygenKHR:
+      return GLSLANG_STAGE_RAYGEN;
+    case vk::ShaderStageFlagBits::eAnyHitKHR:
+      return GLSLANG_STAGE_ANYHIT;
+    case vk::ShaderStageFlagBits::eClosestHitKHR:
+      return GLSLANG_STAGE_CLOSESTHIT;
+    case vk::ShaderStageFlagBits::eMissKHR:
+      return GLSLANG_STAGE_MISS;
+    case vk::ShaderStageFlagBits::eIntersectionKHR:
+      return GLSLANG_STAGE_INTERSECT;
+    case vk::ShaderStageFlagBits::eCallableKHR:
+      return GLSLANG_STAGE_CALLABLE;
+    default:
+      throw std::invalid_argument{std::format("Unsupported shader stage {}", vk::to_string(shader_stage))};
   }
 }
 
