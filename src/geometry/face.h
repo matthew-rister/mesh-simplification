@@ -35,21 +35,13 @@ public:
 
   [[nodiscard]] float area() const noexcept { return area_; }
 
+  friend std::size_t hash_value(const Face& face) noexcept { return hash_value(*face.v0(), *face.v1(), *face.v2()); }
+
 private:
   std::weak_ptr<Vertex> v0_, v1_, v2_;
   glm::vec3 normal_;
   float area_;
 };
-
-inline std::size_t hash_value(const Vertex& v0, const Vertex& v1, const Vertex& v2) noexcept {
-  std::size_t seed = 0;
-  hash_combine(seed, v0);
-  hash_combine(seed, v1);
-  hash_combine(seed, v2);
-  return seed;
-}
-
-inline std::size_t hash_value(const Face& face) noexcept { return hash_value(*face.v0(), *face.v1(), *face.v2()); }
 
 }  // namespace gfx
 

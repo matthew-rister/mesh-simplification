@@ -39,22 +39,15 @@ public:
 
   void set_face(const std::shared_ptr<Face>& face) noexcept { face_ = face; }
 
+  friend std::size_t hash_value(const HalfEdge& edge) noexcept {
+    return hash_value(*edge.flip()->vertex(), *edge.vertex());
+  }
+
 private:
   std::weak_ptr<Vertex> vertex_;
   std::weak_ptr<HalfEdge> next_, flip_;
   std::weak_ptr<Face> face_;
 };
-
-inline std::size_t hash_value(const Vertex& v0, const Vertex& v1) noexcept {
-  std::size_t seed = 0;
-  hash_combine(seed, v0);
-  hash_combine(seed, v1);
-  return seed;
-}
-
-inline std::size_t hash_value(const HalfEdge& edge) noexcept {
-  return hash_value(*edge.flip()->vertex(), *edge.vertex());
-}
 
 }  // namespace gfx
 

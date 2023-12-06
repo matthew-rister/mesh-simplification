@@ -52,7 +52,6 @@ UniqueGlfwWindow CreateGlfwWindow(const char* const title, const gfx::Window::Si
 
 gfx::Window::Window(const char* const title, const Size& size) : window_{CreateGlfwWindow(title, size)} {
   glfwSetWindowUserPointer(window_.get(), this);
-  glfwSetInputMode(window_.get(), GLFW_STICKY_MOUSE_BUTTONS, GLFW_TRUE);
 
   glfwSetKeyCallback(
       window_.get(),
