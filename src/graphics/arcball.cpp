@@ -25,8 +25,7 @@ constexpr glm::vec2 GetNormalizedViewPosition(const glm::vec2& cursor_position, 
   return glm::vec2{x, -y};  // y-coordinate negated to account for +y-axis up convention
 }
 
-glm::vec3 GetArcballPosition(const glm::vec2& cursor_position, const gfx::Window::Size& window_size) {
-  const auto view_position = GetNormalizedViewPosition(cursor_position, window_size);
+glm::vec3 GetArcballPosition(const glm::vec2& view_position) {
   const auto a = view_position.x;
   const auto b = view_position.y;
 
@@ -44,8 +43,11 @@ glm::vec3 GetArcballPosition(const glm::vec2& cursor_position, const gfx::Window
 std::optional<gfx::arcball::Rotation> gfx::arcball::GetRotation(const glm::vec2& cursor_position_start,
                                                                 const glm::vec2& cursor_position_end,
                                                                 const Window::Size& window_size) {
-  const auto arcball_position_start = GetArcballPosition(cursor_position_start, window_size);
-  const auto arcball_position_end = GetArcballPosition(cursor_position_end, window_size);
+  const auto view_position_start = GetNormalizedViewPosition(cursor_position_start, window_size);
+  const auto view_position_end = GetNormalizedViewPosition(cursor_position_end, window_size);
+
+  const auto arcball_position_start = GetArcballPosition(view_position_start);
+  const auto arcball_position_end = GetArcballPosition(view_position_end);
 
   // avoid calculating the cross product and angle between identical vectors
   if (arcball_position_start == arcball_position_end) return std::nullopt;

@@ -46,4 +46,24 @@ TEST(ArcballTest, GetNormalizedViewPositionClampsInTheRangeMinusOneToOne) {
   static_assert(GetNormalizedViewPosition(kTopRightCorner, kWindowSize) == glm::vec2{1.0f, 1.0f});
 }
 
+TEST(ArcballTest, GetArcballPositionForViewPositionInsideTheUnitSphere) {
+  static constexpr glm::vec2 kViewPosition{0.5f, 0.25f};
+  const auto arcball_position = GetArcballPosition(kViewPosition);
+  const auto x = arcball_position.x;
+  const auto y = arcball_position.y;
+  const auto z = arcball_position.z;
+  EXPECT_FLOAT_EQ(x, kViewPosition.x);
+  EXPECT_FLOAT_EQ(y, kViewPosition.y);
+  EXPECT_FLOAT_EQ(z, std::sqrt(1.0f - x * x - y * y));
+}
+
+TEST(ArcballTest, GetArcballPositionForViewPositionOutsideTheUnitSphere) {
+  constexpr glm::vec2 kViewPosition{0.75f, 0.85f};
+  const auto normalized_view_position = glm::normalize(kViewPosition);
+  const auto arcball_position = GetArcballPosition(kViewPosition);
+  EXPECT_FLOAT_EQ(arcball_position.x, normalized_view_position.x);
+  EXPECT_FLOAT_EQ(arcball_position.y, normalized_view_position.y);
+  EXPECT_FLOAT_EQ(arcball_position.z, 0.0f);
+}
+
 }  // namespace
