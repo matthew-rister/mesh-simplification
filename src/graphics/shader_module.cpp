@@ -31,11 +31,11 @@ glslang_stage_t GetGlslangStage(const vk::ShaderStageFlagBits shader_stage) {
 }
 
 std::string ReadFile(const std::filesystem::path& filepath) {
-  if (std::ifstream ifs{filepath, std::ios::ate}) {
-    const std::streamsize size = ifs.tellg();
+  if (std::ifstream ifstream{filepath, std::ios::ate}) {
+    const std::streamsize size = ifstream.tellg();
     std::string source(static_cast<std::size_t>(size), '\0');
-    ifs.seekg(0, std::ios::beg);
-    ifs.read(source.data(), size);
+    ifstream.seekg(0, std::ios::beg);
+    ifstream.read(source.data(), size);
     return source;
   }
   throw std::runtime_error{std::format("Failed to open {}", filepath.string())};

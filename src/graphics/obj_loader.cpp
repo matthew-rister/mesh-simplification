@@ -116,13 +116,13 @@ constexpr glm::vec<N, T> TryGet(const std::vector<glm::vec<N, T>>& data, const i
   return glm::vec<N, T>{};
 }
 
-gfx::Mesh LoadMesh(const gfx::Device& device, std::istream& is) {
+gfx::Mesh LoadMesh(const gfx::Device& device, std::istream& istream) {
   std::vector<glm::vec3> positions;
   std::vector<glm::vec3> normals;
   std::vector<glm::vec2> texture_coordinates;
   std::vector<std::array<glm::ivec3, 3>> faces;
 
-  for (std::string line; getline(is, line);) {
+  for (std::string line; getline(istream, line);) {
     if (const auto line_view = Trim(line); !line_view.empty() && !line_view.starts_with('#')) {
       if (line_view.starts_with("v ")) {
         positions.push_back(ParseLine<float, 3>(line_view));
@@ -161,8 +161,8 @@ gfx::Mesh LoadMesh(const gfx::Device& device, std::istream& is) {
 }  // namespace
 
 gfx::Mesh gfx::obj_loader::LoadMesh(const Device& device, const std::filesystem::path& filepath) {
-  if (std::ifstream ifs{filepath}) {
-    return ::LoadMesh(device, ifs);
+  if (std::ifstream ifstream{filepath}) {
+    return ::LoadMesh(device, ifstream);
   }
   throw std::runtime_error{std::format("Unable to open {}", filepath.string())};
 }

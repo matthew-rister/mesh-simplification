@@ -20,6 +20,7 @@ public:
     glm::vec3 position;
     glm::vec2 texture_coordinates;
     glm::vec3 normal;
+    bool operator==(const Vertex&) const = default;
   };
 
   Mesh(const Device& device,
