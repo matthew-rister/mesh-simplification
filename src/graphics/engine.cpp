@@ -9,6 +9,7 @@
 
 #include <glm/mat4x4.hpp>
 
+#include "geometry/vertex.h"
 #include "graphics/camera.h"
 #include "graphics/mesh.h"
 #include "graphics/shader_module.h"
@@ -16,12 +17,8 @@
 
 namespace {
 
-struct MeshPushConstants {
-  glm::mat4 model_transform;
-};
-
-struct CameraUniformBuffer {
-  glm::mat4 view_transform;
+struct VertexTransforms {
+  glm::mat4 model_view_transform;
   glm::mat4 projection_transform;
 };
 
@@ -121,75 +118,13 @@ std::vector<vk::UniqueFramebuffer> CreateFramebuffers(const vk::Device& device,
          | std::ranges::to<std::vector>();
 }
 
-vk::UniqueDescriptorSetLayout CreateDescriptorSetLayout(const vk::Device& device) {
-  static constexpr vk::DescriptorSetLayoutBinding kDescriptorSetLayoutBinding{
-      .binding = 0,
-      .descriptorType = vk::DescriptorType::eUniformBuffer,
-      .descriptorCount = 1,
-      .stageFlags = vk::ShaderStageFlagBits::eVertex};
-
-  return device.createDescriptorSetLayoutUnique(
-      vk::DescriptorSetLayoutCreateInfo{.bindingCount = 1, .pBindings = &kDescriptorSetLayoutBinding});
-}
-
-template <std::uint32_t N>
-vk::UniqueDescriptorPool CreateDescriptorPool(const vk::Device& device) {
-  static constexpr vk::DescriptorPoolSize kDescriptorPoolSize{.type = vk::DescriptorType::eUniformBuffer,
-                                                              .descriptorCount = N};
-
-  return device.createDescriptorPoolUnique(
-      vk::DescriptorPoolCreateInfo{.flags = vk::DescriptorPoolCreateFlagBits::eFreeDescriptorSet,
-                                   .maxSets = N,
-                                   .poolSizeCount = 1,
-                                   .pPoolSizes = &kDescriptorPoolSize});
-}
-
-template <std::uint32_t N>
-std::vector<vk::UniqueDescriptorSet> AllocateDescriptorSets(const vk::Device& device,
-                                                            const vk::DescriptorPool& descriptor_pool,
-                                                            const vk::DescriptorSetLayout& descriptor_set_layout) {
-  std::array<vk::DescriptorSetLayout, N> descriptor_set_layouts;
-  std::ranges::fill(descriptor_set_layouts, descriptor_set_layout);
-
-  return device.allocateDescriptorSetsUnique(
-      vk::DescriptorSetAllocateInfo{.descriptorPool = descriptor_pool,
-                                    .descriptorSetCount = N,
-                                    .pSetLayouts = descriptor_set_layouts.data()});
-}
-
-std::vector<gfx::Buffer> CreateUniformBuffers(const gfx::Device& device,
-                                              const std::vector<vk::UniqueDescriptorSet>& descriptor_sets) {
-  return descriptor_sets  //
-         | std::views::transform([&device](const auto& descriptor_set) {
-             gfx::Buffer buffer{device,
-                                sizeof(CameraUniformBuffer),
-                                vk::BufferUsageFlagBits::eUniformBuffer,
-                                vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent};
-
-             const vk::DescriptorBufferInfo buffer_info{.buffer = *buffer, .offset = 0, .range = vk::WholeSize};
-             device->updateDescriptorSets(vk::WriteDescriptorSet{.dstSet = *descriptor_set,
-                                                                 .dstBinding = 0,
-                                                                 .dstArrayElement = 0,
-                                                                 .descriptorCount = 1,
-                                                                 .descriptorType = vk::DescriptorType::eUniformBuffer,
-                                                                 .pBufferInfo = &buffer_info},
-                                          nullptr);
-
-             return buffer;
-           })
-         | std::ranges::to<std::vector>();
-}
-
-vk::UniquePipelineLayout CreateGraphicsPipelineLayout(const vk::Device& device,
-                                                      const vk::DescriptorSetLayout& descriptor_set_layout) {
+vk::UniquePipelineLayout CreateGraphicsPipelineLayout(const vk::Device& device) {
   static constexpr vk::PushConstantRange kPushConstantRange{.stageFlags = vk::ShaderStageFlagBits::eVertex,
                                                             .offset = 0,
-                                                            .size = sizeof(MeshPushConstants)};
+                                                            .size = sizeof(VertexTransforms)};
 
-  return device.createPipelineLayoutUnique(vk::PipelineLayoutCreateInfo{.setLayoutCount = 1,
-                                                                        .pSetLayouts = &descriptor_set_layout,
-                                                                        .pushConstantRangeCount = 1,
-                                                                        .pPushConstantRanges = &kPushConstantRange});
+  return device.createPipelineLayoutUnique(
+      vk::PipelineLayoutCreateInfo{.pushConstantRangeCount = 1, .pPushConstantRanges = &kPushConstantRange});
 }
 
 vk::UniquePipeline CreateGraphicsPipeline(const vk::Device& device,
@@ -361,11 +296,7 @@ gfx::Engine::Engine(const Window& window)
                                        *render_pass_,
                                        color_attachment_.image_view(),
                                        depth_attachment_.image_view())},
-      descriptor_set_layout_{CreateDescriptorSetLayout(*device_)},
-      descriptor_pool_{CreateDescriptorPool<kMaxRenderFrames>(*device_)},
-      descriptor_sets_{AllocateDescriptorSets<kMaxRenderFrames>(*device_, *descriptor_pool_, *descriptor_set_layout_)},
-      uniform_buffers_{CreateUniformBuffers(device_, descriptor_sets_)},
-      graphics_pipeline_layout_{CreateGraphicsPipelineLayout(*device_, *descriptor_set_layout_)},
+      graphics_pipeline_layout_{CreateGraphicsPipelineLayout(*device_)},
       graphics_pipeline_{
           CreateGraphicsPipeline(*device_, swapchain_, msaa_sample_count_, *graphics_pipeline_layout_, *render_pass_)},
       command_pool_{CreateCommandPool(device_)},
@@ -393,18 +324,14 @@ void gfx::Engine::Render(const Camera& camera, const Mesh& mesh) {
   std::tie(result, image_index) = device_->acquireNextImageKHR(*swapchain_, kMaxTimeout, acquire_next_image_semaphore);
   vk::resultCheck(result, "Failed to acquire the next presentable image");
 
-  auto& uniform_buffer = uniform_buffers_[current_frame_index_];
-  uniform_buffer.Copy<CameraUniformBuffer>(CameraUniformBuffer{.view_transform = camera.view_transform(),
-                                                               .projection_transform = camera.projection_transform()});
-
   const auto& command_buffer = *command_buffers_[current_frame_index_];
   command_buffer.begin(vk::CommandBufferBeginInfo{.flags = vk::CommandBufferUsageFlagBits::eOneTimeSubmit});
+  command_buffer.bindPipeline(vk::PipelineBindPoint::eGraphics, *graphics_pipeline_);
 
   static constexpr std::array kClearColor{0.05098039f, 0.06666667f, 0.08627451f, 1.0f};
   static constexpr std::array kClearValues{vk::ClearValue{.color = vk::ClearColorValue{kClearColor}},
                                            vk::ClearValue{.color = vk::ClearColorValue{kClearColor}},
                                            vk::ClearValue{.depthStencil = vk::ClearDepthStencilValue{1.0f, 0}}};
-
   command_buffer.beginRenderPass(
       vk::RenderPassBeginInfo{
           .renderPass = *render_pass_,
@@ -414,27 +341,22 @@ void gfx::Engine::Render(const Camera& camera, const Mesh& mesh) {
           .pClearValues = kClearValues.data()},
       vk::SubpassContents::eInline);
 
-  command_buffer.bindPipeline(vk::PipelineBindPoint::eGraphics, *graphics_pipeline_);
+  command_buffer.pushConstants<VertexTransforms>(
+      *graphics_pipeline_layout_,
+      vk::ShaderStageFlagBits::eVertex,
+      0,
+      VertexTransforms{.model_view_transform = camera.view_transform() * mesh.transform(),
+                       .projection_transform = camera.projection_transform()});
 
-  const auto& descriptor_set = *descriptor_sets_[current_frame_index_];
-  command_buffer.bindDescriptorSets(vk::PipelineBindPoint::eGraphics,
-                                    *graphics_pipeline_layout_,
-                                    0,
-                                    descriptor_set,
-                                    nullptr);
-  command_buffer.pushConstants<MeshPushConstants>(*graphics_pipeline_layout_,
-                                                  vk::ShaderStageFlagBits::eVertex,
-                                                  0,
-                                                  MeshPushConstants{.model_transform = mesh.transform()});
   mesh.Render(command_buffer);
 
   command_buffer.endRenderPass();
   command_buffer.end();
 
-  static constexpr vk::PipelineStageFlags kTopOfPipe = vk::PipelineStageFlagBits::eTopOfPipe;
+  static constexpr vk::PipelineStageFlags kPipelineWaitStage = vk::PipelineStageFlagBits::eTopOfPipe;
   device_.graphics_queue()->submit(vk::SubmitInfo{.waitSemaphoreCount = 1,
                                                   .pWaitSemaphores = &acquire_next_image_semaphore,
-                                                  .pWaitDstStageMask = &kTopOfPipe,
+                                                  .pWaitDstStageMask = &kPipelineWaitStage,
                                                   .commandBufferCount = 1,
                                                   .pCommandBuffers = &command_buffer,
                                                   .signalSemaphoreCount = 1,
