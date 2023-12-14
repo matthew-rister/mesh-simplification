@@ -16,6 +16,12 @@
 
 namespace {
 
+/**
+ * \brief Finds a hashable item in an unordered map.
+ * \param key The hash value or item to be hashed before searching the unordered map.
+ * \param map The unordered map to search.
+ * \return A constant iterator to the item in the unordered map if it exists.
+ */
 template <typename Key, typename MapKey, typename MapValue>
 typename std::unordered_map<MapKey, MapValue>::const_iterator Find(const Key& key,
                                                                    const std::unordered_map<MapKey, MapValue>& map) {
@@ -26,6 +32,12 @@ typename std::unordered_map<MapKey, MapValue>::const_iterator Find(const Key& ke
   }
 }
 
+/**
+ * \brief Gets a hashable item in an unordered map.
+ * \param key The hash value or item to be hashed before searching the unordered map.
+ * \param map The unordered map to get from.
+ * \return A constant reference to the item in the unordered map.
+ */
 template <typename Key, typename MapKey, typename MapValue>
 const MapValue& Get(const Key& key, const std::unordered_map<MapKey, MapValue>& map) {
   const auto iterator = Find(key, map);
@@ -33,6 +45,11 @@ const MapValue& Get(const Key& key, const std::unordered_map<MapKey, MapValue>& 
   return iterator->second;
 }
 
+/**
+ * \brief Deletes a hashable item in an unordered map.
+ * \param key The hash value or item to be hashed before searching the unordered map.
+ * \param map The unordered map to delete from.
+ */
 template <typename Key, typename MapKey, typename MapValue>
 void Delete(const Key& key, std::unordered_map<MapKey, MapValue>& map) {
   if constexpr (std::is_same_v<Key, gfx::HalfEdge>) {
@@ -48,6 +65,12 @@ void Delete(const Key& key, std::unordered_map<MapKey, MapValue>& map) {
   }
 }
 
+/**
+ * \brief Creates a new half-edge and its associated flip edge.
+ * \param v0,v1 The half-edge vertices.
+ * \param edges The mesh half-edges by hash value.
+ * \return The half-edge connecting vertex \p v0 to \p v1.
+ */
 std::shared_ptr<gfx::HalfEdge> CreateHalfEdge(const std::shared_ptr<gfx::Vertex>& v0,
                                               const std::shared_ptr<gfx::Vertex>& v1,
                                               std::unordered_map<std::size_t, std::shared_ptr<gfx::HalfEdge>>& edges) {
@@ -73,6 +96,12 @@ std::shared_ptr<gfx::HalfEdge> CreateHalfEdge(const std::shared_ptr<gfx::Vertex>
   return edge01;
 }
 
+/**
+ * \brief Creates a new triangle in the half-edge mesh.
+ * \param v0,v1,v2 The triangle vertices in counter-clockwise order.
+ * \param edges A mesh half-edges by hash value.
+ * \return A triangle face constructed from the vertices \p v0, \p v1, \p v2.
+ */
 std::shared_ptr<gfx::Face> CreateTriangle(const std::shared_ptr<gfx::Vertex>& v0,
                                           const std::shared_ptr<gfx::Vertex>& v1,
                                           const std::shared_ptr<gfx::Vertex>& v2,
@@ -97,6 +126,15 @@ std::shared_ptr<gfx::Face> CreateTriangle(const std::shared_ptr<gfx::Vertex>& v0
   return face012;
 }
 
+/**
+ * \brief Attaches edges incident to a vertex to a new vertex.
+ * \param v_target The vertex whose incident edges should be updated.
+ * \param v_start The vertex opposite of \p v_target representing the first half-edge to process.
+ * \param v_end The vertex opposite of \p v_target representing the last half-edge to process.
+ * \param v_new The new vertex to attach edges to.
+ * \param edges The mesh half-edges by hash value.
+ * \param faces The mesh faces by hash value.
+ */
 void AttachIncidentEdges(const gfx::Vertex& v_target,
                          const gfx::Vertex& v_start,
                          const gfx::Vertex& v_end,
@@ -125,6 +163,11 @@ void AttachIncidentEdges(const gfx::Vertex& v_target,
   Delete(*edge_end, edges);
 }
 
+/**
+ * \brief Computes a vertex normal by averaging its face normals weighted by surface area.
+ * \param v0 The vertex to compute the normal for.
+ * \return The weighted vertex normal.
+ */
 glm::vec3 AverageVertexNormals(const gfx::Vertex& v0) {
   glm::vec3 normal{0.0f};
   auto edgei0 = v0.edge();

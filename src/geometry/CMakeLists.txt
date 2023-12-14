@@ -1,4 +1,6 @@
-add_library(geometry face.cpp half_edge_mesh.cpp mesh_simplifier.cpp)
+add_library(geometry face.cpp
+                     half_edge_mesh.cpp
+                     mesh_simplifier.cpp)
 
 find_package(glm CONFIG REQUIRED)
 

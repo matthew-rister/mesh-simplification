@@ -38,6 +38,7 @@ TEST(FaceTest, EqualFacesHaveTheSameHashValue) {
   const auto& [v0, v1, v2] = CreateValidTriangle();
   const gfx::Face face012{v0, v1, v2};
   const auto face012_copy = face012;  // NOLINT(performance-unnecessary-copy-initialization)
+  EXPECT_EQ(face012, face012_copy);
   EXPECT_EQ(hash_value(face012), hash_value(face012_copy));
 }
 

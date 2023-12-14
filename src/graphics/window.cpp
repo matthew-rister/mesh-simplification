@@ -35,22 +35,23 @@ private:
     }
 #ifdef GLFW_INCLUDE_VULKAN
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+    glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);  // TODO(matthew-rister): enable after implementing swapchain recreation
 #endif
   }
 };
 
 using UniqueGlfwWindow = std::unique_ptr<GLFWwindow, decltype(&glfwDestroyWindow)>;
 
-UniqueGlfwWindow CreateGlfwWindow(const char* const title, const gfx::Window::Size& size) {
+UniqueGlfwWindow CreateGlfwWindow(const char* const title, const gfx::Window::Extent& extent) {
   [[maybe_unused]] const auto& glfw_context = GlfwContext::Get();
-  auto* window = glfwCreateWindow(size.width, size.height, title, nullptr, nullptr);
+  auto* window = glfwCreateWindow(extent.width, extent.height, title, nullptr, nullptr);
   if (window == nullptr) throw std::runtime_error{"GLFW window creation failed"};
   return UniqueGlfwWindow{window, glfwDestroyWindow};
 }
 
 }  // namespace
 
-gfx::Window::Window(const char* const title, const Size& size) : window_{CreateGlfwWindow(title, size)} {
+gfx::Window::Window(const char* const title, const Extent& extent) : window_{CreateGlfwWindow(title, extent)} {
   glfwSetWindowUserPointer(window_.get(), this);
 
   glfwSetKeyCallback(
@@ -74,21 +75,22 @@ gfx::Window::Window(const char* const title, const Size& size) : window_{CreateG
   });
 }
 
-gfx::Window::Size gfx::Window::GetSize() const noexcept {
+gfx::Window::Extent gfx::Window::GetExtent() const noexcept {
   int width{}, height{};
   glfwGetWindowSize(window_.get(), &width, &height);
-  return Size{.width = width, .height = height};
+  return Extent{.width = width, .height = height};
 }
 
 float gfx::Window::GetAspectRatio() const noexcept {
-  const auto [width, height] = GetSize();
+  const auto [width, height] = GetExtent();
+  assert(height > 0);
   return static_cast<float>(width) / static_cast<float>(height);
 }
 
-gfx::Window::Size gfx::Window::GetFramebufferSize() const noexcept {
+gfx::Window::Extent gfx::Window::GetFramebufferExtent() const noexcept {
   int width{}, height{};
   glfwGetFramebufferSize(window_.get(), &width, &height);
-  return Size{.width = width, .height = height};
+  return Extent{.width = width, .height = height};
 }
 
 #ifdef GLFW_INCLUDE_VULKAN
@@ -97,7 +99,7 @@ std::span<const char* const> gfx::Window::GetInstanceExtensions() {
   std::uint32_t required_extension_count{};
   const auto* const* required_extensions = glfwGetRequiredInstanceExtensions(&required_extension_count);
   if (required_extensions == nullptr) throw std::runtime_error{"No window surface instance extensions"};
-  return std::span{required_extensions, required_extension_count};  // pointer lifetime managed by GLFW
+  return std::span{required_extensions, required_extension_count};
 }
 
 vk::UniqueSurfaceKHR gfx::Window::CreateSurface(const vk::Instance& instance) const {

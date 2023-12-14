@@ -53,14 +53,14 @@ std::ostream& operator<<(std::ostream& ostream, glslang_program_t* const program
   return ostream;
 }
 
-UniqueGlslangShader CreateShader(const glslang_stage_t stage, const char* const glsl) {
+UniqueGlslangShader CreateShader(const glslang_stage_t stage, const char* const glsl_source) {
   const glslang_input_t input{.language = GLSLANG_SOURCE_GLSL,
                               .stage = stage,
                               .client = GLSLANG_CLIENT_VULKAN,
                               .client_version = GLSLANG_TARGET_VULKAN_1_3,
                               .target_language = GLSLANG_TARGET_SPV,
                               .target_language_version = GLSLANG_TARGET_SPV_1_6,
-                              .code = glsl,
+                              .code = glsl_source,
                               .default_version = 460,
                               .default_profile = GLSLANG_NO_PROFILE,
                               .force_default_version_and_profile = 0,
@@ -70,14 +70,15 @@ UniqueGlslangShader CreateShader(const glslang_stage_t stage, const char* const 
 
   auto shader = UniqueGlslangShader{glslang_shader_create(&input), glslang_shader_delete};
   if (shader == nullptr) {
-    throw std::runtime_error{std::format("Shader creation failed at {} with GLSL source:\n{}", stage, glsl)};
+    throw std::runtime_error{std::format("Shader creation failed at {} with GLSL source:\n{}", stage, glsl_source)};
   }
 
   const auto shader_preprocess_status = glslang_shader_preprocess(shader.get(), &input);
   std::clog << shader.get();
 
   if (shader_preprocess_status == 0) {
-    throw std::runtime_error{std::format("Shader preprocessing failed at {} with GLSL source:\n{}", stage, glsl)};
+    throw std::runtime_error{
+        std::format("Shader preprocessing failed at {} with GLSL source:\n{}", stage, glsl_source)};
   }
 
   const auto shader_parse_status = glslang_shader_parse(shader.get(), &input);
@@ -140,34 +141,24 @@ struct std::formatter<glslang_stage_t> : std::formatter<std::string_view> {
 private:
   static constexpr std::string_view to_string(const glslang_stage_t stage) noexcept {
     switch (stage) {
-      case GLSLANG_STAGE_VERTEX:
-        return "GLSLANG_STAGE_VERTEX";
-      case GLSLANG_STAGE_TESSCONTROL:
-        return "GLSLANG_STAGE_TESSCONTROL";
-      case GLSLANG_STAGE_TESSEVALUATION:
-        return "GLSLANG_STAGE_TESSEVALUATION";
-      case GLSLANG_STAGE_GEOMETRY:
-        return "GLSLANG_STAGE_GEOMETRY";
-      case GLSLANG_STAGE_FRAGMENT:
-        return "GLSLANG_STAGE_FRAGMENT";
-      case GLSLANG_STAGE_COMPUTE:
-        return "GLSLANG_STAGE_COMPUTE";
-      case GLSLANG_STAGE_RAYGEN:
-        return "GLSLANG_STAGE_RAYGEN";
-      case GLSLANG_STAGE_INTERSECT:
-        return "GLSLANG_STAGE_INTERSECT";
-      case GLSLANG_STAGE_ANYHIT:
-        return "GLSLANG_STAGE_ANYHIT";
-      case GLSLANG_STAGE_CLOSESTHIT:
-        return "GLSLANG_STAGE_CLOSESTHIT";
-      case GLSLANG_STAGE_MISS:
-        return "GLSLANG_STAGE_MISS";
-      case GLSLANG_STAGE_CALLABLE:
-        return "GLSLANG_STAGE_CALLABLE";
-      case GLSLANG_STAGE_TASK:
-        return "GLSLANG_STAGE_TASK";
-      case GLSLANG_STAGE_MESH:
-        return "GLSLANG_STAGE_MESH";
+      // clang-format off
+#define CASE(kGlslangStage) case kGlslangStage: return #kGlslangStage;  // NOLINT(cppcoreguidelines-macro-usage)
+      CASE(GLSLANG_STAGE_VERTEX)
+      CASE(GLSLANG_STAGE_TESSCONTROL)
+      CASE(GLSLANG_STAGE_TESSEVALUATION)
+      CASE(GLSLANG_STAGE_GEOMETRY)
+      CASE(GLSLANG_STAGE_FRAGMENT)
+      CASE(GLSLANG_STAGE_COMPUTE)
+      CASE(GLSLANG_STAGE_RAYGEN)
+      CASE(GLSLANG_STAGE_INTERSECT)
+      CASE(GLSLANG_STAGE_ANYHIT)
+      CASE(GLSLANG_STAGE_CLOSESTHIT)
+      CASE(GLSLANG_STAGE_MISS)
+      CASE(GLSLANG_STAGE_CALLABLE)
+      CASE(GLSLANG_STAGE_TASK)
+      CASE(GLSLANG_STAGE_MESH)
+#undef CASE
+      // clang-format on
       default:
         std::unreachable();
     }
@@ -182,6 +173,7 @@ gfx::GlslangCompiler::GlslangCompiler() {
 
 gfx::GlslangCompiler::~GlslangCompiler() noexcept { glslang_finalize_process(); }
 
+// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
 std::vector<std::uint32_t> gfx::GlslangCompiler::Compile(const glslang_stage_t stage,
                                                          const char* const glsl_source) const {
   const auto shader = CreateShader(stage, glsl_source);

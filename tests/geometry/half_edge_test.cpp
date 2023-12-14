@@ -13,6 +13,7 @@ TEST(HalfEdgeTest, EqualHalfEdgesHaveTheSameHashValue) {
   const auto edge10 = std::make_shared<gfx::HalfEdge>(v0);
   edge01->set_flip(edge10);
   const auto edge01_copy = *edge01;  // NOLINT(performance-unnecessary-copy-initialization)
+  EXPECT_EQ(*edge01, edge01_copy);
   EXPECT_EQ(hash_value(*edge01), hash_value(edge01_copy));
 }
 

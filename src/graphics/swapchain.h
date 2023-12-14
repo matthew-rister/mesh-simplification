@@ -1,7 +1,8 @@
 #ifndef SRC_GRAPHICS_SWAPCHAIN_H_
 #define SRC_GRAPHICS_SWAPCHAIN_H_
 
-#include <experimental/generator>
+#include <algorithm>
+#include <ranges>
 #include <vector>
 
 #include <vulkan/vulkan.hpp>
@@ -11,9 +12,6 @@ class Device;
 class Window;
 
 class Swapchain {
-  template <typename T>
-  using generator = std::experimental::generator<T>;
-
 public:
   Swapchain(const Device& device, const Window& window, const vk::SurfaceKHR& surface);
 
@@ -23,10 +21,8 @@ public:
   [[nodiscard]] vk::Format image_format() const noexcept { return image_format_; }
   [[nodiscard]] const vk::Extent2D& image_extent() const noexcept { return image_extent_; }
 
-  [[nodiscard]] generator<vk::ImageView> image_views() const {
-    for (const auto& image_view : image_views_) {
-      co_yield *image_view;
-    }
+  [[nodiscard]] std::ranges::constant_range auto image_views() const {
+    return image_views_ | std::views::transform([](const auto& image_view) -> auto& { return *image_view; });
   }
 
 private:

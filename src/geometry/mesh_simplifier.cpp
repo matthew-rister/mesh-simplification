@@ -6,6 +6,7 @@
 #include <format>
 #include <iostream>
 #include <memory>
+#include <print>
 #include <queue>
 #include <ranges>
 #include <stdexcept>
@@ -23,26 +24,53 @@
 
 namespace {
 
+/**
+ * \brief A edge contraction candidate in a half-edge mesh.
+ * \details An edge contraction candidate includes all the information necessary to process the next half-edge during
+ *          the mesh simplification process.
+ */
 struct EdgeContraction {
+  /**
+   * \brief Initializes an edge contraction.
+   * \param edge The edge to contract.
+   * \param vertex The vertex whose position optimally preserves the original shape of the mesh after edge contraction.
+   * \param quadric The error quadric for this edge contraction's vertex.
+   * \param cost A metric that quantifies how much the mesh will change after this edge has been contracted.
+   * \param valid Indicates if this edge contraction is valid. This is used as a workaround for priority_queue not
+   *              providing a method to update an existing entry's priority. As edges are updated in the mesh,
+   *              duplicated entries may be inserted in the queue and this property will be used to determine if an
+   *              entry refers to the most recent edge update.
+   */
   EdgeContraction(const std::shared_ptr<gfx::HalfEdge>& edge,
                   const std::shared_ptr<gfx::Vertex>& vertex,
                   const glm::mat4& quadric,
-                  const float cost)
-      : edge{edge}, vertex{vertex}, quadric{quadric}, cost{cost} {}
+                  const float cost,
+                  const bool valid = true)
+      : edge{edge}, vertex{vertex}, quadric{quadric}, cost{cost}, valid{valid} {}
 
   std::shared_ptr<gfx::HalfEdge> edge;
   std::shared_ptr<gfx::Vertex> vertex;
   glm::mat4 quadric;
   float cost;
-  bool valid = true;
+  bool valid;
 };
 
+/**
+ * \brief Gets a canonical representation of a half-edge used to disambiguate between its flip edge.
+ * \param edge01 The half-edge to disambiguate.
+ * \return For two vertices connected by an edge, returns the half-edge pointing to the vertex with the smallest ID.
+ */
 std::shared_ptr<gfx::HalfEdge> GetMinEdge(const std::shared_ptr<gfx::HalfEdge>& edge01) {
   const auto edge10 = edge01->flip();
   return edge01->vertex()->id() < edge10->vertex()->id() ? edge01 : edge10;
 }
 
-glm::mat4 GetErrorQuadric(const gfx::Vertex& v0) {
+/**
+ * \brief Creates an error quadric for a given vertex.
+ * \param v0 The vertex to create an error quadric for.
+ * \return The error quadric for \p v0.
+ */
+glm::mat4 CreateErrorQuadric(const gfx::Vertex& v0) {
   glm::mat4 quadric{0.0f};
   auto edgei0 = v0.edge();
   do {
@@ -55,8 +83,15 @@ glm::mat4 GetErrorQuadric(const gfx::Vertex& v0) {
   return quadric;
 }
 
-std::shared_ptr<EdgeContraction> GetEdgeContraction(const std::shared_ptr<gfx::HalfEdge>& edge01,
-                                                    const std::unordered_map<std::uint32_t, glm::mat4>& quadrics) {
+/**
+ * \brief Creates an edge contraction candidate.
+ * \param edge01 The edge to contract.
+ * \param quadrics Error quadrics for each vertex in the half-edge mesh by vertex ID.
+ * \return An edge contraction candidate that includes the vertex whose position optimally preserves the original shape
+ *         and its associated cost.
+ */
+std::shared_ptr<EdgeContraction> CreateEdgeContraction(const std::shared_ptr<gfx::HalfEdge>& edge01,
+                                                       const std::unordered_map<std::uint32_t, glm::mat4>& quadrics) {
   const auto v0 = edge01->flip()->vertex();
   const auto q0_iterator = quadrics.find(v0->id());
   assert(q0_iterator != quadrics.cend());
@@ -82,6 +117,11 @@ std::shared_ptr<EdgeContraction> GetEdgeContraction(const std::shared_ptr<gfx::H
   return std::make_shared<EdgeContraction>(edge01, std::make_shared<gfx::Vertex>(position), q01, squared_distance);
 }
 
+/**
+ * \brief Determines if the removal of an edge will cause the mesh to degenerate.
+ * \param edge01 The edge to evaluate.
+ * \return \c true if the removal of \p edge01 will produce a non-manifold, otherwise \c false.
+ */
 bool WillDegenerate(const std::shared_ptr<gfx::HalfEdge>& edge01) {
   const auto v0 = edge01->flip()->vertex();
   const auto v1_next = edge01->next()->vertex();
@@ -116,7 +156,7 @@ gfx::Mesh gfx::mesh::Simplify(const Device& device, const Mesh& mesh, const floa
   // compute error quadrics for each vertex in the mesh
   std::unordered_map<std::uint32_t, glm::mat4> quadrics;
   for (const auto& [id, vertex] : half_edge_mesh.vertices()) {
-    quadrics.emplace(id, GetErrorQuadric(*vertex));
+    quadrics.emplace(id, CreateErrorQuadric(*vertex));
   }
 
   // use a priority queue to sort edge contraction candidates by the cost of removing each edge
@@ -135,7 +175,7 @@ gfx::Mesh gfx::mesh::Simplify(const Device& device, const Mesh& mesh, const floa
     const auto min_edge_key = hash_value(*min_edge);
 
     if (!valid_edges.contains(min_edge_key)) {
-      auto edge_contraction = GetEdgeContraction(min_edge, quadrics);
+      auto edge_contraction = CreateEdgeContraction(min_edge, quadrics);
       edge_contractions.push(edge_contraction);
       valid_edges.emplace(min_edge_key, std::move(edge_contraction));
     }
@@ -189,7 +229,7 @@ gfx::Mesh gfx::mesh::Simplify(const Device& device, const Mesh& mesh, const floa
             // invalidate existing edge contraction candidate in the priority queue
             iterator->second->valid = false;
           }
-          auto new_edge_contraction = GetEdgeContraction(min_edge, quadrics);
+          auto new_edge_contraction = CreateEdgeContraction(min_edge, quadrics);
           valid_edges[min_edge_key] = new_edge_contraction;
           edge_contractions.push(std::move(new_edge_contraction));
           visited_edges.emplace(min_edge_key, min_edge);
@@ -200,11 +240,11 @@ gfx::Mesh gfx::mesh::Simplify(const Device& device, const Mesh& mesh, const floa
     } while (edgeji != vi->edge());
   }
 
-  std::clog << std::format(
-      "Mesh simplified from {} to {} triangles in {} seconds\n",
-      initial_face_count,
-      half_edge_mesh.faces().size(),
-      std::chrono::duration<float>{std::chrono::high_resolution_clock::now() - start_time}.count());
+  std::println(std::clog,
+               "Mesh simplified from {} to {} triangles in {} seconds",
+               initial_face_count,
+               half_edge_mesh.faces().size(),
+               std::chrono::duration<float>{std::chrono::high_resolution_clock::now() - start_time}.count());
 
   return half_edge_mesh.ToMesh(device);
 }

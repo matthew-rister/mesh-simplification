@@ -39,7 +39,7 @@ gfx::Mesh CreateMesh(const gfx::Device& device) {
 }  // namespace
 
 gfx::App::App()
-    : window_{"Mesh Simplification", Window::Size{.width = kWindowWidth, .height = kWindowHeight}},
+    : window_{"Mesh Simplification", Window::Extent{.width = kWindowWidth, .height = kWindowHeight}},
       engine_{window_},
       camera_{CreateCamera(window_.GetAspectRatio())},
       mesh_{CreateMesh(engine_.device())} {
@@ -81,7 +81,8 @@ void gfx::App::HandleCursorEvent(const float x, const float y) {
   if (window_.IsMouseButtonPressed(GLFW_MOUSE_BUTTON_LEFT)) {
     const glm::vec2 cursor_position{x, y};
     if (prev_cursor_position.has_value()) {
-      if (const auto view_rotation = arcball::GetRotation(*prev_cursor_position, cursor_position, window_.GetSize())) {
+      const auto view_rotation = arcball::GetRotation(*prev_cursor_position, cursor_position, window_.GetExtent());
+      if (view_rotation.has_value()) {
         const auto& [view_rotation_axis, angle] = *view_rotation;
         const glm::mat3 model_view_inverse = glm::transpose(camera_.view_transform() * mesh_.transform());
         const auto model_rotation_axis = glm::normalize(model_view_inverse * view_rotation_axis);

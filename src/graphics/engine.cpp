@@ -9,7 +9,6 @@
 
 #include <glm/mat4x4.hpp>
 
-#include "geometry/vertex.h"
 #include "graphics/camera.h"
 #include "graphics/mesh.h"
 #include "graphics/shader_module.h"

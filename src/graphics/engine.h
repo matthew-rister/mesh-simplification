@@ -7,7 +7,6 @@
 
 #include <vulkan/vulkan.hpp>
 
-#include "graphics/buffer.h"
 #include "graphics/device.h"
 #include "graphics/image.h"
 #include "graphics/instance.h"
