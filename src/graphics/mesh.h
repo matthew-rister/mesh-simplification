@@ -17,9 +17,9 @@ namespace gfx {
 class Mesh {
 public:
   struct Vertex {
-    glm::vec3 position;
-    glm::vec2 texture_coordinates;
-    glm::vec3 normal;
+    glm::vec3 position{0.0f};
+    glm::vec2 texture_coordinates{0.0f};
+    glm::vec3 normal{0.0f};
     [[nodiscard]] bool operator==(const Vertex&) const noexcept = default;
   };
 

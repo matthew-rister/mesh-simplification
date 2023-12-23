@@ -1,4 +1,4 @@
-add_library(graphics STATIC arcball.cpp
+add_library(graphics STATIC arc_camera.cpp
                             device.cpp
                             engine.cpp
                             glslang_compiler.cpp
@@ -15,13 +15,14 @@ find_package(glfw3 CONFIG REQUIRED)
 find_package(glslang CONFIG REQUIRED)
 find_package(glm CONFIG REQUIRED)
 
-target_link_libraries(graphics PRIVATE asan warnings)
 target_link_libraries(graphics PUBLIC Vulkan::Headers
                                       glfw
                                       glm::glm
                                       glslang::glslang
                                       glslang::glslang-default-resource-limits
-                                      glslang::SPIRV)
+                                      glslang::SPIRV
+                               PRIVATE asan warnings
+                               INTERFACE math)
 
 target_compile_definitions(graphics PUBLIC GLFW_INCLUDE_VULKAN
                                            GLM_ENABLE_EXPERIMENTAL

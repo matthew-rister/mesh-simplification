@@ -12,8 +12,8 @@ namespace gfx::test {
 class Device {
 public:
   static const gfx::Device& Get() {
-    static const Device device;
-    return device.device_;
+    static const Device kTestDevice;
+    return kTestDevice.device_;
   }
 
 private:

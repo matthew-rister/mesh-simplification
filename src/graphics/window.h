@@ -19,8 +19,8 @@ class Window {
 public:
   /** \brief The rectangular extent for a window's bounds. */
   struct Extent {
-    int width;
-    int height;
+    int width{};
+    int height{};
   };
 
   /**
