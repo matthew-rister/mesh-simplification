@@ -22,6 +22,7 @@ public:
   [[nodiscard]] const glm::mat4& view_transform() const noexcept { return view_transform_; }
   [[nodiscard]] const glm::mat4& projection_transform() const noexcept { return projection_transform_; }
 
+  void Translate(float dx, float dy, float dz);
   void Rotate(float theta, float phi);
 
 private:

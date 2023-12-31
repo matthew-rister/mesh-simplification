@@ -30,6 +30,11 @@ gfx::ArcCamera::ArcCamera(const glm::vec3& target, const glm::vec3& position, co
       view_transform_{GetViewTransform(target_, position_)},
       projection_transform_{GetProjectionTransform(view_frustum)} {}
 
+void gfx::ArcCamera::Translate(const float dx, const float dy, const float dz) {
+  target_ += glm::vec3{dx, dy, dz} * glm::mat3{view_transform_};
+  view_transform_ = GetViewTransform(target_, position_);
+}
+
 void gfx::ArcCamera::Rotate(const float theta, const float phi) {
   static constexpr auto kThetaMax = glm::two_pi<float>();
   static constexpr auto kPhiMax = glm::radians(89.0f);
