@@ -239,7 +239,7 @@ vk::UniquePipeline CreateGraphicsPipeline(const vk::Device& device,
 vk::UniqueCommandPool CreateCommandPool(const gfx::Device& device) {
   return device->createCommandPoolUnique(
       vk::CommandPoolCreateInfo{.flags = vk::CommandPoolCreateFlagBits::eResetCommandBuffer,
-                                .queueFamilyIndex = device.graphics_queue().queue_family_index()});
+                                .queueFamilyIndex = device.graphics_queue().queue_family().index()});
 }
 
 template <std::size_t N>

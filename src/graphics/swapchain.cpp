@@ -94,8 +94,8 @@ std::tuple<vk::UniqueSwapchainKHR, vk::Format, vk::Extent2D> CreateSwapchain(con
                                                    .presentMode = GetSwapchainPresentMode(physical_device, surface),
                                                    .clipped = vk::True};
 
-  const auto graphics_index = device.graphics_queue().queue_family_index();
-  const auto present_index = device.present_queue().queue_family_index();
+  const auto graphics_index = device.graphics_queue().queue_family().index();
+  const auto present_index = device.present_queue().queue_family().index();
 
   if (graphics_index != present_index) {
     const std::array queue_family_indices{graphics_index, present_index};

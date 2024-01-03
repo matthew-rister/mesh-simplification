@@ -53,7 +53,7 @@ public:
   }
 
 private:
-  explicit Device(RankedPhysicalDevice&& ranked_physical_device);
+  explicit Device(const RankedPhysicalDevice& ranked_physical_device);
 
   PhysicalDevice physical_device_;
   vk::UniqueDevice device_;
