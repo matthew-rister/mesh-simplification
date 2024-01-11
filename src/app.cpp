@@ -39,6 +39,7 @@ gfx::App::App()
       mesh_{CreateMesh(engine_.device())} {
   window_.OnKeyEvent([this](const auto key, const auto action) { HandleKeyEvent(key, action); });
   window_.OnCursorEvent([this](const auto x, const auto y) { HandleCursorEvent(x, y); });
+  window_.OnScrollEvent([this](const auto y) { HandleScrollEvent(y); });
 }
 
 void gfx::App::Run() {
@@ -89,4 +90,9 @@ void gfx::App::HandleCursorEvent(const float x, const float y) {
   } else if (prev_cursor_position.has_value()) {
     prev_cursor_position = std::nullopt;
   }
+}
+
+void gfx::App::HandleScrollEvent(const float y) {
+  static constexpr auto kZoomSpeed = 0.015625f;
+  camera_.Zoom(kZoomSpeed * -y);
 }

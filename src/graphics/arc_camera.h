@@ -24,6 +24,7 @@ public:
 
   void Translate(float dx, float dy, float dz);
   void Rotate(float theta, float phi);
+  void Zoom(float rate);
 
 private:
   glm::vec3 target_;
