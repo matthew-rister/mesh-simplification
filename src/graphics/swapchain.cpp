@@ -79,9 +79,9 @@ std::vector<vk::UniqueImageView> CreateSwapchainImageViews(const vk::Device& dev
 std::tuple<vk::UniqueSwapchainKHR, vk::Format, vk::Extent2D> CreateSwapchain(const gfx::Device& device,
                                                                              const gfx::Window& window,
                                                                              const vk::SurfaceKHR& surface) {
-  const auto& physical_device = *device.physical_device();
-  const auto surface_capabilities = physical_device.getSurfaceCapabilitiesKHR(surface);
-  const auto [image_format, image_color_space] = GetSwapchainSurfaceFormat(physical_device, surface);
+  const auto& physical_device = device.physical_device();
+  const auto surface_capabilities = physical_device->getSurfaceCapabilitiesKHR(surface);
+  const auto [image_format, image_color_space] = GetSwapchainSurfaceFormat(*physical_device, surface);
   const auto image_extent = GetSwapchainImageExtent(window, surface_capabilities);
 
   vk::SwapchainCreateInfoKHR swapchain_create_info{.surface = surface,
@@ -91,13 +91,11 @@ std::tuple<vk::UniqueSwapchainKHR, vk::Format, vk::Extent2D> CreateSwapchain(con
                                                    .imageExtent = image_extent,
                                                    .imageArrayLayers = 1,
                                                    .imageUsage = vk::ImageUsageFlagBits::eColorAttachment,
-                                                   .presentMode = GetSwapchainPresentMode(physical_device, surface),
+                                                   .presentMode = GetSwapchainPresentMode(*physical_device, surface),
                                                    .clipped = vk::True};
 
-  const auto graphics_index = device.graphics_queue().queue_family().index();
-  const auto present_index = device.present_queue().queue_family().index();
-
-  if (graphics_index != present_index) {
+  if (const auto [graphics_index, present_index] = physical_device.queue_family_indices();
+      graphics_index != present_index) {
     const std::array queue_family_indices{graphics_index, present_index};
     swapchain_create_info.imageSharingMode = vk::SharingMode::eConcurrent;
     swapchain_create_info.queueFamilyIndexCount = 2;

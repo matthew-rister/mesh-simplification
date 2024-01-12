@@ -25,7 +25,7 @@ public:
   [[nodiscard]] const vk::DeviceMemory& operator*() const noexcept { return *memory_; }
   [[nodiscard]] const vk::DeviceMemory* operator->() const noexcept { return &(*memory_); }
 
-  void* Map();
+  [[nodiscard]] void* Map();
   void Unmap() noexcept;
 
 private:
