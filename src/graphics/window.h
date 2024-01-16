@@ -28,7 +28,7 @@ public:
    * \param title The title to display at the top of the window.
    * \param extent The width width and height.
    */
-  Window(const char* title, const Extent& extent);
+  Window(const char* title, Extent extent);
 
   /** \brief Gets the window extent in virtual screen coordinates. */
   [[nodiscard]] Extent GetExtent() const noexcept;
@@ -96,7 +96,7 @@ public:
    * \brief Creates a Vulkan surface.
    * \return A unique handle to the created Vulkan surface.
    */
-  [[nodiscard]] vk::UniqueSurfaceKHR CreateSurface(const vk::Instance& instance) const;
+  [[nodiscard]] vk::UniqueSurfaceKHR CreateSurface(vk::Instance instance) const;
 #endif
 
 private:

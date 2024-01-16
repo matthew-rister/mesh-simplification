@@ -9,8 +9,7 @@ class Instance {
 public:
   Instance();
 
-  [[nodiscard]] const vk::Instance& operator*() const noexcept { return *instance_; }
-  [[nodiscard]] const vk::Instance* operator->() const noexcept { return &(*instance_); }
+  [[nodiscard]] vk::Instance operator*() const noexcept { return *instance_; }
 
 private:
   vk::UniqueInstance instance_;

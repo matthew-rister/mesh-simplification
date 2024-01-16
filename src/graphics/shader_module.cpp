@@ -56,7 +56,7 @@ std::string ReadFile(const std::filesystem::path& filepath) {
 
 }  // namespace
 
-gfx::ShaderModule::ShaderModule(const vk::Device& device,
+gfx::ShaderModule::ShaderModule(const vk::Device device,
                                 const vk::ShaderStageFlagBits shader_stage,
                                 const std::filesystem::path& filepath) {
   const auto glsl = ReadFile(filepath);

@@ -17,8 +17,8 @@ struct RankedPhysicalDevice {
 
 using QueueFamilyIndices = gfx::PhysicalDevice::QueueFamilyIndices;
 
-std::optional<QueueFamilyIndices> FindQueueFamilyIndices(const vk::PhysicalDevice& physical_device,
-                                                         const vk::SurfaceKHR& surface) {
+std::optional<QueueFamilyIndices> FindQueueFamilyIndices(const vk::PhysicalDevice physical_device,
+                                                         const vk::SurfaceKHR surface) {
   std::optional<std::uint32_t> graphics_index, present_index;
   for (std::uint32_t index = 0; const auto& queue_family_properties : physical_device.getQueueFamilyProperties()) {
     if (queue_family_properties.queueFlags & vk::QueueFlagBits::eGraphics) {
@@ -35,9 +35,9 @@ std::optional<QueueFamilyIndices> FindQueueFamilyIndices(const vk::PhysicalDevic
   return std::nullopt;
 }
 
-std::optional<RankedPhysicalDevice> RankPhysicalDevice(const vk::PhysicalDevice& physical_device,
-                                                       const vk::SurfaceKHR& surface) {
-  return FindQueueFamilyIndices(physical_device, surface).transform([&](const auto& queue_family_indices) {
+std::optional<RankedPhysicalDevice> RankPhysicalDevice(const vk::PhysicalDevice physical_device,
+                                                       const vk::SurfaceKHR surface) {
+  return FindQueueFamilyIndices(physical_device, surface).transform([physical_device](const auto queue_family_indices) {
     const auto physical_device_properties = physical_device.getProperties();
     return RankedPhysicalDevice{
         .rank = physical_device_properties.deviceType == vk::PhysicalDeviceType::eDiscreteGpu,
@@ -46,9 +46,9 @@ std::optional<RankedPhysicalDevice> RankPhysicalDevice(const vk::PhysicalDevice&
   });
 }
 
-gfx::PhysicalDevice SelectPhysicalDevice(const vk::Instance& instance, const vk::SurfaceKHR& surface) {
+gfx::PhysicalDevice SelectPhysicalDevice(const vk::Instance instance, const vk::SurfaceKHR surface) {
   std::optional<RankedPhysicalDevice> max_rank_physical_device;
-  for (const auto& physical_device : instance.enumeratePhysicalDevices()) {
+  for (const auto physical_device : instance.enumeratePhysicalDevices()) {
     if (const auto ranked_physical_device = RankPhysicalDevice(physical_device, surface)) {
       if (!max_rank_physical_device.has_value() || ranked_physical_device->rank > max_rank_physical_device->rank) {
         max_rank_physical_device = ranked_physical_device;
@@ -89,7 +89,7 @@ vk::UniqueDevice CreateDevice(const gfx::PhysicalDevice& physical_device) {
 
 }  // namespace
 
-gfx::Device::Device(const vk::Instance& instance, const vk::SurfaceKHR& surface)
+gfx::Device::Device(const vk::Instance instance, const vk::SurfaceKHR surface)
     : physical_device_{SelectPhysicalDevice(instance, surface)},
       device_{CreateDevice(physical_device_)},
       graphics_queue_{device_->getQueue(physical_device_.queue_family_indices().graphics_index, 0)},

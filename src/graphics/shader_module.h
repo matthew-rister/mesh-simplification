@@ -9,9 +9,9 @@ namespace gfx {
 
 class ShaderModule {
 public:
-  ShaderModule(const vk::Device& device, vk::ShaderStageFlagBits shader_stage, const std::filesystem::path& filepath);
+  ShaderModule(vk::Device device, vk::ShaderStageFlagBits shader_stage, const std::filesystem::path& filepath);
 
-  [[nodiscard]] const vk::ShaderModule& operator*() const noexcept { return *shader_module_; }
+  [[nodiscard]] vk::ShaderModule operator*() const noexcept { return *shader_module_; }
 
 private:
   vk::UniqueShaderModule shader_module_;

@@ -15,16 +15,15 @@ class Buffer {
 public:
   Buffer(const Device& device,
          const vk::DeviceSize size,
-         const vk::BufferUsageFlags& buffer_usage_flags,
-         const vk::MemoryPropertyFlags& memory_property_flags)
+         const vk::BufferUsageFlags buffer_usage_flags,
+         const vk::MemoryPropertyFlags memory_property_flags)
       : buffer_{device->createBufferUnique(vk::BufferCreateInfo{.size = size, .usage = buffer_usage_flags})},
         memory_{device, device->getBufferMemoryRequirements(*buffer_), memory_property_flags},
         size_{size} {
     device->bindBufferMemory(*buffer_, *memory_, 0);
   }
 
-  [[nodiscard]] const vk::Buffer& operator*() const noexcept { return *buffer_; }
-  [[nodiscard]] const vk::Buffer* operator->() const noexcept { return &(*buffer_); }
+  [[nodiscard]] vk::Buffer operator*() const noexcept { return *buffer_; }
 
   template <typename T>
   void Copy(const vk::ArrayProxy<const T> data) {
@@ -35,8 +34,8 @@ public:
   }
 
   void Copy(const Device& device, const Buffer& src_buffer) {
-    device.SubmitOneTimeCommandBuffer([&src_buffer, this](const auto& command_buffer) {
-      command_buffer.copyBuffer(*src_buffer.buffer_, *buffer_, vk::BufferCopy{.size = src_buffer.size_});
+    device.SubmitOneTimeCommandBuffer([&src_buffer, &dst_buffer = *this](const auto command_buffer) {
+      command_buffer.copyBuffer(*src_buffer, *dst_buffer, vk::BufferCopy{.size = src_buffer.size_});
     });
   }
 
@@ -48,7 +47,7 @@ private:
 
 template <typename T>
 [[nodiscard]] Buffer CreateDeviceLocalBuffer(const Device& device,
-                                             const vk::BufferUsageFlags& buffer_usage_flags,
+                                             const vk::BufferUsageFlags buffer_usage_flags,
                                              const vk::ArrayProxy<const T> data) {
   const auto size_bytes = sizeof(T) * data.size();
 
