@@ -6,7 +6,6 @@
 
 #include <vulkan/vulkan.hpp>
 
-#include "graphics/data_view.h"
 #include "graphics/device.h"
 #include "graphics/memory.h"
 
@@ -28,9 +27,9 @@ public:
   [[nodiscard]] const vk::Buffer* operator->() const noexcept { return &(*buffer_); }
 
   template <typename T>
-  void Copy(const DataView<const T> data) {
+  void Copy(const vk::ArrayProxy<const T> data) {
     auto* mapped_memory = memory_.Map();
-    const auto size_bytes = data.size_bytes();
+    const auto size_bytes = sizeof(T) * data.size();
     assert(size_bytes <= size_);
     memcpy(mapped_memory, data.data(), size_bytes);
   }
@@ -50,8 +49,8 @@ private:
 template <typename T>
 [[nodiscard]] Buffer CreateDeviceLocalBuffer(const Device& device,
                                              const vk::BufferUsageFlags& buffer_usage_flags,
-                                             const DataView<const T> data) {
-  const auto size_bytes = data.size_bytes();
+                                             const vk::ArrayProxy<const T> data) {
+  const auto size_bytes = sizeof(T) * data.size();
 
   Buffer host_visible_buffer{device,
                              size_bytes,
