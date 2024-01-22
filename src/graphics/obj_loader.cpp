@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <array>
+#include <cassert>
 #include <charconv>
 #include <cstdint>
 #include <format>
@@ -71,15 +72,20 @@ constexpr T ParseToken(const std::string_view token) {
  * \tparam T The type to convert to.
  * \tparam N The number of items to convert (does not include the first token identifying the line type).
  * \param line The line to parse.
+ * \param normalize Indicates the return value should be normalized.
  * \return A vector of size \p N containing each item in \p line converted to type \p T.
  */
 template <typename T, glm::length_t N>
-constexpr glm::vec<N, T> ParseLine(const std::string_view line) {
+constexpr glm::vec<N, T> ParseLine(const std::string_view line, const bool normalize = false) {
   if (const auto tokens = Split(line); tokens.size() == N + 1) {
     glm::vec<N, T> vec{};
     for (glm::length_t i = 0; i < N; ++i) {
       const auto j = static_cast<std::size_t>(i) + 1;
       vec[i] = ParseToken<T>(tokens[j]);
+    }
+    if (normalize) {
+      assert(glm::length(vec) > 0.0f);
+      vec = glm::normalize(vec);
     }
     return vec;
   }
@@ -182,7 +188,7 @@ gfx::Mesh LoadMesh(const gfx::Device& device, std::istream& istream) {
       } else if (line_view.starts_with("vt ")) {
         texture_coordinates.push_back(ParseLine<float, 2>(line_view));
       } else if (line_view.starts_with("vn ")) {
-        normals.push_back(ParseLine<float, 3>(line_view));
+        normals.push_back(ParseLine<float, 3>(line_view, true));
       } else if (line_view.starts_with("f ")) {
         faces.push_back(ParseFace(line_view));
       }

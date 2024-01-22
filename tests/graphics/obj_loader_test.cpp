@@ -57,7 +57,7 @@ TEST(ObjLoaderTest, ParseFloatTokenReturnsTheCorrectValue) {  //
 }
 
 TEST(ObjLoaderTest, ParseEmptyLineThrowsAnException) {  //
-  EXPECT_THROW((ParseLine<int, 3>("")), std::invalid_argument);
+  EXPECT_THROW((ParseLine<float, 3>("")), std::invalid_argument);
 }
 
 TEST(ObjLoaderTest, ParseLineWithInvalidSizeArgumentThrowsAnException) {
@@ -67,6 +67,14 @@ TEST(ObjLoaderTest, ParseLineWithInvalidSizeArgumentThrowsAnException) {
 TEST(ObjLoaderTest, ParseLineReturnsVectorWithCorrectValues) {
   EXPECT_EQ((ParseLine<float, 3>("v 0.707 0.395 0.684")), (glm::vec3{.707f, .395f, .684f}));
 }
+
+#ifndef NDEBUG
+
+TEST(ObjLoaderTest, ParseLineWithNormalizedZeroVectorCausesProgramExit) {
+  EXPECT_DEATH({ (ParseLine<float, 3>("vn 0 0 0", true)); }, "");  // NOLINT(whitespace/newline)
+}
+
+#endif
 
 TEST(ObjLoaderTest, ParseIndexGroupWithOnlyPositionIndexReturnsCorrectIndexGroup) {
   EXPECT_EQ(ParseIndexGroup("1"), (glm::ivec3{0, kInvalidIndex, kInvalidIndex}));
@@ -148,11 +156,11 @@ TEST(ObjLoaderTest, LoadIndexMeshGetsTheCorrectVerticesAndIndices) {
   const auto mesh = LoadMesh(gfx::test::Device::Get(), istream);
   EXPECT_EQ(mesh.vertices(),
             (std::vector{
-                gfx::Mesh::Vertex{.position = kV0, .texture_coordinates = kVt3, .normal = kVn1},
-                gfx::Mesh::Vertex{.position = kV1, .texture_coordinates = kVt0, .normal = kVn2},
-                gfx::Mesh::Vertex{.position = kV2, .texture_coordinates = kVt1, .normal = kVn0},
-                gfx::Mesh::Vertex{.position = kV0, .texture_coordinates = kVt1, .normal = kVn1},
-                gfx::Mesh::Vertex{.position = kV3, .texture_coordinates = kVt2, .normal = kVn0},
+                gfx::Mesh::Vertex{.position = kV0, .texture_coordinates = kVt3, .normal = glm::normalize(kVn1)},
+                gfx::Mesh::Vertex{.position = kV1, .texture_coordinates = kVt0, .normal = glm::normalize(kVn2)},
+                gfx::Mesh::Vertex{.position = kV2, .texture_coordinates = kVt1, .normal = glm::normalize(kVn0)},
+                gfx::Mesh::Vertex{.position = kV0, .texture_coordinates = kVt1, .normal = glm::normalize(kVn1)},
+                gfx::Mesh::Vertex{.position = kV3, .texture_coordinates = kVt2, .normal = glm::normalize(kVn0)},
             }));
   EXPECT_EQ(mesh.indices(), (std::vector{0u, 1u, 2u, 3u, 1u, 4u}));
 }
