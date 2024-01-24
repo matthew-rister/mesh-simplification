@@ -19,7 +19,7 @@ public:
 private:
   Device() = default;
 
-  Window window_{"Mesh Simplification Tests", {.width = 1920, .height = 1080}};
+  Window window_{"Mesh Simplification Tests", 1920, 1080};
   Instance instance_;
   vk::UniqueSurfaceKHR surface_{window_.CreateSurface(*instance_)};
   gfx::Device device_{*instance_, *surface_};

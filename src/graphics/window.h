@@ -17,24 +17,19 @@ namespace gfx {
 /** \brief A window to display rendered output to. */
 class Window {
 public:
-  /** \brief The rectangular extent for a window's bounds. */
-  struct Extent {
-    int width{};
-    int height{};
-  };
-
   /**
    * \brief Initializes a window.
    * \param title The title to display at the top of the window.
-   * \param extent The width width and height.
+   * \param width The widow width.
+   * \param height The widow height.
    */
-  Window(const char* title, Extent extent);
+  Window(const char* title, int width, int height);
 
-  /** \brief Gets the window extent in virtual screen coordinates. */
-  [[nodiscard]] Extent GetExtent() const noexcept;
+  /** \brief Gets the window size in virtual screen coordinates. */
+  [[nodiscard]] std::pair<int, int> GetSize() const noexcept;
 
-  /** \brief Gets the framebuffer extent in pixels. */
-  [[nodiscard]] Extent GetFramebufferExtent() const noexcept;
+  /** \brief Gets the framebuffer size in pixels. */
+  [[nodiscard]] std::pair<int, int> GetFramebufferSize() const noexcept;
 
   /** \brief Gets the ratio of the window's width to its height. */
   [[nodiscard]] float GetAspectRatio() const noexcept;

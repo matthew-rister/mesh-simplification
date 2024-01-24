@@ -33,7 +33,7 @@ gfx::Mesh CreateMesh(const gfx::Device& device) {
 }  // namespace
 
 gfx::App::App()
-    : window_{"Mesh Simplification", Window::Extent{.width = kWindowWidth, .height = kWindowHeight}},
+    : window_{"Mesh Simplification", kWindowWidth, kWindowHeight},
       engine_{window_},
       camera_{CreateCamera(window_.GetAspectRatio())},
       mesh_{CreateMesh(engine_.device())} {

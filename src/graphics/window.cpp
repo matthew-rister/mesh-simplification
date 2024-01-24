@@ -1,5 +1,6 @@
 #include "graphics/window.h"
 
+#include <algorithm>
 #include <cassert>
 #include <format>
 #include <iostream>
@@ -42,16 +43,36 @@ private:
 
 using UniqueGlfwWindow = std::unique_ptr<GLFWwindow, decltype(&glfwDestroyWindow)>;
 
-UniqueGlfwWindow CreateGlfwWindow(const char* const title, const gfx::Window::Extent extent) {
+UniqueGlfwWindow CreateGlfwWindow(const char* const title, int width, int height) {
   [[maybe_unused]] const auto& glfw_context = GlfwContext::Get();
-  auto* window = glfwCreateWindow(extent.width, extent.height, title, nullptr, nullptr);
+
+  auto* monitor = glfwGetPrimaryMonitor();
+  const auto* video_mode = glfwGetVideoMode(monitor);
+
+  glfwWindowHint(GLFW_RED_BITS, video_mode->redBits);
+  glfwWindowHint(GLFW_GREEN_BITS, video_mode->greenBits);
+  glfwWindowHint(GLFW_BLUE_BITS, video_mode->blueBits);
+  glfwWindowHint(GLFW_REFRESH_RATE, video_mode->refreshRate);
+
+  assert(width > 0);
+  assert(height > 0);
+  width = std::min(width, video_mode->width);
+  height = std::min(height, video_mode->height);
+
+  auto* window = glfwCreateWindow(width, height, title, nullptr, nullptr);
   if (window == nullptr) throw std::runtime_error{"GLFW window creation failed"};
+
+  const auto x = (video_mode->width - width) / 2;
+  const auto y = (video_mode->height - height) / 2;
+  glfwSetWindowPos(window, x, y);
+
   return UniqueGlfwWindow{window, glfwDestroyWindow};
 }
 
 }  // namespace
 
-gfx::Window::Window(const char* const title, const Extent extent) : window_{CreateGlfwWindow(title, extent)} {
+gfx::Window::Window(const char* const title, const int width, const int height)
+    : window_{CreateGlfwWindow(title, width, height)} {
   glfwSetWindowUserPointer(window_.get(), this);
 
   glfwSetKeyCallback(
@@ -75,22 +96,22 @@ gfx::Window::Window(const char* const title, const Extent extent) : window_{Crea
   });
 }
 
-gfx::Window::Extent gfx::Window::GetExtent() const noexcept {
+std::pair<int, int> gfx::Window::GetSize() const noexcept {
   int width{}, height{};
   glfwGetWindowSize(window_.get(), &width, &height);
-  return Extent{.width = width, .height = height};
+  return std::pair{width, height};
+}
+
+std::pair<int, int> gfx::Window::GetFramebufferSize() const noexcept {
+  int width{}, height{};
+  glfwGetFramebufferSize(window_.get(), &width, &height);
+  return std::pair{width, height};
 }
 
 float gfx::Window::GetAspectRatio() const noexcept {
-  const auto [width, height] = GetExtent();
+  const auto [width, height] = GetSize();
   assert(height > 0);
   return static_cast<float>(width) / static_cast<float>(height);
-}
-
-gfx::Window::Extent gfx::Window::GetFramebufferExtent() const noexcept {
-  int width{}, height{};
-  glfwGetFramebufferSize(window_.get(), &width, &height);
-  return Extent{.width = width, .height = height};
 }
 
 #ifdef GLFW_INCLUDE_VULKAN

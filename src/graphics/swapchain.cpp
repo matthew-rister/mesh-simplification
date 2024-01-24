@@ -54,7 +54,7 @@ vk::Extent2D GetSwapchainImageExtent(const gfx::Window& window,
   }
   const auto [min_width, min_height] = surface_capabilities.minImageExtent;
   const auto [max_width, max_height] = surface_capabilities.maxImageExtent;
-  const auto [framebuffer_width, framebuffer_height] = window.GetFramebufferExtent();
+  const auto [framebuffer_width, framebuffer_height] = window.GetFramebufferSize();
   return vk::Extent2D{.width = std::clamp(static_cast<std::uint32_t>(framebuffer_width), min_width, max_width),
                       .height = std::clamp(static_cast<std::uint32_t>(framebuffer_height), min_height, max_height)};
 }
