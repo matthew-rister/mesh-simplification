@@ -9,10 +9,23 @@
     {
       "name": "default",
       "hidden": true,
-      "generator": "Ninja",
       "binaryDir": "${sourceDir}/out/build/${presetName}",
       "installDir": "${sourceDir}/out/install/${presetName}",
       "toolchainFile": "${sourceDir}/vcpkg/scripts/buildsystems/vcpkg.cmake"
+    },
+    {
+      "name": "ninja",
+      "hidden": true,
+      "generator": "Ninja",
+      "architecture": {
+        "strategy": "external"
+      },
+      "toolset": {
+        "strategy": "external"
+      },
+      "cacheVariables": {
+        "CMAKE_EXPORT_COMPILE_COMMANDS": true
+      }
     },
     {
       "name": "windows",
@@ -49,16 +62,14 @@
       "name": "x64",
       "hidden": true,
       "architecture": {
-        "value": "x64",
-        "strategy": "external"
+        "value": "x64"
       }
     },
     {
       "name": "x86",
       "hidden": true,
       "architecture": {
-        "value": "x86",
-        "strategy": "external"
+        "value": "x86"
       }
     },
     {
@@ -76,9 +87,17 @@
       }
     },
     {
-      "name": "window-x64-debug",
+      "name": "relwithdebinfo",
+      "hidden": true,
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "RelWithDebInfo"
+      }
+    },
+    {
+      "name": "windows-debug",
       "inherits": [
         "windows",
+        "ninja",
         "x64",
         "debug"
       ],
@@ -88,64 +107,101 @@
       }
     },
     {
-      "name": "windows-x64-release",
+      "name": "windows-release",
       "inherits": [
         "windows",
+        "ninja",
         "x64",
         "release"
       ]
     },
     {
-      "name": "linux-x64-debug",
+      "name": "windows-relwithdebinfo",
+      "inherits": [
+        "windows",
+        "ninja",
+        "x64",
+        "relwithdebinfo"
+      ]
+    },
+    {
+      "name": "linux-debug",
       "inherits": [
         "linux",
+        "ninja",
         "x64",
         "debug"
       ]
     },
     {
-      "name": "linux-x64-release",
+      "name": "linux-release",
       "inherits": [
         "linux",
+        "ninja",
         "x64",
         "release"
+      ]
+    },
+    {
+      "name": "linux-relwithdebinfo",
+      "inherits": [
+        "linux",
+        "ninja",
+        "x64",
+        "relwithdebinfo"
       ]
     }
   ],
   "buildPresets": [
     {
-      "name": "window-x64-debug",
-      "configurePreset": "window-x64-debug"
+      "name": "windows-debug",
+      "configurePreset": "windows-debug"
     },
     {
-      "name": "windows-x64-release",
-      "configurePreset": "windows-x64-release"
+      "name": "windows-release",
+      "configurePreset": "windows-release"
     },
     {
-      "name": "linux-x64-debug",
-      "configurePreset": "linux-x64-debug"
+      "name": "windows-relwithdebinfo",
+      "configurePreset": "windows-relwithdebinfo"
     },
     {
-      "name": "linux-x64-release",
-      "configurePreset": "linux-x64-release"
+      "name": "linux-debug",
+      "configurePreset": "linux-debug"
+    },
+    {
+      "name": "linux-release",
+      "configurePreset": "linux-release"
+    },
+    {
+      "name": "linux-relwithdebinfo",
+      "configurePreset": "linux-relwithdebinfo"
     }
   ],
   "testPresets": [
     {
-      "name": "window-x64-debug",
-      "configurePreset": "window-x64-debug"
+      "name": "windows-debug",
+      "configurePreset": "windows-debug"
     },
     {
-      "name": "windows-x64-release",
-      "configurePreset": "windows-x64-release"
+      "name": "windows-release",
+      "configurePreset": "windows-release"
     },
     {
-      "name": "linux-x64-debug",
-      "configurePreset": "linux-x64-debug"
+      "name": "windows-relwithdebinfo",
+      "configurePreset": "windows-relwithdebinfo"
     },
     {
-      "name": "linux-x64-release",
-      "configurePreset": "linux-x64-release"
+      "name": "linux-debug",
+      "configurePreset": "linux-debug"
+    },
+    {
+      "name": "linux-release",
+      "configurePreset": "linux-release"
+    },
+    {
+      "name": "linux-relwithdebinfo",
+      "configurePreset": "linux-relwithdebinfo"
     }
   ]
 }

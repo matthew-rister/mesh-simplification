@@ -6,6 +6,5 @@ add_subdirectory(geometry)
 add_subdirectory(graphics)
 add_subdirectory(math)
 
-add_custom_target(copy_assets COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/assets
-                                                                         ${CMAKE_CURRENT_BINARY_DIR}/assets)
-add_dependencies(mesh_simplification copy_assets)
+add_custom_target(copy_assets ALL COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/assets
+                                                                             ${CMAKE_CURRENT_BINARY_DIR}/assets)
