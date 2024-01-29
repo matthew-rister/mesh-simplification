@@ -43,10 +43,10 @@ gfx::Memory::Memory(const Device& device,
 
 gfx::Memory& gfx::Memory::operator=(Memory&& memory) noexcept {
   if (this != &memory) {
-    device_ = memory.device_;
-    memory_ = std::move(memory.memory_);
-    mapped_memory_ = memory.mapped_memory_;
-    memory.mapped_memory_ = nullptr;
+    Unmap();
+    device_ = std::exchange(memory.device_, {});
+    memory_ = std::exchange(memory.memory_, {});
+    mapped_memory_ = std::exchange(memory.mapped_memory_, {});
   }
   return *this;
 }
