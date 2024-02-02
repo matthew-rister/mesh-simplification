@@ -1,5 +1,5 @@
-#ifndef SRC_GEOMETRY_HALF_EDGE_MESH_H_
-#define SRC_GEOMETRY_HALF_EDGE_MESH_H_
+#ifndef SRC_GEOMETRY_INCLUDE_GEOMETRY_HALF_EDGE_MESH_H_
+#define SRC_GEOMETRY_INCLUDE_GEOMETRY_HALF_EDGE_MESH_H_
 
 #include <memory>
 #include <unordered_map>
@@ -62,4 +62,4 @@ private:
 
 }  // namespace gfx
 
-#endif  // SRC_GEOMETRY_HALF_EDGE_MESH_H_
+#endif  // SRC_GEOMETRY_INCLUDE_GEOMETRY_HALF_EDGE_MESH_H_

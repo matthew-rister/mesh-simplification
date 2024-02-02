@@ -1,5 +1,5 @@
-#ifndef SRC_GRAPHICS_ARC_CAMERA_H_
-#define SRC_GRAPHICS_ARC_CAMERA_H_
+#ifndef SRC_GRAPHICS_INCLUDE_GRAPHICS_ARC_CAMERA_H_
+#define SRC_GRAPHICS_INCLUDE_GRAPHICS_ARC_CAMERA_H_
 
 #include <glm/mat4x4.hpp>
 #include <glm/vec3.hpp>
@@ -35,4 +35,4 @@ private:
 
 }  // namespace gfx
 
-#endif  // SRC_GRAPHICS_ARC_CAMERA_H_
+#endif  // SRC_GRAPHICS_INCLUDE_GRAPHICS_ARC_CAMERA_H_

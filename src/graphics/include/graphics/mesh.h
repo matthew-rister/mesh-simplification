@@ -1,8 +1,7 @@
-#ifndef SRC_GRAPHICS_MESH_H_
-#define SRC_GRAPHICS_MESH_H_
+#ifndef SRC_GRAPHICS_INCLUDE_GRAPHICS_MESH_H_
+#define SRC_GRAPHICS_INCLUDE_GRAPHICS_MESH_H_
 
 #include <cassert>
-#include <utility>
 #include <vector>
 
 #include <glm/gtc/matrix_transform.hpp>
@@ -59,4 +58,4 @@ private:
 
 }  // namespace gfx
 
-#endif  // SRC_GRAPHICS_MESH_H_
+#endif  // SRC_GRAPHICS_INCLUDE_GRAPHICS_MESH_H_

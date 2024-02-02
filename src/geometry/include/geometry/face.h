@@ -1,5 +1,5 @@
-#ifndef SRC_GEOMETRY_FACE_H_
-#define SRC_GEOMETRY_FACE_H_
+#ifndef SRC_GEOMETRY_INCLUDE_GEOMETRY_FACE_H_
+#define SRC_GEOMETRY_INCLUDE_GEOMETRY_FACE_H_
 
 #include <cassert>
 #include <memory>
@@ -61,4 +61,4 @@ private:
 
 }  // namespace gfx
 
-#endif  // SRC_GEOMETRY_FACE_H_
+#endif  // SRC_GEOMETRY_INCLUDE_GEOMETRY_FACE_H_

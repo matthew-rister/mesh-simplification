@@ -10,4 +10,4 @@ target_link_libraries(geometry PUBLIC glm::glm graphics)
 target_compile_definitions(geometry PUBLIC GLM_FORCE_DEFAULT_ALIGNED_GENTYPES
                                            GLM_FORCE_XYZW_ONLY)
 
-target_include_directories(geometry PUBLIC ${CMAKE_SOURCE_DIR}/src)
+target_include_directories(geometry PUBLIC include)

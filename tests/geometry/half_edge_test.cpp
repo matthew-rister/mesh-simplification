@@ -44,7 +44,7 @@ TEST(HalfEdgeTest, GetExpiredVertexCausesProgramExit) {
     const auto v0 = std::make_shared<gfx::Vertex>(0, glm::vec3{});
     edge10 = std::make_shared<gfx::HalfEdge>(v0);
   }
-  EXPECT_DEATH({ std::ignore = edge10->vertex(); }, "");  // NOLINT(whitespace/newline)
+  EXPECT_DEATH({ std::ignore = edge10->vertex(); }, "");
 }
 
 TEST(HalfEdgeTest, GetExpiredFlipEdgeCausesProgramExit) {
@@ -55,7 +55,7 @@ TEST(HalfEdgeTest, GetExpiredFlipEdgeCausesProgramExit) {
     const auto edge10 = std::make_shared<gfx::HalfEdge>(v0);
     edge10->set_flip(edge10);
   }
-  EXPECT_DEATH({ std::ignore = edge01->flip(); }, "");  // NOLINT(whitespace/newline)
+  EXPECT_DEATH({ std::ignore = edge01->flip(); }, "");
 }
 
 TEST(HalfEdgeTest, GetExpiredNextEdgeCausesProgramExit) {
@@ -66,7 +66,7 @@ TEST(HalfEdgeTest, GetExpiredNextEdgeCausesProgramExit) {
     const auto edge12 = std::make_shared<gfx::HalfEdge>(v2);
     edge01->set_next(edge12);
   }
-  EXPECT_DEATH({ std::ignore = edge01->next(); }, "");  // NOLINT(whitespace/newline)
+  EXPECT_DEATH({ std::ignore = edge01->next(); }, "");
 }
 
 TEST(HalfEdgeTest, GetExpiredFaceCausesProgramExit) {
@@ -78,7 +78,7 @@ TEST(HalfEdgeTest, GetExpiredFaceCausesProgramExit) {
     const auto face012 = std::make_shared<gfx::Face>(v0, v1, v2);
     edge01->set_face(face012);
   }
-  EXPECT_DEATH({ std::ignore = edge01->face(); }, "");  // NOLINT(whitespace/newline)
+  EXPECT_DEATH({ std::ignore = edge01->face(); }, "");
 }
 
 #endif

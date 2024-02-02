@@ -1,5 +1,5 @@
-#ifndef SRC_GEOMETRY_VERTEX_H_
-#define SRC_GEOMETRY_VERTEX_H_
+#ifndef SRC_GEOMETRY_INCLUDE_GEOMETRY_VERTEX_H_
+#define SRC_GEOMETRY_INCLUDE_GEOMETRY_VERTEX_H_
 
 #include <cassert>
 #include <concepts>
@@ -101,4 +101,4 @@ private:
 
 }  // namespace gfx
 
-#endif  // SRC_GEOMETRY_VERTEX_H_
+#endif  // SRC_GEOMETRY_INCLUDE_GEOMETRY_VERTEX_H_

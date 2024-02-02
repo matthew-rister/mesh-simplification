@@ -1,4 +1,4 @@
-#include "geometry/half_edge_mesh.h"  // NOLINT(build/include)
+#include "geometry/half_edge_mesh.h"
 
 #include <vector>
 
