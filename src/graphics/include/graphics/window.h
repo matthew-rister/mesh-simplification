@@ -1,7 +1,6 @@
 #ifndef SRC_GRAPHICS_INCLUDE_GRAPHICS_WINDOW_H_
 #define SRC_GRAPHICS_INCLUDE_GRAPHICS_WINDOW_H_
 
-#include <concepts>
 #include <functional>
 #include <memory>
 #include <span>
