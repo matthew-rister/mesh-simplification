@@ -168,9 +168,13 @@ gfx::Mesh LoadMesh(const gfx::Device& device, std::istream& istream) {
 
 }  // namespace
 
-gfx::Mesh gfx::obj_loader::LoadMesh(const Device& device, const std::filesystem::path& filepath) {
+namespace gfx {
+
+Mesh obj_loader::LoadMesh(const Device& device, const std::filesystem::path& filepath) {
   if (std::ifstream ifstream{filepath}) {
     return ::LoadMesh(device, ifstream);
   }
   throw std::runtime_error{std::format("Unable to open {}", filepath.string())};
 }
+
+}  // namespace gfx

@@ -181,7 +181,9 @@ glm::vec3 AverageVertexNormals(const gfx::Vertex& v0) {
 
 }  // namespace
 
-gfx::HalfEdgeMesh::HalfEdgeMesh(const Mesh& mesh)
+namespace gfx {
+
+HalfEdgeMesh::HalfEdgeMesh(const Mesh& mesh)
     : vertices_{mesh.vertices()  //
                 | std::views::transform([id = 0u](const auto& mesh_vertex) mutable {
                     auto vertex = std::make_shared<Vertex>(id, mesh_vertex.position);
@@ -200,7 +202,7 @@ gfx::HalfEdgeMesh::HalfEdgeMesh(const Mesh& mesh)
              | std::ranges::to<std::unordered_map>()},
       transform_{mesh.transform()} {}
 
-void gfx::HalfEdgeMesh::Contract(const HalfEdge& edge01, const std::shared_ptr<Vertex>& v_new) {
+void HalfEdgeMesh::Contract(const HalfEdge& edge01, const std::shared_ptr<Vertex>& v_new) {
   assert(Find(edge01, edges_) != edges_.cend());
   assert(Find(v_new->id(), vertices_) == vertices_.cend());
 
@@ -224,7 +226,7 @@ void gfx::HalfEdgeMesh::Contract(const HalfEdge& edge01, const std::shared_ptr<V
   vertices_.emplace(v_new->id(), v_new);
 }
 
-gfx::Mesh gfx::HalfEdgeMesh::ToMesh(const Device& device) const {
+Mesh HalfEdgeMesh::ToMesh(const Device& device) const {
   std::vector<Mesh::Vertex> vertices;
   vertices.reserve(vertices_.size());
 
@@ -247,3 +249,5 @@ gfx::Mesh gfx::HalfEdgeMesh::ToMesh(const Device& device) const {
 
   return Mesh{device, vertices, indices, transform_};
 }
+
+}  // namespace gfx

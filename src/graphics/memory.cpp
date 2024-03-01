@@ -36,12 +36,14 @@ vk::UniqueDeviceMemory AllocateMemory(const gfx::Device& device,
 
 }  // namespace
 
-gfx::Memory::Memory(const Device& device,
-                    const vk::MemoryRequirements& memory_requirements,
-                    const vk::MemoryPropertyFlags memory_property_flags)
+namespace gfx {
+
+Memory::Memory(const Device& device,
+               const vk::MemoryRequirements& memory_requirements,
+               const vk::MemoryPropertyFlags memory_property_flags)
     : device_{*device}, memory_{AllocateMemory(device, memory_requirements, memory_property_flags)} {}
 
-gfx::Memory& gfx::Memory::operator=(Memory&& memory) noexcept {
+Memory& Memory::operator=(Memory&& memory) noexcept {
   if (this != &memory) {
     Unmap();
     device_ = std::exchange(memory.device_, {});
@@ -51,7 +53,7 @@ gfx::Memory& gfx::Memory::operator=(Memory&& memory) noexcept {
   return *this;
 }
 
-void* gfx::Memory::Map() {
+void* Memory::Map() {
   if (mapped_memory_ == nullptr) {
     mapped_memory_ = device_.mapMemory(*memory_, 0, vk::WholeSize);
     assert(mapped_memory_ != nullptr);
@@ -59,9 +61,11 @@ void* gfx::Memory::Map() {
   return mapped_memory_;
 }
 
-void gfx::Memory::Unmap() noexcept {
+void Memory::Unmap() noexcept {
   if (mapped_memory_ != nullptr) {
     device_.unmapMemory(*memory_);
     mapped_memory_ = nullptr;
   }
 }
+
+}  // namespace gfx

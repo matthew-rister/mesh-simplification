@@ -25,18 +25,20 @@ glm::mat4 GetProjectionTransform(const gfx::ArcCamera::ViewFrustum& view_frustum
 
 }  // namespace
 
-gfx::ArcCamera::ArcCamera(const glm::vec3& target, const glm::vec3& position, const ViewFrustum& view_frustum)
+namespace gfx {
+
+ArcCamera::ArcCamera(const glm::vec3& target, const glm::vec3& position, const ViewFrustum& view_frustum)
     : target_{target},
       position_{ToSphericalCoordinates(position - target)},
       view_transform_{GetViewTransform(target_, position_)},
       projection_transform_{GetProjectionTransform(view_frustum)} {}
 
-void gfx::ArcCamera::Translate(const float dx, const float dy, const float dz) {
+void ArcCamera::Translate(const float dx, const float dy, const float dz) {
   target_ += glm::vec3{dx, dy, dz} * glm::mat3{view_transform_};
   view_transform_ = GetViewTransform(target_, position_);
 }
 
-void gfx::ArcCamera::Rotate(const float theta, const float phi) {
+void ArcCamera::Rotate(const float theta, const float phi) {
   static constexpr auto kThetaMax = glm::two_pi<float>();
   static constexpr auto kPhiMax = glm::radians(89.0f);
   position_.theta = std::fmodf(position_.theta + theta, kThetaMax);
@@ -44,8 +46,10 @@ void gfx::ArcCamera::Rotate(const float theta, const float phi) {
   view_transform_ = GetViewTransform(target_, position_);
 }
 
-void gfx::ArcCamera::Zoom(const float rate) {
+void ArcCamera::Zoom(const float rate) {
   static constexpr auto kEpsilon = std::numeric_limits<float>::epsilon();
   position_.radius = std::max((1.0f - rate) * position_.radius, kEpsilon);
   view_transform_ = GetViewTransform(target_, position_);
 }
+
+}  // namespace gfx

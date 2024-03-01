@@ -12,6 +12,39 @@
 #include <glslang/Include/glslang_c_interface.h>
 #include <glslang/Public/resource_limits_c.h>
 
+template <>
+struct std::formatter<glslang_stage_t> : std::formatter<std::string_view> {
+  [[nodiscard]] auto format(const glslang_stage_t stage, std::format_context& format_context) const {
+    return std::formatter<std::string_view>::format(to_string(stage), format_context);
+  }
+
+private:
+  static constexpr std::string_view to_string(const glslang_stage_t stage) noexcept {
+    switch (stage) {
+      // clang-format off
+#define CASE(kGlslangStage) case kGlslangStage: return #kGlslangStage;  // NOLINT(cppcoreguidelines-macro-usage)
+      CASE(GLSLANG_STAGE_VERTEX)
+      CASE(GLSLANG_STAGE_TESSCONTROL)
+      CASE(GLSLANG_STAGE_TESSEVALUATION)
+      CASE(GLSLANG_STAGE_GEOMETRY)
+      CASE(GLSLANG_STAGE_FRAGMENT)
+      CASE(GLSLANG_STAGE_COMPUTE)
+      CASE(GLSLANG_STAGE_RAYGEN)
+      CASE(GLSLANG_STAGE_INTERSECT)
+      CASE(GLSLANG_STAGE_ANYHIT)
+      CASE(GLSLANG_STAGE_CLOSESTHIT)
+      CASE(GLSLANG_STAGE_MISS)
+      CASE(GLSLANG_STAGE_CALLABLE)
+      CASE(GLSLANG_STAGE_TASK)
+      CASE(GLSLANG_STAGE_MESH)
+#undef CASE
+      // clang-format on
+      default:
+        std::unreachable();
+    }
+  }
+};
+
 namespace {
 
 using UniqueGlslangShader = std::unique_ptr<glslang_shader_t, decltype(&glslang_shader_delete)>;
@@ -132,51 +165,21 @@ std::vector<std::uint32_t> GenerateSpirv(glslang_program_t* const program, const
 
 }  // namespace
 
-template <>
-struct std::formatter<glslang_stage_t> : std::formatter<std::string_view> {
-  [[nodiscard]] auto format(const glslang_stage_t stage, std::format_context& format_context) const {
-    return std::formatter<std::string_view>::format(to_string(stage), format_context);
-  }
+namespace gfx {
 
-private:
-  static constexpr std::string_view to_string(const glslang_stage_t stage) noexcept {
-    switch (stage) {
-      // clang-format off
-#define CASE(kGlslangStage) case kGlslangStage: return #kGlslangStage;  // NOLINT(cppcoreguidelines-macro-usage)
-      CASE(GLSLANG_STAGE_VERTEX)
-      CASE(GLSLANG_STAGE_TESSCONTROL)
-      CASE(GLSLANG_STAGE_TESSEVALUATION)
-      CASE(GLSLANG_STAGE_GEOMETRY)
-      CASE(GLSLANG_STAGE_FRAGMENT)
-      CASE(GLSLANG_STAGE_COMPUTE)
-      CASE(GLSLANG_STAGE_RAYGEN)
-      CASE(GLSLANG_STAGE_INTERSECT)
-      CASE(GLSLANG_STAGE_ANYHIT)
-      CASE(GLSLANG_STAGE_CLOSESTHIT)
-      CASE(GLSLANG_STAGE_MISS)
-      CASE(GLSLANG_STAGE_CALLABLE)
-      CASE(GLSLANG_STAGE_TASK)
-      CASE(GLSLANG_STAGE_MESH)
-#undef CASE
-      // clang-format on
-      default:
-        std::unreachable();
-    }
-  }
-};
-
-gfx::GlslangCompiler::GlslangCompiler() {
+GlslangCompiler::GlslangCompiler() {
   if (glslang_initialize_process() == 0) {
     throw std::runtime_error{"glslang initialization failed"};
   }
 }
 
-gfx::GlslangCompiler::~GlslangCompiler() noexcept { glslang_finalize_process(); }
+GlslangCompiler::~GlslangCompiler() noexcept { glslang_finalize_process(); }
 
 // NOLINTNEXTLINE(readability-convert-member-functions-to-static)
-std::vector<std::uint32_t> gfx::GlslangCompiler::Compile(const glslang_stage_t stage,
-                                                         const char* const glsl_source) const {
+std::vector<std::uint32_t> GlslangCompiler::Compile(const glslang_stage_t stage, const char* const glsl_source) const {
   const auto shader = CreateShader(stage, glsl_source);
   const auto program = CreateProgram(stage, shader.get());
   return GenerateSpirv(program.get(), stage);
 }
+
+}  // namespace gfx

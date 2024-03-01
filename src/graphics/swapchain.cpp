@@ -110,7 +110,11 @@ std::tuple<vk::UniqueSwapchainKHR, vk::Format, vk::Extent2D> CreateSwapchain(con
 
 }  // namespace
 
-gfx::Swapchain::Swapchain(const Device& device, const Window& window, const vk::SurfaceKHR surface) {
+namespace gfx {
+
+Swapchain::Swapchain(const Device& device, const Window& window, const vk::SurfaceKHR surface) {
   std::tie(swapchain_, image_format_, image_extent_) = CreateSwapchain(device, window, surface);
   image_views_ = CreateSwapchainImageViews(*device, *swapchain_, image_format_);
 }
+
+}  // namespace gfx

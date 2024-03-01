@@ -71,7 +71,9 @@ UniqueGlfwWindow CreateGlfwWindow(const char* const title, int width, int height
 
 }  // namespace
 
-gfx::Window::Window(const char* const title, const int width, const int height)
+namespace gfx {
+
+Window::Window(const char* const title, const int width, const int height)
     : window_{CreateGlfwWindow(title, width, height)} {
   glfwSetWindowUserPointer(window_.get(), this);
 
@@ -96,19 +98,19 @@ gfx::Window::Window(const char* const title, const int width, const int height)
   });
 }
 
-std::pair<int, int> gfx::Window::GetSize() const noexcept {
+std::pair<int, int> Window::GetSize() const noexcept {
   int width{}, height{};
   glfwGetWindowSize(window_.get(), &width, &height);
   return std::pair{width, height};
 }
 
-std::pair<int, int> gfx::Window::GetFramebufferSize() const noexcept {
+std::pair<int, int> Window::GetFramebufferSize() const noexcept {
   int width{}, height{};
   glfwGetFramebufferSize(window_.get(), &width, &height);
   return std::pair{width, height};
 }
 
-float gfx::Window::GetAspectRatio() const noexcept {
+float Window::GetAspectRatio() const noexcept {
   const auto [width, height] = GetSize();
   assert(height > 0);
   return static_cast<float>(width) / static_cast<float>(height);
@@ -116,14 +118,14 @@ float gfx::Window::GetAspectRatio() const noexcept {
 
 #ifdef GLFW_INCLUDE_VULKAN
 
-std::span<const char* const> gfx::Window::GetInstanceExtensions() {
+std::span<const char* const> Window::GetInstanceExtensions() {
   std::uint32_t required_extension_count{};
   const auto* const* required_extensions = glfwGetRequiredInstanceExtensions(&required_extension_count);
   if (required_extensions == nullptr) throw std::runtime_error{"No window surface instance extensions"};
   return std::span{required_extensions, required_extension_count};
 }
 
-vk::UniqueSurfaceKHR gfx::Window::CreateSurface(const vk::Instance instance) const {
+vk::UniqueSurfaceKHR Window::CreateSurface(const vk::Instance instance) const {
   VkSurfaceKHR surface{};
   const auto result = static_cast<vk::Result>(glfwCreateWindowSurface(instance, window_.get(), nullptr, &surface));
   vk::resultCheck(result, "Window surface creation failed");
@@ -132,3 +134,5 @@ vk::UniqueSurfaceKHR gfx::Window::CreateSurface(const vk::Instance instance) con
 }
 
 #endif
+
+}  // namespace gfx

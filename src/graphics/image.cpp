@@ -33,16 +33,20 @@ vk::UniqueImageView CreateImageView(const vk::Device device,
 
 }  // namespace
 
-gfx::Image::Image(const Device& device,
-                  const vk::Format format,
-                  const vk::Extent2D extent,
-                  const vk::SampleCountFlagBits sample_count,
-                  const vk::ImageUsageFlags image_usage_flags,
-                  const vk::ImageAspectFlags image_aspect_flags,
-                  const vk::MemoryPropertyFlags memory_property_flags)
+namespace gfx {
+
+Image::Image(const Device& device,
+             const vk::Format format,
+             const vk::Extent2D extent,
+             const vk::SampleCountFlagBits sample_count,
+             const vk::ImageUsageFlags image_usage_flags,
+             const vk::ImageAspectFlags image_aspect_flags,
+             const vk::MemoryPropertyFlags memory_property_flags)
     : image_{CreateImage(*device, format, extent, sample_count, image_usage_flags)},
       memory_{device, device->getImageMemoryRequirements(*image_), memory_property_flags},
       format_{format} {
   device->bindImageMemory(*image_, *memory_, 0);
   image_view_ = CreateImageView(*device, *image_, format, image_aspect_flags);
 }
+
+}  // namespace gfx

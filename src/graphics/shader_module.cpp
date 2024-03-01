@@ -56,9 +56,11 @@ std::string ReadFile(const std::filesystem::path& filepath) {
 
 }  // namespace
 
-gfx::ShaderModule::ShaderModule(const vk::Device device,
-                                const vk::ShaderStageFlagBits shader_stage,
-                                const std::filesystem::path& filepath) {
+namespace gfx {
+
+ShaderModule::ShaderModule(const vk::Device device,
+                           const vk::ShaderStageFlagBits shader_stage,
+                           const std::filesystem::path& filepath) {
   const auto glsl = ReadFile(filepath);
   const auto spirv = GlslangCompiler::Get().Compile(GetGlslangStage(shader_stage), glsl.c_str());
 
@@ -66,3 +68,5 @@ gfx::ShaderModule::ShaderModule(const vk::Device device,
       vk::ShaderModuleCreateInfo{.codeSize = spirv.size() * sizeof(decltype(spirv)::value_type),
                                  .pCode = spirv.data()});
 }
+
+}  // namespace gfx

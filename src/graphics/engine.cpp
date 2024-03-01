@@ -277,7 +277,9 @@ std::array<vk::UniqueFence, N> CreateFences(const vk::Device device) {
 
 }  // namespace
 
-gfx::Engine::Engine(const Window& window)
+namespace gfx {
+
+Engine::Engine(const Window& window)
     : surface_{window.CreateSurface(*instance_)},
       device_{*instance_, *surface_},
       swapchain_{device_, window, *surface_},
@@ -315,7 +317,7 @@ gfx::Engine::Engine(const Window& window)
       present_image_semaphores_{CreateSemaphores<kMaxRenderFrames>(*device_)},
       draw_fences_{CreateFences<kMaxRenderFrames>(*device_)} {}
 
-void gfx::Engine::Render(const ArcCamera& camera, const Mesh& mesh) {
+void Engine::Render(const ArcCamera& camera, const Mesh& mesh) {
   if (++current_frame_index_ == kMaxRenderFrames) {
     current_frame_index_ = 0;
   }
@@ -381,3 +383,5 @@ void gfx::Engine::Render(const ArcCamera& camera, const Mesh& mesh) {
                                                                  .pImageIndices = &image_index});
   vk::resultCheck(result, "Failed to queue an image for presentation");
 }
+
+}  // namespace gfx

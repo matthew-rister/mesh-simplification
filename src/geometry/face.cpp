@@ -24,9 +24,11 @@ std::array<std::shared_ptr<gfx::Vertex>, 3> GetMinVertexOrder(const std::shared_
 
 }  // namespace
 
-gfx::Face::Face(const std::shared_ptr<Vertex>& v0,  // NOLINT(*-member-init)
-                const std::shared_ptr<Vertex>& v1,
-                const std::shared_ptr<Vertex>& v2) noexcept {
+namespace gfx {
+
+Face::Face(const std::shared_ptr<Vertex>& v0,  // NOLINT(*-member-init)
+           const std::shared_ptr<Vertex>& v1,
+           const std::shared_ptr<Vertex>& v2) noexcept {
   tie(v0_, v1_, v2_) = GetMinVertexOrder(v0, v1, v2);
 
   const auto edge01 = v1_.lock()->position() - v0_.lock()->position();
@@ -38,3 +40,5 @@ gfx::Face::Face(const std::shared_ptr<Vertex>& v0,  // NOLINT(*-member-init)
   area_ = 0.5f * normal_magnitude;  // NOLINT(*-magic-numbers)
   normal_ = normal / normal_magnitude;
 }
+
+}  // namespace gfx

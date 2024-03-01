@@ -38,7 +38,9 @@ vk::UniqueDevice CreateDevice(const gfx::PhysicalDevice& physical_device) {
 
 }  // namespace
 
-gfx::Device::Device(const vk::Instance instance, const vk::SurfaceKHR surface)
+namespace gfx {
+
+Device::Device(const vk::Instance instance, const vk::SurfaceKHR surface)
     : physical_device_{instance, surface},
       device_{CreateDevice(physical_device_)},
       graphics_queue_{device_->getQueue(physical_device_.queue_family_indices().graphics_index, 0)},
@@ -46,3 +48,5 @@ gfx::Device::Device(const vk::Instance instance, const vk::SurfaceKHR surface)
       one_time_submit_command_pool_{device_->createCommandPoolUnique(
           vk::CommandPoolCreateInfo{.flags = vk::CommandPoolCreateFlagBits::eTransient,
                                     .queueFamilyIndex = physical_device_.queue_family_indices().graphics_index})} {}
+
+}  // namespace gfx

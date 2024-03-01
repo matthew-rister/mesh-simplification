@@ -32,7 +32,9 @@ gfx::Mesh CreateMesh(const gfx::Device& device) {
 
 }  // namespace
 
-gfx::App::App()
+namespace gfx {
+
+App::App()
     : window_{"Mesh Simplification", kWindowWidth, kWindowHeight},
       engine_{window_},
       camera_{CreateCamera(window_.GetAspectRatio())},
@@ -42,7 +44,7 @@ gfx::App::App()
   window_.OnScrollEvent([this](const auto y) { HandleScrollEvent(y); });
 }
 
-void gfx::App::Run() {
+void App::Run() {
   while (!window_.IsClosed()) {
     Window::Update();
     engine_.Render(camera_, mesh_);
@@ -50,7 +52,7 @@ void gfx::App::Run() {
   engine_.device()->waitIdle();
 }
 
-void gfx::App::HandleKeyEvent(const int key, const int action) {
+void App::HandleKeyEvent(const int key, const int action) {
   if (action != GLFW_PRESS) return;
 
   switch (key) {
@@ -67,7 +69,7 @@ void gfx::App::HandleKeyEvent(const int key, const int action) {
   }
 }
 
-void gfx::App::HandleCursorEvent(const float x, const float y) {
+void App::HandleCursorEvent(const float x, const float y) {
   static std::optional<glm::vec2> prev_cursor_position;
   const glm::vec2 cursor_position{x, y};
 
@@ -92,7 +94,9 @@ void gfx::App::HandleCursorEvent(const float x, const float y) {
   }
 }
 
-void gfx::App::HandleScrollEvent(const float y) {
+void App::HandleScrollEvent(const float y) {
   static constexpr auto kZoomSpeed = 0.015625f;
   camera_.Zoom(kZoomSpeed * -y);
 }
+
+}  // namespace gfx

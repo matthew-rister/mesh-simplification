@@ -145,7 +145,9 @@ bool WillDegenerate(const std::shared_ptr<gfx::HalfEdge>& edge01) {
 
 }  // namespace
 
-gfx::Mesh gfx::mesh::Simplify(const Device& device, const Mesh& mesh, const float rate) {
+namespace gfx {
+
+Mesh mesh::Simplify(const Device& device, const Mesh& mesh, const float rate) {
   if (rate < 0.0f || rate > 1.0f) {
     throw std::invalid_argument{std::format("Invalid mesh simplification rate: {}", rate)};
   }
@@ -248,3 +250,5 @@ gfx::Mesh gfx::mesh::Simplify(const Device& device, const Mesh& mesh, const floa
 
   return half_edge_mesh.ToMesh(device);
 }
+
+}  // namespace gfx
