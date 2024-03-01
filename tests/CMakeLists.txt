@@ -8,10 +8,8 @@ add_executable(mesh_simplification_tests geometry/face_test.cpp
 find_package(GTest CONFIG REQUIRED)
 
 target_link_libraries(mesh_simplification_tests PRIVATE GTest::gtest_main
-                                                        asan
                                                         geometry
-                                                        graphics
-                                                        warnings)
+                                                        graphics)
 
 target_include_directories(mesh_simplification_tests PRIVATE ${CMAKE_SOURCE_DIR})
 

@@ -1,6 +1,6 @@
 add_executable(mesh_simplification main.cpp app.cpp)
 
-target_link_libraries(mesh_simplification PRIVATE asan geometry graphics warnings)
+target_link_libraries(mesh_simplification PRIVATE geometry graphics)
 
 add_subdirectory(geometry)
 add_subdirectory(graphics)
