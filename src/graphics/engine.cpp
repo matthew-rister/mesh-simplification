@@ -262,7 +262,9 @@ std::vector<vk::UniqueCommandBuffer> AllocateCommandBuffers(const vk::Device dev
 template <std::size_t N>
 std::array<vk::UniqueSemaphore, N> CreateSemaphores(const vk::Device device) {
   std::array<vk::UniqueSemaphore, N> semaphores;
-  std::ranges::generate(semaphores, [device] { return device.createSemaphoreUnique(vk::SemaphoreCreateInfo{}); });
+  std::ranges::generate(semaphores, [device] {  // NOLINT(whitespace/newline)
+    return device.createSemaphoreUnique(vk::SemaphoreCreateInfo{});
+  });
   return semaphores;
 }
 
@@ -357,8 +359,8 @@ void Engine::Render(const ArcCamera& camera, const Mesh& mesh) {
       *graphics_pipeline_layout_,
       vk::ShaderStageFlagBits::eVertex,
       0,
-      VertexTransforms{.model_view_transform = camera.view_transform() * mesh.transform(),
-                       .projection_transform = camera.projection_transform()});
+      VertexTransforms{.model_view_transform = camera.GetViewTransform() * mesh.transform(),
+                       .projection_transform = camera.GetProjectionTransform()});
 
   mesh.Render(command_buffer);
 

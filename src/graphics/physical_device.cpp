@@ -7,18 +7,16 @@
 
 namespace {
 
-using QueueFamilyIndices = gfx::PhysicalDevice::QueueFamilyIndices;
-
 struct RankedPhysicalDevice {
-  static constexpr auto kInvalidRank = -1;
   vk::PhysicalDevice physical_device;
   vk::PhysicalDeviceLimits physical_device_limits;
-  QueueFamilyIndices queue_family_indices;
+  gfx::QueueFamilyIndices queue_family_indices;
+  static constexpr auto kInvalidRank = -1;
   int rank{};
 };
 
-std::optional<QueueFamilyIndices> FindQueueFamilyIndices(const vk::PhysicalDevice physical_device,
-                                                         const vk::SurfaceKHR surface) {
+std::optional<gfx::QueueFamilyIndices> FindQueueFamilyIndices(const vk::PhysicalDevice physical_device,
+                                                              const vk::SurfaceKHR surface) {
   std::optional<std::uint32_t> graphics_index, present_index;
   for (std::uint32_t index = 0; const auto& queue_family_properties : physical_device.getQueueFamilyProperties()) {
     if (queue_family_properties.queueFlags & vk::QueueFlagBits::eGraphics) {
@@ -28,7 +26,7 @@ std::optional<QueueFamilyIndices> FindQueueFamilyIndices(const vk::PhysicalDevic
       present_index = index;
     }
     if (graphics_index.has_value() && present_index.has_value()) {
-      return QueueFamilyIndices{.graphics_index = *graphics_index, .present_index = *present_index};
+      return gfx::QueueFamilyIndices{.graphics_index = *graphics_index, .present_index = *present_index};
     }
     ++index;
   }
@@ -69,9 +67,11 @@ namespace gfx {
 
 PhysicalDevice::PhysicalDevice(const vk::Instance instance, const vk::SurfaceKHR surface) {
   const auto [physical_device, limits, queue_family_indices, _] = SelectPhysicalDevice(instance, surface);
+  // NOLINTBEGIN(cppcoreguidelines-prefer-member-initializer)
   physical_device_ = physical_device;
   physical_device_limits_ = limits;
   queue_family_indices_ = queue_family_indices;
+  // NOLINTEND(cppcoreguidelines-prefer-member-initializer)
 }
 
 }  // namespace gfx

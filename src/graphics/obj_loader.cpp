@@ -57,8 +57,9 @@ constexpr glm::vec<N, T> ParseLine(const std::string_view line, const bool norma
       vec[i] = ParseToken<T>(tokens[j]);
     }
     if (normalize) {
-      assert(glm::length(vec) > 0.0f);
-      vec = glm::normalize(vec);
+      const auto length = glm::length(vec);
+      assert(length > 0.0f);
+      vec = vec / length;
     }
     return vec;
   }

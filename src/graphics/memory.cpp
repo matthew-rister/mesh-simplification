@@ -15,7 +15,8 @@ std::uint32_t FindMemoryTypeIndex(const vk::PhysicalDevice physical_device,
                                   const vk::MemoryPropertyFlags memory_property_flags) {
   const auto device_memory_properties = physical_device.getMemoryProperties();
   for (std::uint32_t index = 0; const auto memory_type : device_memory_properties.memoryTypes) {
-    if (memory_requirements.memoryTypeBits & (1u << index)
+    const auto memory_type_bit = 1u << index;
+    if ((memory_requirements.memoryTypeBits & memory_type_bit) == memory_type_bit
         && (memory_property_flags & memory_type.propertyFlags) == memory_property_flags) {
       return index;
     }

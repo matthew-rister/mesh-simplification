@@ -45,27 +45,6 @@ private:
   vk::DeviceSize size_;
 };
 
-template <typename T>
-[[nodiscard]] Buffer CreateDeviceLocalBuffer(const Device& device,
-                                             const vk::BufferUsageFlags buffer_usage_flags,
-                                             const vk::ArrayProxy<const T> data) {
-  const auto size_bytes = sizeof(T) * data.size();
-
-  Buffer host_visible_buffer{device,
-                             size_bytes,
-                             vk::BufferUsageFlagBits::eTransferSrc,
-                             vk::MemoryPropertyFlagBits::eHostVisible};
-  host_visible_buffer.Copy(data);
-
-  Buffer device_local_buffer{device,
-                             size_bytes,
-                             buffer_usage_flags | vk::BufferUsageFlagBits::eTransferDst,
-                             vk::MemoryPropertyFlagBits::eDeviceLocal};
-  device_local_buffer.Copy(device, host_visible_buffer);
-
-  return device_local_buffer;
-}
-
 }  // namespace gfx
 
 #endif  // SRC_GRAPHICS_INCLUDE_GRAPHICS_BUFFER_H_

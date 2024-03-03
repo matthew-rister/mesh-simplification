@@ -8,19 +8,19 @@
 
 namespace gfx {
 
+struct ViewFrustum {
+  float field_of_view_y{};
+  float aspect_ratio{};
+  float z_near{};
+  float z_far{};
+};
+
 class ArcCamera {
 public:
-  struct ViewFrustum {
-    float field_of_view_y{};
-    float aspect_ratio{};
-    float z_near{};
-    float z_far{};
-  };
-
   ArcCamera(const glm::vec3& target, const glm::vec3& position, const ViewFrustum& view_frustum);
 
-  [[nodiscard]] const glm::mat4& view_transform() const noexcept { return view_transform_; }
-  [[nodiscard]] const glm::mat4& projection_transform() const noexcept { return projection_transform_; }
+  [[nodiscard]] glm::mat4 GetViewTransform() const noexcept;
+  [[nodiscard]] glm::mat4 GetProjectionTransform() const noexcept;
 
   void Translate(float dx, float dy, float dz);
   void Rotate(float theta, float phi);
@@ -29,8 +29,7 @@ public:
 private:
   glm::vec3 target_;
   SphericalCoordinates position_;
-  glm::mat4 view_transform_;
-  glm::mat4 projection_transform_;
+  ViewFrustum view_frustum_;
 };
 
 }  // namespace gfx

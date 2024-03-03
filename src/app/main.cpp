@@ -2,9 +2,9 @@
 #include <exception>
 #include <iostream>
 
-#include "app.h"  // NOLINT(build/include_subdir)
+#include "app/app.h"
 
-int main() {
+int main() {  // NOLINT(bugprone-exception-escape)
   try {
     gfx::App app;
     app.Run();

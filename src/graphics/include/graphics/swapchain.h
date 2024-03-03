@@ -27,7 +27,7 @@ public:
 
 private:
   vk::UniqueSwapchainKHR swapchain_;
-  vk::Format image_format_{};
+  vk::Format image_format_ = vk::Format::eUndefined;
   vk::Extent2D image_extent_;
   std::vector<vk::UniqueImageView> image_views_;
 };

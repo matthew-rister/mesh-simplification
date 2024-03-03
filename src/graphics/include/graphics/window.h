@@ -21,9 +21,9 @@ public:
   [[nodiscard]] std::pair<int, int> GetFramebufferSize() const noexcept;
   [[nodiscard]] float GetAspectRatio() const noexcept;
 
-  void OnKeyEvent(std::function<void(int, int)> fn) { key_event_handler_ = std::move(fn); }
-  void OnCursorEvent(std::function<void(float, float)> fn) { cursor_event_handler_ = std::move(fn); }
-  void OnScrollEvent(std::function<void(float)> fn) { scroll_event_handler_ = std::move(fn); }
+  void OnKeyEvent(std::invocable<int, int> auto&& fn) { key_event_handler_ = std::forward<decltype(fn)>(fn); }
+  void OnCursorEvent(std::invocable<float, float> auto&& fn) { cursor_event_handler_ = std::forward<decltype(fn)>(fn); }
+  void OnScrollEvent(std::invocable<float> auto&& fn) { scroll_event_handler_ = std::forward<decltype(fn)>(fn); }
 
   [[nodiscard]] bool IsClosed() const noexcept { return glfwWindowShouldClose(window_.get()) == GLFW_TRUE; }
   void Close() const noexcept { glfwSetWindowShouldClose(window_.get(), GLFW_TRUE); }

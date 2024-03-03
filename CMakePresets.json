@@ -17,9 +17,6 @@
       },
       "toolset": {
         "strategy": "external"
-      },
-      "cacheVariables": {
-        "CMAKE_EXPORT_COMPILE_COMMANDS": true
       }
     },
     {
@@ -40,7 +37,9 @@
       "hidden": true,
       "inherits": "default",
       "cacheVariables": {
-        "CMAKE_CXX_COMPILER": "g++"
+        "CMAKE_CXX_COMPILER": "clang++",
+        "CMAKE_CXX_FLAGS": "-stdlib=libc++",
+        "CMAKE_EXE_LINKER_FLAGS": "-stdlib=libc++"
       },
       "condition": {
         "type": "equals",
@@ -86,6 +85,14 @@
       "hidden": true,
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "RelWithDebInfo"
+      }
+    },
+    {
+      "name": "clang-tidy",
+      "hidden": true,
+      "cacheVariables": {
+        "CMAKE_CXX_CLANG_TIDY": "clang-tidy;--config-file=${sourceDir}/.clang-tidy;-p=${sourceDir}/out/build/${presetName};--extra-arg=/EHsc",
+        "CMAKE_EXPORT_COMPILE_COMMANDS": true
       }
     },
     {

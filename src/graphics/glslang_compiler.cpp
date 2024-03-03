@@ -37,8 +37,9 @@ private:
       CASE(GLSLANG_STAGE_CALLABLE)
       CASE(GLSLANG_STAGE_TASK)
       CASE(GLSLANG_STAGE_MESH)
+      CASE(GLSLANG_STAGE_COUNT)
 #undef CASE
-      // clang-format on
+        // clang-format on
       default:
         std::unreachable();
     }

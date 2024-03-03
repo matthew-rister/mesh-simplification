@@ -24,23 +24,7 @@
 
 namespace {
 
-/**
- * \brief A edge contraction candidate in a half-edge mesh.
- * \details An edge contraction candidate includes all the information necessary to process the next half-edge during
- *          the mesh simplification process.
- */
 struct EdgeContraction {
-  /**
-   * \brief Initializes an edge contraction.
-   * \param edge The edge to contract.
-   * \param vertex The vertex whose position optimally preserves the original shape of the mesh after edge contraction.
-   * \param quadric The error quadric for this edge contraction's vertex.
-   * \param cost A metric that quantifies how much the mesh will change after this edge has been contracted.
-   * \param valid Indicates if this edge contraction is valid. This is used as a workaround for priority_queue not
-   *              providing a method to update an existing entry's priority. As edges are updated in the mesh,
-   *              duplicated entries may be inserted in the queue and this property will be used to determine if an
-   *              entry refers to the most recent edge update.
-   */
   EdgeContraction(const std::shared_ptr<gfx::HalfEdge>& edge,
                   const std::shared_ptr<gfx::Vertex>& vertex,
                   const glm::mat4& quadric,
@@ -48,28 +32,20 @@ struct EdgeContraction {
                   const bool valid = true)
       : edge{edge}, vertex{vertex}, quadric{quadric}, cost{cost}, valid{valid} {}
 
+  // NOLINTBEGIN(misc-non-private-member-variables-in-classes)
   std::shared_ptr<gfx::HalfEdge> edge;
   std::shared_ptr<gfx::Vertex> vertex;
   glm::mat4 quadric;
   float cost;
   bool valid;
+  // NOLINTEND(misc-non-private-member-variables-in-classes)
 };
 
-/**
- * \brief Gets a canonical representation of a half-edge used to disambiguate between its flip edge.
- * \param edge01 The half-edge to disambiguate.
- * \return For two vertices connected by an edge, returns the half-edge pointing to the vertex with the smallest ID.
- */
 std::shared_ptr<gfx::HalfEdge> GetMinEdge(const std::shared_ptr<gfx::HalfEdge>& edge01) {
   const auto edge10 = edge01->flip();
   return edge01->vertex()->id() < edge10->vertex()->id() ? edge01 : edge10;
 }
 
-/**
- * \brief Creates an error quadric for a given vertex.
- * \param v0 The vertex to create an error quadric for.
- * \return The error quadric for \p v0.
- */
 glm::mat4 CreateErrorQuadric(const gfx::Vertex& v0) {
   glm::mat4 quadric{0.0f};
   auto edgei0 = v0.edge();
@@ -83,13 +59,6 @@ glm::mat4 CreateErrorQuadric(const gfx::Vertex& v0) {
   return quadric;
 }
 
-/**
- * \brief Creates an edge contraction candidate.
- * \param edge01 The edge to contract.
- * \param quadrics Error quadrics for each vertex in the half-edge mesh by vertex ID.
- * \return An edge contraction candidate that includes the vertex whose position optimally preserves the original shape
- *         and its associated cost.
- */
 std::shared_ptr<EdgeContraction> CreateEdgeContraction(const std::shared_ptr<gfx::HalfEdge>& edge01,
                                                        const std::unordered_map<std::uint32_t, glm::mat4>& quadrics) {
   const auto v0 = edge01->flip()->vertex();
@@ -117,11 +86,6 @@ std::shared_ptr<EdgeContraction> CreateEdgeContraction(const std::shared_ptr<gfx
   return std::make_shared<EdgeContraction>(edge01, std::make_shared<gfx::Vertex>(position), q01, squared_distance);
 }
 
-/**
- * \brief Determines if the removal of an edge will cause the mesh to degenerate.
- * \param edge01 The edge to evaluate.
- * \return \c true if the removal of \p edge01 will produce a non-manifold, otherwise \c false.
- */
 bool WillDegenerate(const std::shared_ptr<gfx::HalfEdge>& edge01) {
   const auto v0 = edge01->flip()->vertex();
   const auto v1_next = edge01->next()->vertex();

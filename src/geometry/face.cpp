@@ -7,12 +7,6 @@
 
 namespace {
 
-/**
- * \brief Gets a canonical ordering of face vertices such that the vertex with the lowest ID appears first.
- * \param v0,v1,v2 The face vertices.
- * \return A array consisting of \p v0, \p v1, \p v2 ordered by the lowest ID.
- * \remark Preserves winding order. The is necessary to disambiguate equivalent face elements queries.
- */
 std::array<std::shared_ptr<gfx::Vertex>, 3> GetMinVertexOrder(const std::shared_ptr<gfx::Vertex>& v0,
                                                               const std::shared_ptr<gfx::Vertex>& v1,
                                                               const std::shared_ptr<gfx::Vertex>& v2) {

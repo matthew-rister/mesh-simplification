@@ -87,7 +87,7 @@ private:
       seed *= 0xe9846af9b1a615d;
       seed ^= seed >> 28u;
     } else {
-      // the is a workaround to enable using static_assert(false) in constexpr expressions
+      // this is a workaround to enable using static_assert(false) in constexpr expressions
       ([]<bool False = false>() { static_assert(False, "Unsupported processor architecture"); })();
     }
     // NOLINTEND(*-magic-numbers)

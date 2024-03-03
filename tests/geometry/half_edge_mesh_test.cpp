@@ -133,6 +133,7 @@ TEST(HalfEdgeMeshTest, ContractEdgeAttachesIndicentEdgesToNewVertex) {
   EXPECT_EQ(32, half_edge_mesh.edges().size());
   EXPECT_EQ(8, half_edge_mesh.faces().size());
 
+  // NOLINTBEGIN(*-magic-numbers)
   VerifyTriangles(half_edge_mesh, std::vector{2u, 3u,  10u,   // f0
                                               3u, 4u,  10u,   // f1
                                               4u, 5u,  10u,   // f2
@@ -141,6 +142,7 @@ TEST(HalfEdgeMeshTest, ContractEdgeAttachesIndicentEdgesToNewVertex) {
                                               7u, 8u,  10u,   // f5
                                               8u, 9u,  10u,   // f6
                                               2u, 10u, 9u});  // f7
+  // NOLINTEND(*-magic-numbers)
 }
 
 #ifndef NDEBUG

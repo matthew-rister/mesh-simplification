@@ -1,5 +1,5 @@
-#ifndef SRC_APP_H_
-#define SRC_APP_H_
+#ifndef SRC_APP_INCLUDE_APP_APP_H_
+#define SRC_APP_INCLUDE_APP_APP_H_
 
 #include "graphics/arc_camera.h"
 #include "graphics/engine.h"
@@ -27,4 +27,4 @@ private:
 
 }  // namespace gfx
 
-#endif  // SRC_APP_H_
+#endif  // SRC_APP_INCLUDE_APP_APP_H_

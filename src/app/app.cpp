@@ -1,4 +1,4 @@
-#include "app.h"  // NOLINT(build/include_subdir)
+#include "app/app.h"
 
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
@@ -11,24 +11,26 @@ namespace {
 constexpr auto kWindowWidth = 1920;
 constexpr auto kWindowHeight = 1080;
 
+// NOLINTBEGIN(*-magic-numbers)
 gfx::ArcCamera CreateCamera(const float aspect_ratio) {
   static constexpr glm::vec3 kTarget{0.0f};
   static constexpr glm::vec3 kPosition{0.0f, 0.0f, 2.0f};
-  const gfx::ArcCamera::ViewFrustum view_frustum{.field_of_view_y = glm::radians(45.0f),
-                                                 .aspect_ratio = aspect_ratio,
-                                                 .z_near = 0.1f,
-                                                 .z_far = 100'000.0f};
-  return gfx::ArcCamera{kTarget, kPosition, view_frustum};
+  return gfx::ArcCamera{kTarget,
+                        kPosition,
+                        gfx::ViewFrustum{.field_of_view_y = glm::radians(45.0f),
+                                         .aspect_ratio = aspect_ratio,
+                                         .z_near = 0.1f,
+                                         .z_far = 100'000.0f}};
 }
 
 gfx::Mesh CreateMesh(const gfx::Device& device) {
-  static constexpr glm::vec3 kTranslation{0.2f, -0.3f, 0.0f};
-  static constexpr glm::vec3 kScale{0.35f};
   auto mesh = gfx::obj_loader::LoadMesh(device, "assets/models/bunny.obj");
-  mesh.Translate(kTranslation);
-  mesh.Scale(kScale);
+  mesh.Translate(glm::vec3{0.2f, -0.3f, 0.0f});
+  mesh.Rotate(glm::vec3{1.0f, 0.0f, 0.0f}, glm::radians(10.0f));
+  mesh.Scale(glm::vec3{0.35f});
   return mesh;
 }
+// NOLINTEND(*-magic-numbers)
 
 }  // namespace
 

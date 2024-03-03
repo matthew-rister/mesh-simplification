@@ -1,7 +1,6 @@
 #ifndef SRC_GRAPHICS_INCLUDE_GRAPHICS_MESH_H_
 #define SRC_GRAPHICS_INCLUDE_GRAPHICS_MESH_H_
 
-#include <cassert>
 #include <vector>
 
 #include <glm/gtc/matrix_transform.hpp>
@@ -9,9 +8,9 @@
 #include <vulkan/vulkan.hpp>
 
 #include "graphics/buffer.h"
-#include "graphics/device.h"
 
 namespace gfx {
+class Device;
 
 class Mesh {
 public:
@@ -19,20 +18,12 @@ public:
     glm::vec3 position{0.0f};
     glm::vec2 texture_coordinates{0.0f};
     glm::vec3 normal{0.0f};
-    [[nodiscard]] bool operator==(const Vertex&) const noexcept = default;
   };
 
   Mesh(const Device& device,
        const std::vector<Vertex>& vertices,
        const std::vector<std::uint32_t>& indices,
-       const glm::mat4& transform = glm::mat4{1.0f})
-      : vertices_{vertices},
-        indices_{indices},
-        transform_{transform},
-        vertex_buffer_{CreateDeviceLocalBuffer<Vertex>(device, vk::BufferUsageFlagBits::eVertexBuffer, vertices_)},
-        index_buffer_{CreateDeviceLocalBuffer<std::uint32_t>(device, vk::BufferUsageFlagBits::eIndexBuffer, indices_)} {
-    assert(indices_.size() % 3 == 0);
-  }
+       const glm::mat4& transform = glm::mat4{1.0f});
 
   [[nodiscard]] const std::vector<Vertex>& vertices() const noexcept { return vertices_; }
   [[nodiscard]] const std::vector<std::uint32_t>& indices() const noexcept { return indices_; }

@@ -40,7 +40,7 @@ void main() {
     vec3 light_direction = point_light.position - vertex.position;
     const float light_distance = length(light_direction);
     const float attenuation = 1.0 / max(light_distance * light_distance, 1.0);
-    light_direction = light_direction / light_distance; // normalize
+    light_direction = light_direction / light_distance;
 
     const float diffuse_intensity = max(dot(normal, light_direction), 0.0);
     const vec3 diffuse_color = diffuse_intensity * kMaterial.diffuse;

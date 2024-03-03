@@ -7,13 +7,13 @@
 
 namespace gfx {
 
+struct QueueFamilyIndices {
+  std::uint32_t graphics_index{};
+  std::uint32_t present_index{};
+};
+
 class PhysicalDevice {
 public:
-  struct QueueFamilyIndices {
-    std::uint32_t graphics_index;
-    std::uint32_t present_index;
-  };
-
   PhysicalDevice(vk::Instance instance, vk::SurfaceKHR surface);
 
   [[nodiscard]] vk::PhysicalDevice operator*() const noexcept { return physical_device_; }
