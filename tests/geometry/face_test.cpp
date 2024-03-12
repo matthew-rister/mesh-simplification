@@ -50,16 +50,16 @@ TEST(FaceTest, GetExpiredVertexCausesProgramExit) {
     const auto& [v0, v1, v2] = CreateValidTriangle();
     face012 = std::make_unique<gfx::Face>(v0, v1, v2);
   }
-  EXPECT_DEATH({ std::ignore = face012->v0(); }, "");
-  EXPECT_DEATH({ std::ignore = face012->v1(); }, "");
-  EXPECT_DEATH({ std::ignore = face012->v2(); }, "");
+  EXPECT_DEATH({ std::ignore = face012->v0(); }, "");  // NOLINT(whitespace/newline)
+  EXPECT_DEATH({ std::ignore = face012->v1(); }, "");  // NOLINT(whitespace/newline)
+  EXPECT_DEATH({ std::ignore = face012->v2(); }, "");  // NOLINT(whitespace/newline)
 }
 
 TEST(FaceTest, InitializationWithCollinearVerticesCausesProgramExit) {
   const auto v0 = std::make_shared<gfx::Vertex>(0, glm::vec3{-1.0f, -1.0f, 0.0f});
   const auto v1 = std::make_shared<gfx::Vertex>(1, glm::vec3{0.0f, -1.0f, 0.0f});
   const auto v2 = std::make_shared<gfx::Vertex>(2, glm::vec3{1.0f, -1.0f, 0.0f});
-  EXPECT_DEATH((gfx::Face{v0, v1, v2}), "");
+  EXPECT_DEATH((gfx::Face{v0, v1, v2}), "");  // NOLINT(whitespace/newline)
 }
 
 #endif

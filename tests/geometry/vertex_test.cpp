@@ -17,7 +17,7 @@ TEST(VertexTest, EqualVerticesHaveTheSameHashValue) {
 
 TEST(VertexTest, GetUnsetIdCausesProgramExit) {
   const gfx::Vertex vertex{glm::vec3{0.0f}};
-  EXPECT_DEATH({ std::ignore = vertex.id(); }, "");
+  EXPECT_DEATH({ std::ignore = vertex.id(); }, "");  // NOLINT(whitespace/newline)
 }
 
 TEST(VertexTest, GetExpiredEdgeCausesProgramExit) {
@@ -26,7 +26,7 @@ TEST(VertexTest, GetExpiredEdgeCausesProgramExit) {
     const auto edge = std::make_shared<gfx::HalfEdge>(vertex);
     vertex->set_edge(edge);
   }
-  EXPECT_DEATH({ std::ignore = vertex->edge(); }, "");
+  EXPECT_DEATH({ std::ignore = vertex->edge(); }, "");  // NOLINT(whitespace/newline)
 }
 
 #endif

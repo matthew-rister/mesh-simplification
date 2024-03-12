@@ -150,7 +150,7 @@ TEST(HalfEdgeMeshTest, ContractHalfEdgeWithExistingMeshVertexCausesProgramExit) 
   const auto& v0 = half_edge_mesh.vertices().at(0);
   const auto& v1 = half_edge_mesh.vertices().at(1);
   const auto& edge01 = half_edge_mesh.edges().at(hash_value(*v0, *v1));
-  EXPECT_DEATH(half_edge_mesh.Contract(*edge01, v0), "");
+  EXPECT_DEATH(half_edge_mesh.Contract(*edge01, v0), "");  // NOLINT(whitespace/newline)
 }
 
 TEST(HalfEdgeMeshTest, ContractNonexistentHalfEdgeCausesProgramExit) {
@@ -158,10 +158,11 @@ TEST(HalfEdgeMeshTest, ContractNonexistentHalfEdgeCausesProgramExit) {
   const auto next_vertex_id = static_cast<int>(half_edge_mesh.vertices().size());
   const auto v_invalid0 = std::make_shared<gfx::Vertex>(next_vertex_id, glm::vec3{0.0f});
   const auto v_invalid1 = std::make_shared<gfx::Vertex>(next_vertex_id + 1, glm::vec3{0.0f});
+  const auto v_new = std::make_shared<gfx::Vertex>(42, glm::vec3{0.0f});
   const auto edge_invalid01 = std::make_shared<gfx::HalfEdge>(v_invalid1);
   const auto edge_invalid10 = std::make_shared<gfx::HalfEdge>(v_invalid0);
   edge_invalid01->set_flip(edge_invalid10);
-  EXPECT_DEATH(half_edge_mesh.Contract(*edge_invalid01, std::make_shared<gfx::Vertex>(42, glm::vec3{0.0f})), "");
+  EXPECT_DEATH(half_edge_mesh.Contract(*edge_invalid01, v_new), "");  // NOLINT(whitespace/newline)
 }
 
 #endif
