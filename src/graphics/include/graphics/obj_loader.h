@@ -9,7 +9,16 @@ class Mesh;
 
 namespace obj_loader {
 
-Mesh LoadMesh(const Device& device, const std::filesystem::path& filepath);
+/**
+ * \brief Loads a triangle mesh from an .obj file.
+ * \param device The graphics device used to load mesh data into GPU memory.
+ * \param filepath The path to the .obj file.
+ * \return A mesh defined by the position, texture coordinates, normals, and indices specified in the .obj file.
+ * \remark At this time, only a subset of .obj file specification is supported. Specifically, only triangle primitives
+ *         with 3D vertex positions, 2D texture coordinates, and 3D normals are supported.
+ * \see https://en.wikipedia.org/wiki/Wavefront_.obj_file
+ */
+[[nodiscard]] Mesh LoadMesh(const Device& device, const std::filesystem::path& filepath);
 
 }  // namespace obj_loader
 }  // namespace gfx

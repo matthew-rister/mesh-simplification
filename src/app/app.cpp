@@ -87,8 +87,8 @@ void App::HandleCursorEvent(const float x, const float y) {
     if (prev_cursor_position.has_value()) {
       static constexpr auto kTranslationSpeed = 0.001953125f;
       const auto delta_cursor_position = cursor_position - *prev_cursor_position;
-      const auto translation = kTranslationSpeed * glm::vec2{-delta_cursor_position.x, delta_cursor_position.y};
-      camera_.Translate(translation.x, translation.y, 0.0f);
+      const auto translation = kTranslationSpeed * glm::vec3{-delta_cursor_position.x, delta_cursor_position.y, 0.0f};
+      camera_.Translate(translation);
     }
     prev_cursor_position = cursor_position;
   } else if (prev_cursor_position.has_value()) {

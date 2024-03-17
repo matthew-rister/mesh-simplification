@@ -149,10 +149,10 @@ HalfEdgeMesh::HalfEdgeMesh(const Mesh& mesh)
                 | std::ranges::to<std::unordered_map>()},
       faces_{mesh.indices()          //
              | std::views::chunk(3)  //
-             | std::views::transform([this](const auto& index_group) {
-                 const auto& v0 = Get(index_group[0], vertices_);
-                 const auto& v1 = Get(index_group[1], vertices_);
-                 const auto& v2 = Get(index_group[2], vertices_);
+             | std::views::transform([this](const auto& indices) {
+                 const auto& v0 = Get(indices[0], vertices_);
+                 const auto& v1 = Get(indices[1], vertices_);
+                 const auto& v2 = Get(indices[2], vertices_);
                  auto face012 = CreateTriangle(v0, v1, v2, edges_);
                  return std::pair{hash_value(*face012), std::move(face012)};
                })

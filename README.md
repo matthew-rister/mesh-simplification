@@ -21,7 +21,7 @@ This project requires CMake 3.27 and a compiler that supports the C++23 language
 
 ### Vulkan
 
-This project requires a graphics driver with Vulkan 1.3 support. While not required for release builds, this project requires the [Vulkan SDK](https://www.lunarg.com/vulkan-sdk/) for debug builds which enable [validation layers](https://vulkan.lunarg.com/doc/view/latest/windows/validation_layers.html) by default.
+This project requires a graphics driver with Vulkan 1.3 support. While not required for release builds, this project requires the [Vulkan SDK](https://www.lunarg.com/vulkan-sdk/) for debug builds which enables [validation layers](https://vulkan.lunarg.com/doc/view/latest/windows/validation_layers.html) by default.
 
 ### Package Management
 

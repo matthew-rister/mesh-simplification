@@ -26,9 +26,9 @@ glm::mat4 ArcCamera::GetProjectionTransform() const noexcept {
   return projection_transform;
 }
 
-void ArcCamera::Translate(const float dx, const float dy, const float dz) {
+void ArcCamera::Translate(const glm::vec3& translation) {
   const glm::mat3 view_transform = GetViewTransform();
-  target_ += glm::vec3{dx, dy, dz} * view_transform;
+  target_ += translation * view_transform;
 }
 
 void ArcCamera::Rotate(const float theta, const float phi) {

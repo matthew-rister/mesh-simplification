@@ -8,8 +8,10 @@
 
 namespace gfx {
 
+/** \brief A GLSL to SPIR-V compiler using glslang. */
 class GlslangCompiler {
 public:
+  /** \brief Gets an instance to the glslang compiler. */
   [[nodiscard]] static const GlslangCompiler& Get() {
     static const GlslangCompiler kInstance;
     return kInstance;
@@ -23,6 +25,12 @@ public:
 
   ~GlslangCompiler() noexcept;
 
+  /**
+   * \brief Compilers GLSL source code to SPIR-V.
+   * \param stage The target GLSL shader stage.
+   * \param glsl_source The GLSL source code to compile.
+   * \return A vector containing the compiled SPIR-V bytecode.
+   */
   [[nodiscard]] std::vector<std::uint32_t> Compile(glslang_stage_t stage, const char* glsl_source) const;
 
 private:

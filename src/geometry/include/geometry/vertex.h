@@ -64,7 +64,7 @@ public:
 
 private:
   /**
-   * \brief Combines the hash values of an arbitrary number of vertices.
+   * \brief Combines the hash values for an arbitrary number of vertices.
    * \param seed The starting seed to generate hash values from.
    * \param vertex The current vertex to get the hash value for.
    * \param rest The remaining vertices to combine hash values for.
