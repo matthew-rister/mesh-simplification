@@ -13,10 +13,9 @@ class Window;
 
 class Swapchain {
 public:
-  Swapchain(const Device& device, const Window& window, vk::SurfaceKHR surface);
+  Swapchain(const Window& window, vk::SurfaceKHR surface, const Device& device);
 
   [[nodiscard]] vk::SwapchainKHR operator*() const noexcept { return *swapchain_; }
-  [[nodiscard]] const vk::SwapchainKHR* operator->() const noexcept { return &(*swapchain_); }
 
   [[nodiscard]] vk::Format image_format() const noexcept { return image_format_; }
   [[nodiscard]] vk::Extent2D image_extent() const noexcept { return image_extent_; }

@@ -284,7 +284,7 @@ namespace gfx {
 Engine::Engine(const Window& window)
     : surface_{window.CreateSurface(*instance_)},
       device_{*instance_, *surface_},
-      swapchain_{device_, window, *surface_},
+      swapchain_{window, *surface_, device_},
       msaa_sample_count_{GetMsaaSampleCount(device_.physical_device().limits())},
       color_attachment_{device_,
                         swapchain_.image_format(),

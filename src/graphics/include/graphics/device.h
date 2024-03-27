@@ -17,7 +17,6 @@ public:
   [[nodiscard]] const vk::Device* operator->() const noexcept { return &(*device_); }
 
   [[nodiscard]] const PhysicalDevice& physical_device() const noexcept { return physical_device_; }
-
   [[nodiscard]] vk::Queue graphics_queue() const noexcept { return graphics_queue_; }
   [[nodiscard]] vk::Queue present_queue() const noexcept { return present_queue_; }
 
