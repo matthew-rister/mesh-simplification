@@ -47,9 +47,9 @@ Memory::Memory(const Device& device,
 Memory& Memory::operator=(Memory&& memory) noexcept {
   if (this != &memory) {
     Unmap();
-    device_ = std::exchange(memory.device_, {});
-    memory_ = std::exchange(memory.memory_, {});
-    mapped_memory_ = std::exchange(memory.mapped_memory_, {});
+    device_ = std::exchange(memory.device_, nullptr);
+    memory_ = std::exchange(memory.memory_, vk::UniqueDeviceMemory{});
+    mapped_memory_ = std::exchange(memory.mapped_memory_, nullptr);
   }
   return *this;
 }

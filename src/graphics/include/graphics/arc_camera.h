@@ -9,10 +9,10 @@
 namespace gfx {
 
 struct ViewFrustum {
-  float field_of_view_y{};
-  float aspect_ratio{};
-  float z_near{};
-  float z_far{};
+  float field_of_view_y = 0.0f;
+  float aspect_ratio = 0.0f;
+  float z_near = 0.0f;
+  float z_far = 0.0f;
 };
 
 class ArcCamera {

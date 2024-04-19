@@ -8,8 +8,8 @@
 namespace gfx {
 
 struct QueueFamilyIndices {
-  std::uint32_t graphics_index{};
-  std::uint32_t present_index{};
+  std::uint32_t graphics_index = 0;
+  std::uint32_t present_index = 0;
 };
 
 class PhysicalDevice {

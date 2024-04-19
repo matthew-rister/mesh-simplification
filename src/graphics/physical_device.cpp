@@ -12,7 +12,7 @@ struct RankedPhysicalDevice {
   vk::PhysicalDeviceLimits physical_device_limits;
   gfx::QueueFamilyIndices queue_family_indices;
   static constexpr auto kInvalidRank = -1;
-  int rank{};
+  int rank = kInvalidRank;
 };
 
 std::optional<gfx::QueueFamilyIndices> FindQueueFamilyIndices(const vk::PhysicalDevice physical_device,

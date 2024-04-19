@@ -51,7 +51,7 @@ constexpr T ParseToken(const std::string_view token) {
 template <typename T, glm::length_t N>
 constexpr glm::vec<N, T> ParseLine(const std::string_view line, const bool normalize = false) {
   if (const auto tokens = Split(line); tokens.size() == N + 1) {
-    glm::vec<N, T> vec{};
+    glm::vec<N, T> vec{0.0f};
     for (glm::length_t i = 0; i < N; ++i) {
       const auto j = static_cast<std::size_t>(i) + 1;
       vec[i] = ParseToken<T>(tokens[j]);
@@ -121,7 +121,7 @@ constexpr glm::vec<N, T> TryGet(const std::vector<glm::vec<N, T>>& data, const i
     // use bounds checking in case the index position in the .obj file is invalid
     return data.at(static_cast<std::size_t>(index));
   }
-  return glm::vec<N, T>{};
+  return glm::vec<N, T>{0.0f};
 }
 
 gfx::Mesh LoadMesh(const gfx::Device& device, std::istream& istream) {

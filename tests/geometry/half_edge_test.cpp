@@ -41,7 +41,7 @@ TEST(HalfEdgeTest, FlipHalfEdgesDoNotHaveTheSameHashValue) {
 TEST(HalfEdgeTest, GetExpiredVertexCausesProgramExit) {
   std::shared_ptr<gfx::HalfEdge> edge10;
   {
-    const auto v0 = std::make_shared<gfx::Vertex>(0, glm::vec3{});
+    const auto v0 = std::make_shared<gfx::Vertex>(0, glm::vec3{0.0f});
     edge10 = std::make_shared<gfx::HalfEdge>(v0);
   }
   EXPECT_DEATH({ std::ignore = edge10->vertex(); }, "");  // NOLINT(whitespace/newline)

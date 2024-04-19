@@ -334,7 +334,7 @@ void Engine::Render(const ArcCamera& camera, const Mesh& mesh) {
   vk::resultCheck(result, "Draw fence failed to enter a signaled state");
   device_->resetFences(draw_fence);
 
-  std::uint32_t image_index{};
+  std::uint32_t image_index = 0;
   std::tie(result, image_index) = device_->acquireNextImageKHR(*swapchain_, kMaxTimeout, acquire_next_image_semaphore);
   vk::resultCheck(result, "Failed to acquire the next presentable image");
 
