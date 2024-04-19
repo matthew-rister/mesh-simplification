@@ -7,7 +7,6 @@
 #include "graphics/obj_loader.h"
 
 namespace {
-
 constexpr auto kWindowWidth = 1920;
 constexpr auto kWindowHeight = 1080;
 

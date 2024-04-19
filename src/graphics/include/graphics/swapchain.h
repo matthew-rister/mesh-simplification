@@ -13,13 +13,12 @@ class Window;
 
 class Swapchain {
 public:
-  Swapchain(const Window& window, vk::SurfaceKHR surface, const Device& device);
+  Swapchain(const Window& window, const vk::SurfaceKHR surface, const Device& device);
 
   [[nodiscard]] vk::SwapchainKHR operator*() const noexcept { return *swapchain_; }
 
   [[nodiscard]] vk::Format image_format() const noexcept { return image_format_; }
   [[nodiscard]] vk::Extent2D image_extent() const noexcept { return image_extent_; }
-
   [[nodiscard]] std::ranges::view auto image_views() const {
     return image_views_ | std::views::transform([](const auto& image_view) { return *image_view; });
   }

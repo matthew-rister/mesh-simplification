@@ -12,7 +12,7 @@ class Memory {
 public:
   Memory(const Device& device,
          const vk::MemoryRequirements& memory_requirements,
-         vk::MemoryPropertyFlags memory_property_flags);
+         const vk::MemoryPropertyFlags memory_property_flags);
 
   Memory(const Memory&) = delete;
   Memory(Memory&& memory) noexcept { *this = std::move(memory); }

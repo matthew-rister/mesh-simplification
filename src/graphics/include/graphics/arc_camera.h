@@ -22,9 +22,9 @@ public:
   [[nodiscard]] glm::mat4 GetViewTransform() const noexcept;
   [[nodiscard]] glm::mat4 GetProjectionTransform() const noexcept;
 
-  void Translate(float dx, float dy, float dz);
-  void Rotate(float theta, float phi);
-  void Zoom(float rate);
+  void Translate(const float dx, const float dy, const float dz);
+  void Rotate(const float theta, const float phi);
+  void Zoom(const float rate);
 
 private:
   glm::vec3 target_;

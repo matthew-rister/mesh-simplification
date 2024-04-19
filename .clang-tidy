@@ -18,9 +18,10 @@ Checks: >
   -misc-include-cleaner,
   -misc-no-recursion,
   -modernize-use-trailing-return-type,
+  -readability-avoid-const-params-in-decls,
   -readability-function-cognitive-complexity,
   -readability-identifier-length,
-  -readability-isolate-declaration,
+  -readability-isolate-declaration
 CheckOptions:
   - { key: readability-identifier-naming.ClassCase,               value: CamelCase  }
   - { key: readability-identifier-naming.ClassMemberCase,         value: lower_case }

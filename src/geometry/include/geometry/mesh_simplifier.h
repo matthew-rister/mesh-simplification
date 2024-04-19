@@ -15,7 +15,7 @@ namespace mesh {
  * \return A triangle mesh with \p rate percent of triangles removed from \p mesh.
  * \see docs/surface_simplification for a description of this mesh simplification algorithm.
  */
-Mesh Simplify(const Device& device, const Mesh& mesh, float rate);
+Mesh Simplify(const Device& device, const Mesh& mesh, const float rate);
 
 }  // namespace mesh
 }  // namespace gfx
