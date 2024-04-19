@@ -1,9 +1,7 @@
 #include "math/spherical_coordinates.h"
 
-#include <array>
-#include <cstdint>
-
 #include <gtest/gtest.h>
+#include <glm/glm.hpp>
 #include <glm/gtc/constants.hpp>
 
 namespace {

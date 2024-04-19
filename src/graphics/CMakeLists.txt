@@ -22,7 +22,8 @@ target_link_libraries(graphics PUBLIC Vulkan::Headers
                                       glm::glm
                                       glslang::glslang
                                       glslang::glslang-default-resource-limits
-                                      glslang::SPIRV)
+                                      glslang::SPIRV
+                                      math)
 
 target_compile_definitions(graphics PUBLIC GLFW_INCLUDE_VULKAN
                                            GLM_ENABLE_EXPERIMENTAL
