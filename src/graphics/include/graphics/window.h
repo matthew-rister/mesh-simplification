@@ -15,7 +15,7 @@ namespace gfx {
 
 class Window {
 public:
-  Window(const char* const title, const int width, const int height);
+  Window(const char* title, int width, int height);
 
   [[nodiscard]] std::pair<int, int> GetSize() const noexcept;
   [[nodiscard]] std::pair<int, int> GetFramebufferSize() const noexcept;

@@ -13,7 +13,7 @@ class Window;
 
 class Swapchain {
 public:
-  Swapchain(const Window& window, const vk::SurfaceKHR surface, const Device& device);
+  Swapchain(const Window& window, vk::SurfaceKHR surface, const Device& device);
 
   [[nodiscard]] vk::SwapchainKHR operator*() const noexcept { return *swapchain_; }
 

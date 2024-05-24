@@ -17,16 +17,17 @@ struct RankedPhysicalDevice {
 
 std::optional<gfx::QueueFamilyIndices> FindQueueFamilyIndices(const vk::PhysicalDevice physical_device,
                                                               const vk::SurfaceKHR surface) {
-  std::optional<std::uint32_t> graphics_index, present_index;
+  std::optional<std::uint32_t> maybe_graphics_index;
+  std::optional<std::uint32_t> maybe_present_index;
   for (std::uint32_t index = 0; const auto& queue_family_properties : physical_device.getQueueFamilyProperties()) {
     if (queue_family_properties.queueFlags & vk::QueueFlagBits::eGraphics) {
-      graphics_index = index;
+      maybe_graphics_index = index;
     }
     if (physical_device.getSurfaceSupportKHR(index, surface) == vk::True) {
-      present_index = index;
+      maybe_present_index = index;
     }
-    if (graphics_index.has_value() && present_index.has_value()) {
-      return gfx::QueueFamilyIndices{.graphics_index = *graphics_index, .present_index = *present_index};
+    if (maybe_graphics_index.has_value() && maybe_present_index.has_value()) {
+      return gfx::QueueFamilyIndices{.graphics_index = *maybe_graphics_index, .present_index = *maybe_present_index};
     }
     ++index;
   }

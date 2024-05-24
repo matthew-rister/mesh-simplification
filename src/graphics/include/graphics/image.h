@@ -11,12 +11,12 @@ class Device;
 class Image {
 public:
   Image(const Device& device,
-        const vk::Format format,
-        const vk::Extent2D extent,
-        const vk::SampleCountFlagBits sample_count,
-        const vk::ImageUsageFlags image_usage_flags,
-        const vk::ImageAspectFlags image_aspect_flags,
-        const vk::MemoryPropertyFlags memory_property_flags);
+        vk::Format format,
+        vk::Extent2D extent,
+        vk::SampleCountFlagBits sample_count,
+        vk::ImageUsageFlags image_usage_flags,
+        vk::ImageAspectFlags image_aspect_flags,
+        vk::MemoryPropertyFlags memory_property_flags);
 
   [[nodiscard]] vk::ImageView image_view() const noexcept { return *image_view_; }
   [[nodiscard]] vk::Format format() const noexcept { return format_; }

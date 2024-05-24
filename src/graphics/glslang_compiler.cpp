@@ -14,13 +14,13 @@
 
 template <>
 struct std::formatter<glslang_stage_t> : std::formatter<std::string_view> {
-  [[nodiscard]] auto format(const glslang_stage_t stage, std::format_context& format_context) const {
-    return std::formatter<std::string_view>::format(to_string(stage), format_context);
+  [[nodiscard]] auto format(const glslang_stage_t glslang_stage, std::format_context& format_context) const {
+    return std::formatter<std::string_view>::format(to_string(glslang_stage), format_context);
   }
 
 private:
-  static constexpr std::string_view to_string(const glslang_stage_t stage) noexcept {
-    switch (stage) {
+  static constexpr std::string_view to_string(const glslang_stage_t glslang_stage) noexcept {
+    switch (glslang_stage) {
       // clang-format off
 #define CASE(kGlslangStage) case kGlslangStage: return #kGlslangStage;  // NOLINT(cppcoreguidelines-macro-usage)
       CASE(GLSLANG_STAGE_VERTEX)
@@ -59,103 +59,106 @@ constexpr auto kGlslangMessages =
     GLSLANG_MSG_SPV_RULES_BIT | GLSLANG_MSG_VULKAN_RULES_BIT;
 // NOLINTEND(hicpp-signed-bitwise)
 
-std::ostream& operator<<(std::ostream& ostream, glslang_shader_t* const shader) {
-  if (const auto* const shader_info_log = glslang_shader_get_info_log(shader);
-      shader_info_log != nullptr && std::strlen(shader_info_log) > 0) {
-    std::println(ostream, "{}", shader_info_log);
+std::ostream& operator<<(std::ostream& ostream, glslang_shader_t* const glslang_shader) {
+  if (const auto* const glslang_shader_info_log = glslang_shader_get_info_log(glslang_shader);
+      glslang_shader_info_log != nullptr && std::strlen(glslang_shader_info_log) > 0) {
+    std::println(ostream, "{}", glslang_shader_info_log);
   }
 #ifndef NDEBUG
-  if (const auto* const shader_info_debug_log = glslang_shader_get_info_debug_log(shader);
-      shader_info_debug_log != nullptr && std::strlen(shader_info_debug_log) > 0) {
-    std::println(ostream, "{}", shader_info_debug_log);
+  if (const auto* const glslang_shader_info_debug_log = glslang_shader_get_info_debug_log(glslang_shader);
+      glslang_shader_info_debug_log != nullptr && std::strlen(glslang_shader_info_debug_log) > 0) {
+    std::println(ostream, "{}", glslang_shader_info_debug_log);
   }
 #endif
   return ostream;
 }
 
-std::ostream& operator<<(std::ostream& ostream, glslang_program_t* const program) {
-  if (const auto* const program_info_log = glslang_program_get_info_log(program);
-      program_info_log != nullptr && std::strlen(program_info_log) > 0) {
-    std::println(ostream, "{}", program_info_log);
+std::ostream& operator<<(std::ostream& ostream, glslang_program_t* const glslang_program) {
+  if (const auto* const glslang_program_info_log = glslang_program_get_info_log(glslang_program);
+      glslang_program_info_log != nullptr && std::strlen(glslang_program_info_log) > 0) {
+    std::println(ostream, "{}", glslang_program_info_log);
   }
 #ifndef NDEBUG
-  if (const auto* const program_info_debug_log = glslang_program_get_info_debug_log(program);
-      program_info_debug_log != nullptr && std::strlen(program_info_debug_log) > 0) {
-    std::println(ostream, "{}", program_info_debug_log);
+  if (const auto* const glslang_program_info_debug_log = glslang_program_get_info_debug_log(glslang_program);
+      glslang_program_info_debug_log != nullptr && std::strlen(glslang_program_info_debug_log) > 0) {
+    std::println(ostream, "{}", glslang_program_info_debug_log);
   }
 #endif
   return ostream;
 }
 
-UniqueGlslangShader CreateShader(const glslang_stage_t stage, const char* const glsl_source) {
-  const glslang_input_t input{.language = GLSLANG_SOURCE_GLSL,
-                              .stage = stage,
-                              .client = GLSLANG_CLIENT_VULKAN,
-                              .client_version = GLSLANG_TARGET_VULKAN_1_3,
-                              .target_language = GLSLANG_TARGET_SPV,
-                              .target_language_version = GLSLANG_TARGET_SPV_1_6,
-                              .code = glsl_source,
-                              .default_version = 460,
-                              .default_profile = GLSLANG_NO_PROFILE,
-                              .force_default_version_and_profile = 0,
-                              .forward_compatible = 0,
-                              .messages = static_cast<glslang_messages_t>(kGlslangMessages),
-                              .resource = glslang_default_resource()};
+UniqueGlslangShader CreateShader(const glslang_stage_t glslang_stage, const char* const glsl_source) {
+  const glslang_input_t glslang_input{.language = GLSLANG_SOURCE_GLSL,
+                                      .stage = glslang_stage,
+                                      .client = GLSLANG_CLIENT_VULKAN,
+                                      .client_version = GLSLANG_TARGET_VULKAN_1_3,
+                                      .target_language = GLSLANG_TARGET_SPV,
+                                      .target_language_version = GLSLANG_TARGET_SPV_1_6,
+                                      .code = glsl_source,
+                                      .default_version = 460,
+                                      .default_profile = GLSLANG_NO_PROFILE,
+                                      .force_default_version_and_profile = 0,
+                                      .forward_compatible = 0,
+                                      .messages = static_cast<glslang_messages_t>(kGlslangMessages),
+                                      .resource = glslang_default_resource()};
 
-  auto shader = UniqueGlslangShader{glslang_shader_create(&input), glslang_shader_delete};
-  if (shader == nullptr) {
-    throw std::runtime_error{std::format("Shader creation failed at {} with GLSL source:\n{}", stage, glsl_source)};
-  }
-
-  const auto shader_preprocess_status = glslang_shader_preprocess(shader.get(), &input);
-  std::clog << shader.get();
-
-  if (shader_preprocess_status == 0) {
+  auto glslang_shader = UniqueGlslangShader{glslang_shader_create(&glslang_input), glslang_shader_delete};
+  if (glslang_shader == nullptr) {
     throw std::runtime_error{
-        std::format("Shader preprocessing failed at {} with GLSL source:\n{}", stage, glsl_source)};
+        std::format("Shader creation failed at {} with GLSL source:\n{}", glslang_stage, glsl_source)};
   }
 
-  const auto shader_parse_status = glslang_shader_parse(shader.get(), &input);
-  std::clog << shader.get();
+  const auto glslang_shader_preprocess_result = glslang_shader_preprocess(glslang_shader.get(), &glslang_input);
+  std::clog << glslang_shader.get();
 
-  if (shader_parse_status == 0) {
+  if (glslang_shader_preprocess_result == 0) {
+    throw std::runtime_error{
+        std::format("Shader preprocessing failed at {} with GLSL source:\n{}", glslang_stage, glsl_source)};
+  }
+
+  const auto glslang_shader_parse_result = glslang_shader_parse(glslang_shader.get(), &glslang_input);
+  std::clog << glslang_shader.get();
+
+  if (glslang_shader_parse_result == 0) {
     throw std::runtime_error{std::format("Shader parsing failed at {} with GLSL source:\n{}",
-                                         stage,
-                                         glslang_shader_get_preprocessed_code(shader.get()))};
+                                         glslang_stage,
+                                         glslang_shader_get_preprocessed_code(glslang_shader.get()))};
   }
 
-  return shader;
+  return glslang_shader;
 }
 
-UniqueGlslangProgram CreateProgram(const glslang_stage_t stage, glslang_shader_t* const shader) {
-  auto program = UniqueGlslangProgram{glslang_program_create(), glslang_program_delete};
-  if (program == nullptr) throw std::runtime_error{std::format("Shader program creation failed at {}", stage)};
+UniqueGlslangProgram CreateProgram(const glslang_stage_t glslang_stage, glslang_shader_t* const glslang_shader) {
+  auto glslang_program = UniqueGlslangProgram{glslang_program_create(), glslang_program_delete};
+  if (glslang_program == nullptr) {
+    throw std::runtime_error{std::format("Shader program creation failed at {}", glslang_stage)};
+  }
+  glslang_program_add_shader(glslang_program.get(), glslang_shader);
 
-  glslang_program_add_shader(program.get(), shader);
+  const auto glslang_program_link_result = glslang_program_link(glslang_program.get(), kGlslangMessages);
+  std::clog << glslang_program.get();
 
-  const auto program_link_status = glslang_program_link(program.get(), kGlslangMessages);
-  std::clog << program.get();
-
-  if (program_link_status == 0) {
+  if (glslang_program_link_result == 0) {
     throw std::runtime_error{std::format("Shader program linking failed at {} with GLSL source:\n{}",
-                                         stage,
-                                         glslang_shader_get_preprocessed_code(shader))};
+                                         glslang_stage,
+                                         glslang_shader_get_preprocessed_code(glslang_shader))};
   }
 
-  return program;
+  return glslang_program;
 }
 
-std::vector<std::uint32_t> GenerateSpirv(glslang_program_t* const program, const glslang_stage_t stage) {
-  glslang_program_SPIRV_generate(program, stage);
+std::vector<std::uint32_t> GenerateSpirv(glslang_program_t* const glslang_program,
+                                         const glslang_stage_t glslang_stage) {
+  glslang_program_SPIRV_generate(glslang_program, glslang_stage);
 
-  const auto spirv_size = glslang_program_SPIRV_get_size(program);
-  if (spirv_size == 0) throw std::runtime_error{std::format("SPIR-V generation failed at {}", stage)};
+  const auto spirv_size = glslang_program_SPIRV_get_size(glslang_program);
+  if (spirv_size == 0) throw std::runtime_error{std::format("SPIR-V generation failed at {}", glslang_stage)};
 
   std::vector<std::uint32_t> spirv(spirv_size);
-  glslang_program_SPIRV_get(program, spirv.data());
+  glslang_program_SPIRV_get(glslang_program, spirv.data());
 
 #ifndef NDEBUG
-  if (const auto* const spirv_messages = glslang_program_SPIRV_get_messages(program);
+  if (const auto* const spirv_messages = glslang_program_SPIRV_get_messages(glslang_program);
       spirv_messages != nullptr && std::cmp_greater(std::strlen(spirv_messages), 0)) {
     std::println(std::clog, "{}", spirv_messages);
   }
@@ -177,10 +180,11 @@ GlslangCompiler::GlslangCompiler() {
 GlslangCompiler::~GlslangCompiler() noexcept { glslang_finalize_process(); }
 
 // NOLINTNEXTLINE(readability-convert-member-functions-to-static)
-std::vector<std::uint32_t> GlslangCompiler::Compile(const glslang_stage_t stage, const char* const glsl_source) const {
-  const auto shader = CreateShader(stage, glsl_source);
-  const auto program = CreateProgram(stage, shader.get());
-  return GenerateSpirv(program.get(), stage);
+std::vector<std::uint32_t> GlslangCompiler::Compile(const glslang_stage_t glslang_stage,
+                                                    const char* const glsl_source) const {
+  const auto glslang_shader = CreateShader(glslang_stage, glsl_source);
+  const auto glslang_program = CreateProgram(glslang_stage, glslang_shader.get());
+  return GenerateSpirv(glslang_program.get(), glslang_stage);
 }
 
 }  // namespace gfx

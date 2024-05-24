@@ -14,7 +14,7 @@ struct QueueFamilyIndices {
 
 class PhysicalDevice {
 public:
-  PhysicalDevice(const vk::Instance instance, const vk::SurfaceKHR surface);
+  PhysicalDevice(vk::Instance instance, vk::SurfaceKHR surface);
 
   [[nodiscard]] vk::PhysicalDevice operator*() const noexcept { return physical_device_; }
   [[nodiscard]] const vk::PhysicalDevice* operator->() const noexcept { return &physical_device_; }

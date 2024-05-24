@@ -26,16 +26,16 @@ public:
    * \param id The vertex ID.
    * \param position The vertex position.
    */
-  Vertex(const std::uint32_t id, const glm::vec3& position) noexcept : id_{id}, position_{position} {}
+  Vertex(const std::uint32_t id, const glm::vec3& position) noexcept : maybe_id_{id}, position_{position} {}
 
   /** \brief Gets the vertex ID. */
   [[nodiscard]] std::uint32_t id() const noexcept {
-    assert(id_.has_value());
-    return *id_;
+    assert(maybe_id_.has_value());
+    return *maybe_id_;
   }
 
   /** \brief Sets the vertex ID. */
-  void set_id(const std::uint32_t id) noexcept { id_ = id; }
+  void set_id(const std::uint32_t id) noexcept { maybe_id_ = id; }
 
   /** \brief Gets the vertex position. */
   [[nodiscard]] const glm::vec3& position() const noexcept { return position_; }
@@ -94,7 +94,7 @@ private:
     (hash_combine(seed, rest), ...);
   }
 
-  std::optional<std::uint32_t> id_;
+  std::optional<std::uint32_t> maybe_id_;
   glm::vec3 position_;
   std::weak_ptr<HalfEdge> edge_;
 };

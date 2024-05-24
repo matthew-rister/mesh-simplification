@@ -1,7 +1,7 @@
 #version 460
 
 layout(location = 0) in Vertex {
-  vec3 position;
+  vec3 position; // defined in view-space coordinates
   vec3 normal;
 } vertex;
 
@@ -12,7 +12,7 @@ struct PointLight {
   vec3 position;
   vec3 color;
 } kPointLights[3] = {
-  {{1.0f, 1.0f, 0.0f}, {0.0, 1.0, 1.0}},
+  {{1.0f, 1.0f, 0.0f}, {1.0, 1.0, 1.0}},
   {{-1.0f, 0.0f, 1.0f}, {1.0, 1.0, 1.0}},
   {{0.0f, 3.0f, -2.0f}, {1.0, 1.0, 1.0}}
 };
@@ -40,7 +40,7 @@ void main() {
     vec3 light_direction = point_light.position - vertex.position;
     const float light_distance = length(light_direction);
     const float attenuation = 1.0 / max(light_distance * light_distance, 1.0);
-    light_direction = light_direction / light_distance;
+    light_direction /= light_distance;
 
     const float diffuse_intensity = max(dot(normal, light_direction), 0.0);
     const vec3 diffuse_color = diffuse_intensity * kMaterial.diffuse;

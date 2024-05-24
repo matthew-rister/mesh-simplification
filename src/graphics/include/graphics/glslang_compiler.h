@@ -23,7 +23,7 @@ public:
 
   ~GlslangCompiler() noexcept;
 
-  [[nodiscard]] std::vector<std::uint32_t> Compile(glslang_stage_t stage, const char* glsl_source) const;
+  [[nodiscard]] std::vector<std::uint32_t> Compile(glslang_stage_t glslang_stage, const char* glsl_source) const;
 
 private:
   GlslangCompiler();

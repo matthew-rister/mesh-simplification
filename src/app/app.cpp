@@ -71,27 +71,27 @@ void App::HandleKeyEvent(const int key, const int action) {
 }
 
 void App::HandleCursorEvent(const float x, const float y) {
-  static std::optional<glm::vec2> prev_cursor_position;
+  static std::optional<glm::vec2> maybe_prev_cursor_position;
   const glm::vec2 cursor_position{x, y};
 
   if (window_.IsMouseButtonPressed(GLFW_MOUSE_BUTTON_LEFT)) {
-    if (prev_cursor_position.has_value()) {
+    if (maybe_prev_cursor_position.has_value()) {
       static constexpr auto kRotationSpeed = 0.00390625f;
-      const auto delta_cursor_position = cursor_position - *prev_cursor_position;
+      const auto delta_cursor_position = cursor_position - *maybe_prev_cursor_position;
       const auto rotation = kRotationSpeed * -delta_cursor_position;
       camera_.Rotate(rotation.x, rotation.y);
     }
-    prev_cursor_position = cursor_position;
+    maybe_prev_cursor_position = cursor_position;
   } else if (window_.IsMouseButtonPressed(GLFW_MOUSE_BUTTON_RIGHT)) {
-    if (prev_cursor_position.has_value()) {
+    if (maybe_prev_cursor_position.has_value()) {
       static constexpr auto kTranslationSpeed = 0.001953125f;
-      const auto delta_cursor_position = cursor_position - *prev_cursor_position;
+      const auto delta_cursor_position = cursor_position - *maybe_prev_cursor_position;
       const auto translation = kTranslationSpeed * glm::vec2{-delta_cursor_position.x, delta_cursor_position.y};
       camera_.Translate(translation.x, translation.y, 0.0f);
     }
-    prev_cursor_position = cursor_position;
-  } else if (prev_cursor_position.has_value()) {
-    prev_cursor_position = std::nullopt;
+    maybe_prev_cursor_position = cursor_position;
+  } else if (maybe_prev_cursor_position.has_value()) {
+    maybe_prev_cursor_position = std::nullopt;
   }
 }
 
