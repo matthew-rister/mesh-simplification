@@ -1,7 +1,11 @@
-add_executable(mesh_simplification main.cpp app.cpp)
+add_executable(mesh_simplification)
+
+target_sources(
+  mesh_simplification
+  PUBLIC FILE_SET HEADERS BASE_DIRS ${SRC_DIR} FILES app.h
+  PRIVATE main.cpp app.cpp)
 
 target_link_libraries(mesh_simplification PRIVATE geometry graphics)
-target_include_directories(mesh_simplification PRIVATE ${SRC_DIR})
 
 set(ASSETS_SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/assets)
 set(ASSETS_DST_DIR ${CMAKE_CURRENT_BINARY_DIR}/assets)
