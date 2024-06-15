@@ -1,5 +1,6 @@
 #include "graphics/device.h"
 
+#include <algorithm>
 #include <array>
 #include <cstdint>
 #include <ranges>

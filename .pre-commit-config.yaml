@@ -20,3 +20,10 @@ repos:
         args: [-i, --style=file, --Werror]
       - id: cpplint
         args: [--verbose=0]
+  - repo: https://github.com/cheshirekow/cmake-format-precommit
+    rev: v0.6.13
+    hooks:
+    - id: cmake-format
+      types: [cmake]
+    - id: cmake-lint
+      types: [cmake]
