@@ -33,4 +33,4 @@ target_compile_definitions(graphics PUBLIC GLFW_INCLUDE_VULKAN
                                            VULKAN_HPP_NO_CONSTRUCTORS
                                            VULKAN_HPP_DISPATCH_LOADER_DYNAMIC=1)
 
-target_include_directories(graphics PUBLIC include)
+target_include_directories(graphics PUBLIC ${SRC_DIR})

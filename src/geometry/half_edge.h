@@ -1,5 +1,5 @@
-#ifndef SRC_GEOMETRY_INCLUDE_GEOMETRY_HALF_EDGE_H_
-#define SRC_GEOMETRY_INCLUDE_GEOMETRY_HALF_EDGE_H_
+#ifndef GEOMETRY_HALF_EDGE_H_
+#define GEOMETRY_HALF_EDGE_H_
 
 #include <cassert>
 #include <memory>
@@ -69,4 +69,4 @@ private:
 
 }  // namespace gfx
 
-#endif  // SRC_GEOMETRY_INCLUDE_GEOMETRY_HALF_EDGE_H_
+#endif  // GEOMETRY_HALF_EDGE_H_

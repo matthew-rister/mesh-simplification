@@ -1,5 +1,5 @@
-#ifndef SRC_GRAPHICS_INCLUDE_GRAPHICS_BUFFER_H_
-#define SRC_GRAPHICS_INCLUDE_GRAPHICS_BUFFER_H_
+#ifndef GRAPHICS_BUFFER_H_
+#define GRAPHICS_BUFFER_H_
 
 #include <cassert>
 #include <cstring>
@@ -47,4 +47,4 @@ private:
 
 }  // namespace gfx
 
-#endif  // SRC_GRAPHICS_INCLUDE_GRAPHICS_BUFFER_H_
+#endif  // GRAPHICS_BUFFER_H_

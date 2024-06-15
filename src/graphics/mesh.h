@@ -1,5 +1,5 @@
-#ifndef SRC_GRAPHICS_INCLUDE_GRAPHICS_MESH_H_
-#define SRC_GRAPHICS_INCLUDE_GRAPHICS_MESH_H_
+#ifndef GRAPHICS_MESH_H_
+#define GRAPHICS_MESH_H_
 
 #include <vector>
 
@@ -49,4 +49,4 @@ private:
 
 }  // namespace gfx
 
-#endif  // SRC_GRAPHICS_INCLUDE_GRAPHICS_MESH_H_
+#endif  // GRAPHICS_MESH_H_

@@ -1,5 +1,5 @@
-#ifndef SRC_GRAPHICS_INCLUDE_GRAPHICS_ENGINE_H_
-#define SRC_GRAPHICS_INCLUDE_GRAPHICS_ENGINE_H_
+#ifndef GRAPHICS_ENGINE_H_
+#define GRAPHICS_ENGINE_H_
 
 #include <array>
 #include <cstdint>
@@ -48,4 +48,4 @@ private:
 
 }  // namespace gfx
 
-#endif  // SRC_GRAPHICS_INCLUDE_GRAPHICS_ENGINE_H_
+#endif  // GRAPHICS_ENGINE_H_

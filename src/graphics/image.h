@@ -1,5 +1,5 @@
-#ifndef SRC_GRAPHICS_INCLUDE_GRAPHICS_IMAGE_H_
-#define SRC_GRAPHICS_INCLUDE_GRAPHICS_IMAGE_H_
+#ifndef GRAPHICS_IMAGE_H_
+#define GRAPHICS_IMAGE_H_
 
 #include <vulkan/vulkan.hpp>
 
@@ -30,4 +30,4 @@ private:
 
 }  // namespace gfx
 
-#endif  // SRC_GRAPHICS_INCLUDE_GRAPHICS_IMAGE_H_
+#endif  // GRAPHICS_IMAGE_H_

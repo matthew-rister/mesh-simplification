@@ -1,5 +1,5 @@
-#ifndef SRC_GRAPHICS_INCLUDE_GRAPHICS_INSTANCE_H_
-#define SRC_GRAPHICS_INCLUDE_GRAPHICS_INSTANCE_H_
+#ifndef GRAPHICS_INSTANCE_H_
+#define GRAPHICS_INSTANCE_H_
 
 #include <vulkan/vulkan.hpp>
 
@@ -17,4 +17,4 @@ private:
 
 }  // namespace gfx
 
-#endif  // SRC_GRAPHICS_INCLUDE_GRAPHICS_INSTANCE_H_
+#endif  // GRAPHICS_INSTANCE_H_

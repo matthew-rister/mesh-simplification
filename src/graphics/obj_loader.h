@@ -1,5 +1,5 @@
-#ifndef SRC_GRAPHICS_INCLUDE_GRAPHICS_OBJ_LOADER_H_
-#define SRC_GRAPHICS_INCLUDE_GRAPHICS_OBJ_LOADER_H_
+#ifndef GRAPHICS_OBJ_LOADER_H_
+#define GRAPHICS_OBJ_LOADER_H_
 
 #include <filesystem>
 
@@ -14,4 +14,4 @@ Mesh LoadMesh(const Device& device, const std::filesystem::path& filepath);
 }  // namespace obj_loader
 }  // namespace gfx
 
-#endif  // SRC_GRAPHICS_INCLUDE_GRAPHICS_OBJ_LOADER_H_
+#endif  // GRAPHICS_OBJ_LOADER_H_

@@ -1,5 +1,5 @@
-#ifndef SRC_GRAPHICS_INCLUDE_GRAPHICS_DEVICE_H_
-#define SRC_GRAPHICS_INCLUDE_GRAPHICS_DEVICE_H_
+#ifndef GRAPHICS_DEVICE_H_
+#define GRAPHICS_DEVICE_H_
 
 #include <concepts>
 
@@ -44,4 +44,4 @@ private:
 
 }  // namespace gfx
 
-#endif  // SRC_GRAPHICS_INCLUDE_GRAPHICS_DEVICE_H_
+#endif  // GRAPHICS_DEVICE_H_

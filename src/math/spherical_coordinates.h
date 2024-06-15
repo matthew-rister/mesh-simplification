@@ -1,5 +1,5 @@
-#ifndef SRC_MATH_INCLUDE_MATH_SPHERICAL_COORDINATES_H_
-#define SRC_MATH_INCLUDE_MATH_SPHERICAL_COORDINATES_H_
+#ifndef MATH_SPHERICAL_COORDINATES_H_
+#define MATH_SPHERICAL_COORDINATES_H_
 
 #include <glm/fwd.hpp>
 
@@ -16,4 +16,4 @@ struct SphericalCoordinates {
 
 }  // namespace gfx
 
-#endif  // SRC_MATH_INCLUDE_MATH_SPHERICAL_COORDINATES_H_
+#endif  // MATH_SPHERICAL_COORDINATES_H_

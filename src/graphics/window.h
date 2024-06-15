@@ -1,5 +1,5 @@
-#ifndef SRC_GRAPHICS_INCLUDE_GRAPHICS_WINDOW_H_
-#define SRC_GRAPHICS_INCLUDE_GRAPHICS_WINDOW_H_
+#ifndef GRAPHICS_WINDOW_H_
+#define GRAPHICS_WINDOW_H_
 
 #include <functional>
 #include <memory>
@@ -48,4 +48,4 @@ private:
 
 }  // namespace gfx
 
-#endif  // SRC_GRAPHICS_INCLUDE_GRAPHICS_WINDOW_H_
+#endif  // GRAPHICS_WINDOW_H_
