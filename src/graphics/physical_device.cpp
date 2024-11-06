@@ -19,6 +19,7 @@ std::optional<gfx::QueueFamilyIndices> FindQueueFamilyIndices(const vk::Physical
                                                               const vk::SurfaceKHR surface) {
   std::optional<std::uint32_t> maybe_graphics_index;
   std::optional<std::uint32_t> maybe_present_index;
+
   for (std::uint32_t index = 0; const auto& queue_family_properties : physical_device.getQueueFamilyProperties()) {
     if (queue_family_properties.queueFlags & vk::QueueFlagBits::eGraphics) {
       maybe_graphics_index = index;
@@ -31,6 +32,7 @@ std::optional<gfx::QueueFamilyIndices> FindQueueFamilyIndices(const vk::Physical
     }
     ++index;
   }
+
   return std::nullopt;
 }
 

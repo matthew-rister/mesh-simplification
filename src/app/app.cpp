@@ -10,26 +10,32 @@ namespace {
 constexpr auto kWindowWidth = 1920;
 constexpr auto kWindowHeight = 1080;
 
-// NOLINTBEGIN(*-magic-numbers)
 gfx::ArcCamera CreateCamera(const float aspect_ratio) {
   static constexpr glm::vec3 kTarget{0.0f};
   static constexpr glm::vec3 kPosition{0.0f, 0.0f, 2.0f};
   return gfx::ArcCamera{kTarget,
                         kPosition,
-                        gfx::ViewFrustum{.field_of_view_y = glm::radians(45.0f),
-                                         .aspect_ratio = aspect_ratio,
-                                         .z_near = 0.1f,
-                                         .z_far = 100'000.0f}};
+                        gfx::ViewFrustum{
+                            // NOLINTBEGIN(*-magic-numbers)
+                            .field_of_view_y = glm::radians(45.0f),
+                            .aspect_ratio = aspect_ratio,
+                            .z_near = 0.1f,
+                            .z_far = 100'000.0f
+                            // NOLINTEND(*-magic-numbers)
+                        }};
 }
 
 gfx::Mesh CreateMesh(const gfx::Device& device) {
   auto mesh = gfx::obj_loader::LoadMesh(device, "assets/models/bunny.obj");
+
+  // NOLINTBEGIN(*-magic-numbers)
   mesh.Translate(glm::vec3{0.2f, -0.3f, 0.0f});
   mesh.Rotate(glm::vec3{1.0f, 0.0f, 0.0f}, glm::radians(10.0f));
   mesh.Scale(glm::vec3{0.35f});
+  // NOLINTEND(*-magic-numbers)
+
   return mesh;
 }
-// NOLINTEND(*-magic-numbers)
 
 }  // namespace
 
@@ -40,9 +46,9 @@ App::App()
       engine_{window_},
       camera_{CreateCamera(window_.GetAspectRatio())},
       mesh_{CreateMesh(engine_.device())} {
-  window_.OnKeyEvent([this](const auto key, const auto action) { HandleKeyEvent(key, action); });
-  window_.OnCursorEvent([this](const auto x, const auto y) { HandleCursorEvent(x, y); });
-  window_.OnScrollEvent([this](const auto y) { HandleScrollEvent(y); });
+  window_.OnKeyEvent([this](const auto key, const auto action) { OnKeyEvent(key, action); });
+  window_.OnCursorEvent([this](const auto x, const auto y) { OnCursorEvent(x, y); });
+  window_.OnScrollEvent([this](const auto y) { OnScrollEvent(y); });
 }
 
 void App::Run() {
@@ -53,7 +59,7 @@ void App::Run() {
   engine_.device()->waitIdle();
 }
 
-void App::HandleKeyEvent(const int key, const int action) {
+void App::OnKeyEvent(const int key, const int action) {
   if (action != GLFW_PRESS) return;
 
   switch (key) {
@@ -70,7 +76,7 @@ void App::HandleKeyEvent(const int key, const int action) {
   }
 }
 
-void App::HandleCursorEvent(const float x, const float y) {
+void App::OnCursorEvent(const float x, const float y) {
   static std::optional<glm::vec2> maybe_prev_cursor_position;
   const glm::vec2 cursor_position{x, y};
 
@@ -82,6 +88,7 @@ void App::HandleCursorEvent(const float x, const float y) {
       camera_.Rotate(rotation.x, rotation.y);
     }
     maybe_prev_cursor_position = cursor_position;
+
   } else if (window_.IsMouseButtonPressed(GLFW_MOUSE_BUTTON_RIGHT)) {
     if (maybe_prev_cursor_position.has_value()) {
       static constexpr auto kTranslationSpeed = 0.001953125f;
@@ -90,12 +97,13 @@ void App::HandleCursorEvent(const float x, const float y) {
       camera_.Translate(translation.x, translation.y, 0.0f);
     }
     maybe_prev_cursor_position = cursor_position;
+
   } else if (maybe_prev_cursor_position.has_value()) {
     maybe_prev_cursor_position = std::nullopt;
   }
 }
 
-void App::HandleScrollEvent(const float y) {
+void App::OnScrollEvent(const float y) {
   static constexpr auto kZoomSpeed = 0.015625f;
   camera_.Zoom(kZoomSpeed * -y);
 }

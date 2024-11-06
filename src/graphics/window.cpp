@@ -3,8 +3,10 @@
 #include <algorithm>
 #include <cassert>
 #include <format>
+#ifndef NDEBUG
 #include <iostream>
 #include <print>
+#endif
 #include <stdexcept>
 
 namespace {
@@ -80,34 +82,34 @@ Window::Window(const char* const title, const int width, const int height)
   glfwSetKeyCallback(
       window_.get(),
       [](GLFWwindow* const window, const int key, const int /*scancode*/, const int action, const int /*modifiers*/) {
-        if (const auto* self = static_cast<Window*>(glfwGetWindowUserPointer(window)); self->key_event_handler_) {
+        if (const auto* const self = static_cast<Window*>(glfwGetWindowUserPointer(window)); self->key_event_handler_) {
           self->key_event_handler_(key, action);
         }
       });
 
   glfwSetCursorPosCallback(window_.get(), [](GLFWwindow* const window, const double x, const double y) {
-    if (const auto* self = static_cast<Window*>(glfwGetWindowUserPointer(window)); self->cursor_event_handler_) {
+    if (const auto* const self = static_cast<Window*>(glfwGetWindowUserPointer(window)); self->cursor_event_handler_) {
       self->cursor_event_handler_(static_cast<float>(x), static_cast<float>(y));
     }
   });
 
   glfwSetScrollCallback(window_.get(), [](GLFWwindow* const window, const double /*x_offset*/, const double y_offset) {
-    if (const auto* self = static_cast<Window*>(glfwGetWindowUserPointer(window)); self->scroll_event_handler_) {
+    if (const auto* const self = static_cast<Window*>(glfwGetWindowUserPointer(window)); self->scroll_event_handler_) {
       self->scroll_event_handler_(static_cast<float>(y_offset));
     }
   });
 }
 
 std::pair<int, int> Window::GetSize() const noexcept {
-  int width = 0;
-  int height = 0;
+  auto width = 0;
+  auto height = 0;
   glfwGetWindowSize(window_.get(), &width, &height);
   return std::pair{width, height};
 }
 
 std::pair<int, int> Window::GetFramebufferSize() const noexcept {
-  int width = 0;
-  int height = 0;
+  auto width = 0;
+  auto height = 0;
   glfwGetFramebufferSize(window_.get(), &width, &height);
   return std::pair{width, height};
 }

@@ -42,7 +42,7 @@ public:
 private:
   vk::UniqueBuffer buffer_;
   Memory memory_;
-  vk::DeviceSize size_;
+  vk::DeviceSize size_ = 0;
 };
 
 }  // namespace gfx

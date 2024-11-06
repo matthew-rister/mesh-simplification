@@ -27,7 +27,7 @@ public:
   void Zoom(float rate);
 
 private:
-  glm::vec3 target_;
+  glm::vec3 target_{0.0f};
   SphericalCoordinates position_;
   ViewFrustum view_frustum_;
 };

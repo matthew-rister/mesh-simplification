@@ -27,26 +27,32 @@ vk::SampleCountFlagBits GetMsaaSampleCount(const vk::PhysicalDeviceLimits& physi
   const auto color_depth_sample_count_flags = color_sample_count_flags & depth_sample_count_flags;
 
   using enum vk::SampleCountFlagBits;
-  for (const auto sample_count_flag_bit : {e8, e4, e2}) {
-    if (sample_count_flag_bit & color_depth_sample_count_flags) {
-      return sample_count_flag_bit;
+  for (const auto msaa_sample_count_bit : {e8, e4, e2}) {
+    if (msaa_sample_count_bit & color_depth_sample_count_flags) {
+      return msaa_sample_count_bit;
     }
   }
 
   assert(color_depth_sample_count_flags & e1);
-  return e1;
+  return e1;  // multisample anti-aliasing is not supported on this device
 }
 
 vk::Format GetDepthAttachmentFormat(const vk::PhysicalDevice physical_device) {
+  // the Vulkan specification requires VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT support for VK_FORMAT_D16_UNORM
+  // and at least one of VK_FORMAT_X8_D24_UNORM_PACK32 and VK_FORMAT_D32_SFLOAT
   using enum vk::Format;
-  static constexpr std::array kTargetFormats{eD32Sfloat, eD32SfloatS8Uint, eD24UnormS8Uint, eD16Unorm, eD16UnormS8Uint};
-  for (const auto format : kTargetFormats) {
-    if (const auto format_properties = physical_device.getFormatProperties(format);
-        format_properties.optimalTilingFeatures & vk::FormatFeatureFlagBits::eDepthStencilAttachment) {
-      return format;
+  for (const auto depth_attachment_format : {eD32Sfloat, eX8D24UnormPack32}) {
+    const auto format_properties = physical_device.getFormatProperties(depth_attachment_format);
+    if (format_properties.optimalTilingFeatures & vk::FormatFeatureFlagBits::eDepthStencilAttachment) {
+      return depth_attachment_format;
     }
   }
-  throw std::runtime_error{"No supported depth attachment format"};
+
+#ifndef NDEBUG
+  const auto d16_unorm_format_properties = physical_device.getFormatProperties(eD16Unorm);
+  assert(d16_unorm_format_properties.optimalTilingFeatures & vk::FormatFeatureFlagBits::eDepthStencilAttachment);
+#endif
+  return eD16Unorm;
 }
 
 vk::UniqueRenderPass CreateRenderPass(const vk::Device device,

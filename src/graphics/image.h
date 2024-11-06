@@ -25,7 +25,7 @@ private:
   vk::UniqueImage image_;
   vk::UniqueImageView image_view_;
   Memory memory_;
-  vk::Format format_;
+  vk::Format format_ = vk::Format::eUndefined;
 };
 
 }  // namespace gfx

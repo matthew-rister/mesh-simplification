@@ -15,9 +15,9 @@ public:
   void Run();
 
 private:
-  void HandleKeyEvent(int key, int action);
-  void HandleCursorEvent(float x, float y);
-  void HandleScrollEvent(float y);
+  void OnKeyEvent(int key, int action);
+  void OnCursorEvent(float x, float y);
+  void OnScrollEvent(float y);
 
   Window window_;
   Engine engine_;
