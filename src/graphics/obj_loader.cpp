@@ -7,6 +7,7 @@
 #include <cstdint>
 #include <format>
 #include <fstream>
+#include <limits>
 #include <stdexcept>
 #include <string>
 #include <string_view>
@@ -49,17 +50,12 @@ constexpr T ParseToken(const std::string_view token) {
 }
 
 template <typename T, glm::length_t N>
-constexpr glm::vec<N, T> ParseLine(const std::string_view line, const bool normalize = false) {
+constexpr glm::vec<N, T> ParseLine(const std::string_view line) {
   if (const auto tokens = Split(line); tokens.size() == N + 1) {
     glm::vec<N, T> vec{0.0f};
     for (glm::length_t i = 0; i < N; ++i) {
       const auto j = static_cast<std::size_t>(i) + 1;
       vec[i] = ParseToken<T>(tokens[j]);
-    }
-    if (normalize) {
-      const auto length = glm::length(vec);
-      assert(length > 0.0f);
-      vec = vec / length;
     }
     return vec;
   }
@@ -116,7 +112,7 @@ std::array<glm::ivec3, 3> ParseFace(const std::string_view line) {
 }
 
 template <typename T, glm::length_t N>
-constexpr glm::vec<N, T> TryGet(const std::vector<glm::vec<N, T>>& data, const int index) {
+constexpr glm::vec<N, T> Get(const std::vector<glm::vec<N, T>>& data, const int index) {
   if (index != kInvalidIndex) {
     // use bounds checking in case the index position in the .obj file is invalid
     return data.at(static_cast<std::size_t>(index));
@@ -137,7 +133,13 @@ gfx::Mesh LoadMesh(const gfx::Device& device, std::istream& istream) {
       } else if (line_view.starts_with("vt ")) {
         texture_coordinates.push_back(ParseLine<float, 2>(line_view));
       } else if (line_view.starts_with("vn ")) {
-        normals.push_back(ParseLine<float, 3>(line_view, true));
+        const auto normal = ParseLine<float, 3>(line_view);
+#ifndef NDEBUG
+        // normals assumed to have unit length in the .obj file
+        static constexpr auto kEpsilon = 1.0e-6f;
+        assert(std::abs(glm::length(normal) - 1.0f) < kEpsilon);
+#endif
+        normals.push_back(normal);
       } else if (line_view.starts_with("f ")) {
         faces.push_back(ParseFace(line_view));
       }
@@ -155,9 +157,9 @@ gfx::Mesh LoadMesh(const gfx::Device& device, std::istream& istream) {
     for (const auto& index_group : face) {
       auto iterator = index_groups.find(index_group);
       if (iterator == index_groups.cend()) {
-        vertices.push_back(gfx::Mesh::Vertex{.position = TryGet(positions, index_group[0]),
-                                             .texture_coordinates = TryGet(texture_coordinates, index_group[1]),
-                                             .normal = TryGet(normals, index_group[2])});
+        vertices.push_back(gfx::Mesh::Vertex{.position = Get(positions, index_group[0]),
+                                             .texture_coordinates = Get(texture_coordinates, index_group[1]),
+                                             .normal = Get(normals, index_group[2])});
         iterator = index_groups.emplace(index_group, static_cast<std::uint32_t>(vertices.size()) - 1).first;
       }
       indices.push_back(iterator->second);

@@ -32,13 +32,11 @@ struct EdgeContraction {
                   const bool valid = true)
       : edge{edge}, vertex{vertex}, quadric{quadric}, cost{cost}, valid{valid} {}
 
-  // NOLINTBEGIN(misc-non-private-member-variables-in-classes)
   std::shared_ptr<gfx::HalfEdge> edge;
   std::shared_ptr<gfx::Vertex> vertex;
   glm::mat4 quadric;
   float cost;
   bool valid;
-  // NOLINTEND(misc-non-private-member-variables-in-classes)
 };
 
 std::shared_ptr<gfx::HalfEdge> GetMinEdge(const std::shared_ptr<gfx::HalfEdge>& edge01) {
@@ -49,6 +47,7 @@ std::shared_ptr<gfx::HalfEdge> GetMinEdge(const std::shared_ptr<gfx::HalfEdge>& 
 glm::mat4 CreateErrorQuadric(const gfx::Vertex& v0) {
   glm::mat4 quadric{0.0f};
   auto edgei0 = v0.edge();
+
   do {
     const auto& position = v0.position();
     const auto& normal = edgei0->face()->normal();
@@ -56,6 +55,7 @@ glm::mat4 CreateErrorQuadric(const gfx::Vertex& v0) {
     quadric += glm::outerProduct(plane, plane);
     edgei0 = edgei0->next()->flip();
   } while (edgei0 != v0.edge());
+
   return quadric;
 }
 

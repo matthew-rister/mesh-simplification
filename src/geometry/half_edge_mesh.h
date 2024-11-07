@@ -48,7 +48,7 @@ public:
 
   /**
    * \brief Converts the half-edge mesh back to an indexed triangle mesh.
-   * \param device The graphics device used to load mesh data into GPU memory.
+   * \param device The graphics device used to copy mesh buffers to device memory.
    * \return An indexed triangle mesh.
    */
   [[nodiscard]] Mesh ToMesh(const Device& device) const;
