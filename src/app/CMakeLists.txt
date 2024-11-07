@@ -7,10 +7,10 @@ target_sources(
 
 target_link_libraries(mesh_simplification PRIVATE geometry graphics)
 
-set(ASSETS_SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/assets)
-set(ASSETS_DST_DIR ${CMAKE_CURRENT_BINARY_DIR}/assets)
+set(ASSETS_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/assets)
+set(ASSETS_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/assets)
 
 add_custom_target(
-  copy_assets ALL
-  COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different ${ASSETS_SRC_DIR} ${ASSETS_DST_DIR}
-  COMMENT "Copying assets from ${ASSETS_SRC_DIR} to ${ASSETS_DST_DIR}")
+  create_symlink ALL
+  COMMAND ${CMAKE_COMMAND} -E create_symlink ${ASSETS_SOURCE_DIR} ${ASSETS_BINARY_DIR}
+  COMMENT "Creating assets symlink from ${ASSETS_SOURCE_DIR} to ${ASSETS_BINARY_DIR}")
